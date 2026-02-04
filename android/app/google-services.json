@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1015221394159",
+    "project_id": "collaby-app-4255f",
+    "storage_bucket": "collaby-app-4255f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015221394159:android:a5b2c944f56942672f191a",
+        "android_client_info": {
+          "package_name": "com.ir.collaby_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1015221394159-nee2vahgaj8vjckr0u8i0et75fgth4ha.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ir.collaby_app",
+            "certificate_hash": "d82548b1bd444ddb0c3e64bfd3aa76223a7091f7"
+          }
+        },
+        {
+          "client_id": "1015221394159-v6ep4079r7mbchobccpja20d4s0rbrv6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6-_1jpgiiJVX2bMLqXwR5JS8qFoeNJnA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1015221394159-sse19l40ovoi15l86l4dp0vsj1la37i5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1015221394159-nn4uvncvc9ot5s828eqt1iuo4rm3pqsj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ir.collaby-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
