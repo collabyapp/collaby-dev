@@ -171,7 +171,7 @@ class AuthService {
     final user = response['data'] != null
         ? Map<String, dynamic>.from(response['data'] as Map)
         : <String, dynamic>{};
-    log(response);
+    log('verifyToken response: ${response.toString()}');
     if (user.isEmpty) {
       throw 'Verification succeeded but user data is empty.';
     }

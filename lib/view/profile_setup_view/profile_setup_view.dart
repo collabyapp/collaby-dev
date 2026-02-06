@@ -125,30 +125,7 @@ class ProfileSetupView extends StatelessWidget {
                       placeholder: 'Enter your display name',
                     ),
                     SizedBox(height: 20),
-                    Stack(
-                      children: [
-                        buildTextField(
-                          label: 'Description',
-                          controller: controller.descriptionController,
-                          placeholder:
-                              'Share a bit about your work experience, cool projects you\'ve completed, and your area of expertise.',
-                          maxLines: 6,
-                          maxLength: 600,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: 10,
-                          child: Text(
-                            'min. 150 characters',
-                            style: AppTextStyles.extraSmallText.copyWith(
-                              color: Color(0xff969FAE),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-
+                    // Description removed for account creation flow
                     // Age Group & Gender Section
                     Text('Age Group & Gender', style: AppTextStyles.normalText),
                     SizedBox(height: 12),
@@ -296,29 +273,7 @@ class ProfileSetupView extends StatelessWidget {
                         placeholder: 'Enter your display name',
                       ),
                       SizedBox(height: 20),
-                      Stack(
-                        children: [
-                          buildTextField(
-                            label: 'Description*',
-                            controller: controller.descriptionController,
-                            placeholder:
-                                'Share a bit about your work experience, cool projects you\'ve completed, and your area of expertise.',
-                            maxLines: 6,
-                            maxLength: 600,
-                            minLength: 150,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-
-                      Text(
-                        'min. 150 characters',
-                        style: AppTextStyles.extraSmallText.copyWith(
-                          color: Color(0xff969FAE),
-                        ),
-                      ),
-
-                      SizedBox(height: 15),
+                      // Description removed for account creation flow
 
                       // Age Group & Gender Section
                       Text(

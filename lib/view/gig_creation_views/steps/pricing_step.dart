@@ -23,48 +23,27 @@ class PricingStep extends GetView<CreateGigController> {
           Text('Pricing', style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            'Only price changes per duration. Everything else is shared.',
+            'Set your price for each duration.',
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // Tier Selector (only price changes)
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(60),
-              color: const Color(0xffCBD9FF).withOpacity(0.33),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: Row(
-              children: [
-                Expanded(child: _buildTierButton('15 Sec', 0)),
-                const SizedBox(width: 8),
-                Expanded(child: _buildTierButton('30 Sec', 1)),
-                const SizedBox(width: 8),
-                Expanded(child: _buildTierButton('60 Sec', 2)),
-              ],
-            ),
-          ),
+          _buildAllTierPrices(),
 
           const SizedBox(height: 24),
 
-          // Current Tier Price Form (only)
-          Obx(() => _buildTierPriceForm(controller.currentTierIndex.value)),
-
-          const SizedBox(height: 24),
-
-          // Shared extras (minimal)
-          Text('Extras (shared)', style: AppTextStyles.h6Bold),
+          // Extras
+          Text('Extras', style: AppTextStyles.h6Bold),
           const SizedBox(height: 10),
           _coreMinimalExtras(),
 
           const SizedBox(height: 24),
 
-          // Custom global extras
+          // Custom extras
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Custom Extras (shared)', style: AppTextStyles.h6Bold),
+              Text('Custom Extras', style: AppTextStyles.h6Bold),
               GestureDetector(
                 onTap: () => _openAddGlobalExtraSheet(existing: null),
                 child: const Icon(Icons.add_circle_outline, size: 22),
@@ -88,7 +67,7 @@ class PricingStep extends GetView<CreateGigController> {
 
           const SizedBox(height: 32),
 
-          // Preview (shows shared rules + selected tier price)
+          // Preview
           Obx(() {
             final p = controller.packages[controller.currentTierIndex.value].value;
             return p.price > 0 ? _buildPackagePreview(p) : const SizedBox();
@@ -98,29 +77,149 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 
-  // ===================== Tier Button =====================
-  Widget _buildTierButton(String title, int index) {
-    return Obx(
-      () => GestureDetector(
-        onTap: () => controller.setCurrentTier(index),
-        child: Container(
-          height: 38,
-          decoration: BoxDecoration(
-            color: controller.currentTierIndex.value == index ? const Color(0xFF917DE5) : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.extraSmallText.copyWith(
-                color: controller.currentTierIndex.value == index ? Colors.white : const Color(0xff5E5E5E),
-                fontWeight: controller.currentTierIndex.value == index ? FontWeight.w600 : FontWeight.normal,
-              ),
+  // ===================== Prices for all tiers =====================
+  Widget _buildAllTierPrices() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Currency', style: AppTextStyles.smallText),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: _showCurrencySelector,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 14),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Obx(() => Text(controller.selectedCurrency.value, style: AppTextStyles.smallText)),
+                const SizedBox(width: 22),
+                const Icon(Icons.arrow_forward_ios, size: 20, color: Color(0xff3F4146)),
+              ],
             ),
           ),
         ),
+        const SizedBox(height: 16),
+        _tierPriceCard('15 Sec', 0),
+        const SizedBox(height: 12),
+        _tierPriceCard('30 Sec', 1),
+        const SizedBox(height: 12),
+        _tierPriceCard('60 Sec', 2),
+        const SizedBox(height: 18),
+        Text('Delivery Time', style: AppTextStyles.smallText),
+        const SizedBox(height: 12),
+        _deliveryTimeSelector(),
+        const SizedBox(height: 15),
+        Text('Number of Revisions', style: AppTextStyles.smallText),
+        const SizedBox(height: 12),
+        _revisionsField(),
+      ],
+    );
+  }
+
+  Widget _tierPriceCard(String title, int tierIndex) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xffF4F7FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AppTextStyles.smallTextBold),
+          const SizedBox(height: 10),
+          TextField(
+            controller: controller.priceControllers[tierIndex],
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
+            ],
+            decoration: InputDecoration(
+              hintText: 'Type Price e.g. 50',
+              hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: AppColor.primaryColor),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+            ),
+            onChanged: (value) {
+              final price = double.tryParse(value) ?? 0;
+              controller.updatePackagePrice(tierIndex, price);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _deliveryTimeSelector() {
+    return GestureDetector(
+      onTap: () => _showDeliveryTimeSelector(0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              controller.packages[0].value.deliveryTime.isEmpty
+                  ? 'Select Delivery Time in Days'
+                  : controller.packages[0].value.deliveryTime,
+              style: AppTextStyles.smallText.copyWith(
+                color: controller.packages[0].value.deliveryTime.isEmpty
+                    ? Colors.grey.shade500
+                    : Colors.black,
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_sharp, size: 18, color: Color(0xff3F4146)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _revisionsField() {
+    return TextField(
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      decoration: InputDecoration(
+        hintText: 'Type Number',
+        hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        contentPadding: const EdgeInsets.all(16),
+      ),
+      controller: TextEditingController(
+        text: controller.packages[0].value.revisions == 0
+            ? ''
+            : controller.packages[0].value.revisions.toString(),
+      ),
+      onChanged: (value) {
+        final revisions = int.tryParse(value) ?? 0;
+        controller.updatePackageRevisions(revisions);
+      },
     );
   }
 

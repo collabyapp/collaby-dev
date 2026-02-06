@@ -46,12 +46,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   // ===================== OVERVIEW (VIDEO STYLES) =====================
   final creatorTraits = <String>[
-    'âœ… I have pets',
-    'âœ… Iâ€™m a couple creator',
-    'âœ… Iâ€™m a mom creator',
-    'âœ… I can do green screen',
-    'âœ… I can do car content',
-    'âœ… I can do travel content',
+    'I have pets',
+    "I'm a couple creator",
+    "I'm a mom creator",
+    'I can do green screen',
+    'I can do car content',
+    'I can do travel content',
   ];
   final selectedTraits = <String>[].obs;
 
@@ -105,10 +105,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     'Custom request',
   ];
 
-  /// âœ… Extras personalizados globales
+  /// Extras personalizados globales
   final RxList<AdditionalFeature> globalExtras = <AdditionalFeature>[].obs;
 
-  /// âœ… Core minimal shared:
+  /// Core minimal shared:
   /// Included toggle + price if not included
   final coreScriptIncluded = false.obs;
   final coreRawIncluded = false.obs;
@@ -140,7 +140,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (v) coreSubtitlesPriceController.text = '';
   }
 
-  /// âœ… Pricing Ready:
+  /// Pricing Ready:
   /// - los 3 precios deben ser > 0 (o lo que tu isComplete requiera)
   /// - sharedDeliveryTime y sharedRevisions salen del tier 0
   bool get isPricingReady {
@@ -479,7 +479,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       isDeclarationAccepted.value = true;
       highestCompletedStep.value = tabs.length - 1;
     } catch (e) {
-      debugPrint('âŒ Error pre-filling data: $e');
+      debugPrint('Error pre-filling data: $e');
       Utils.snackBar('Error', 'Failed to load data for editing');
     }
   }
