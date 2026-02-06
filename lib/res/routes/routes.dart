@@ -65,15 +65,15 @@ class AppRoutes {
         ),
         GetPage(
           name: RouteName.shippingAddressView,
-          page: () => const ShippingAddressView(),
+          page: () => ShippingAddressView(),
         ),
         GetPage(
           name: RouteName.accountSecurityView,
-          page: () => const AccountSecurityView(),
+          page: () => AccountSecurityView(),
         ),
         GetPage(
           name: RouteName.phoneNumberView,
-          page: () => const PhoneNumberView(),
+          page: () => PhoneNumberView(),
         ),
         GetPage(
           name: RouteName.phoneVerificationView,
