@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collaby_app/firebase_options.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes.dart';
@@ -26,10 +28,18 @@ class BootstrapApp extends StatefulWidget {
 class _BootstrapAppState extends State<BootstrapApp> {
   Object? initError;
   bool initialized = false;
+  Timer? _watchdog;
 
   @override
   void initState() {
     super.initState();
+    _watchdog = Timer(const Duration(seconds: 25), () {
+      if (!mounted || initialized || initError != null) return;
+      setState(() {
+        initError =
+            TimeoutException('Init took too long. Check network/services.');
+      });
+    });
     _init();
   }
 
@@ -55,6 +65,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
       initialized = true;
     } catch (e) {
       initError = e;
+    } finally {
+      _watchdog?.cancel();
     }
 
     if (mounted) setState(() {});
