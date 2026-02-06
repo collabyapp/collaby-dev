@@ -75,7 +75,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
             : (initialized ? SplashScreen() : const _LoadingScreen()),
         theme: ThemeData(
           scaffoldBackgroundColor: const Color(0xffF4F7FF),
-          appBarTheme: const AppBarTheme(
+          appBarTheme: AppBarTheme(
             surfaceTintColor: Color(0xffF4F7FF),
             backgroundColor: Color(0xffF4F7FF),
             elevation: 0,
