@@ -1,6 +1,7 @@
 import 'package:collaby_app/firebase_options.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes.dart';
+import 'package:collaby_app/view/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -9,23 +10,55 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'view_models/services/notification_services/awesome_notification_services.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-    // Initialize Stripe
-  Stripe.publishableKey = 'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs'; // Replace with your key
-  
-  
-    await Stripe.instance.applySettings();
-  // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await AwsomeNotificationService().initializeNotification();
-  // FirebaseMessaging.onBackgroundMessage(handleBackgroundNotification);
-  runApp(const MyApp());
+  // Arranca UI SIEMPRE; la init pesada corre dentro del widget.
+  runApp(const BootstrapApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BootstrapApp extends StatefulWidget {
+  const BootstrapApp({super.key});
+
+  @override
+  State<BootstrapApp> createState() => _BootstrapAppState();
+}
+
+class _BootstrapAppState extends State<BootstrapApp> {
+  Object? initError;
+  bool initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      // Stripe
+      Stripe.publishableKey =
+          'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
+      await Stripe.instance
+          .applySettings()
+          .timeout(const Duration(seconds: 10));
+
+      // Firebase
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      ).timeout(const Duration(seconds: 15));
+
+      // Notificaciones
+      await AwsomeNotificationService()
+          .initializeNotification()
+          .timeout(const Duration(seconds: 15));
+
+      initialized = true;
+    } catch (e) {
+      initError = e;
+    }
+
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +70,12 @@ class MyApp extends StatelessWidget {
         localizationsDelegates: const [
           FlutterQuillLocalizations.delegate, // <- required
         ],
-        // translations: Languages(),
-        // locale: locale,
-        // fallbackLocale: const Locale('en', 'US'),
+        home: initError != null
+            ? _InitErrorScreen(error: initError)
+            : (initialized ? SplashScreen() : const _LoadingScreen()),
         theme: ThemeData(
-          scaffoldBackgroundColor: Color(0xffF4F7FF),
-          appBarTheme: AppBarTheme(
+          scaffoldBackgroundColor: const Color(0xffF4F7FF),
+          appBarTheme: const AppBarTheme(
             surfaceTintColor: Color(0xffF4F7FF),
             backgroundColor: Color(0xffF4F7FF),
             elevation: 0,
@@ -52,6 +85,34 @@ class MyApp extends StatelessWidget {
           ),
         ),
         getPages: AppRoutes.appRoutes(),
+      ),
+    );
+  }
+}
+
+class _LoadingScreen extends StatelessWidget {
+  const _LoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class _InitErrorScreen extends StatelessWidget {
+  final Object? error;
+  const _InitErrorScreen({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Text(
+          'Init error:\n$error',
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
