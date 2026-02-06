@@ -19,13 +19,13 @@ class GigsTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Gigs', style: AppTextStyles.normalTextBold),
+              Text('Services', style: AppTextStyles.normalTextBold),
               GestureDetector(
                 onTap: () {
                   Get.toNamed(RouteName.createGigView);
                 },
                 child: Text(
-                  'Create New Gig',
+                  'Create New Service',
                   style: AppTextStyles.smallMediumText.copyWith(
                     color: AppColor.primaryColor,
                   ),
@@ -47,10 +47,13 @@ class GigsTab extends StatelessWidget {
                     children: [
                       Icon(Icons.work_outline, size: 64, color: Colors.grey),
                       SizedBox(height: 16),
-                      Text('No gigs yet', style: AppTextStyles.normalTextBold),
+                      Text(
+                        'No services yet',
+                        style: AppTextStyles.normalTextBold,
+                      ),
                       SizedBox(height: 8),
                       Text(
-                        'Create your first gig to get started',
+                        'Create your first service to get started',
                         style: AppTextStyles.smallText,
                       ),
                     ],
@@ -60,7 +63,14 @@ class GigsTab extends StatelessWidget {
 
               return RefreshIndicator(
                 onRefresh: () => controller.fetchMyGigs(refresh: true),
-                child: ListView.builder(
+                child: GridView.builder(
+                  padding: EdgeInsets.only(bottom: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.78,
+                  ),
                   itemCount:
                       controller.myGigs.length +
                       (controller.hasMoreGigs.value ? 1 : 0),
@@ -82,14 +92,21 @@ class GigsTab extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        margin: EdgeInsets.only(bottom: 16),
-                        padding: EdgeInsets.all(16),
-                        child: Row(
+                        padding: EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: 88,
-                              height: 102,
+                              width: double.infinity,
+                              height: 120,
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(8),
@@ -110,96 +127,80 @@ class GigsTab extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          gig.gigTitle,
-                                          style: AppTextStyles.smallMediumText,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: gig.gigStatus == 'Active'
-                                              ? Color(
-                                                  0xff5DA160,
-                                                ).withOpacity(0.1)
-                                              : Colors.grey.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          gig.gigStatus,
-                                          style: AppTextStyles
-                                              .extraSmallMediumText
-                                              .copyWith(
-                                                color: gig.gigStatus == 'Active'
-                                                    ? Color(0xff5DA160)
-                                                    : Colors.grey,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
+                            SizedBox(height: 10),
+                            Text(
+                              gig.gigTitle,
+                              style: AppTextStyles.smallMediumText,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
                                   ),
-                                  SizedBox(height: 6),
-                                  Text(
-                                    'Starting at \$${gig.startingPrice}',
-                                    style: AppTextStyles.extraSmallText
+                                  decoration: BoxDecoration(
+                                    color: gig.gigStatus == 'Active'
+                                        ? Color(0xff5DA160).withOpacity(0.12)
+                                        : Colors.grey.withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    gig.gigStatus,
+                                    style: AppTextStyles.extraSmallMediumText
                                         .copyWith(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColor.primaryColor,
+                                          color: gig.gigStatus == 'Active'
+                                              ? Color(0xff5DA160)
+                                              : Colors.grey,
                                         ),
                                   ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.access_time,
-                                        size: 14,
-                                        color: Color(0xff676767),
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        gig.postedTimeAgo,
-                                        style: AppTextStyles.extraSmallText
-                                            .copyWith(color: Color(0xff676767)),
-                                      ),
-                                      if (gig.reviewStats.totalReviews > 0) ...[
-                                        SizedBox(width: 12),
-                                        Icon(
-                                          Icons.star,
-                                          size: 14,
-                                          color: Colors.amber,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${gig.reviewStats.averageRating.toStringAsFixed(1)} (${gig.reviewStats.totalReviews})',
-                                          style: AppTextStyles.extraSmallText
-                                              .copyWith(
-                                                color: Color(0xff676767),
-                                              ),
-                                        ),
-                                      ],
-                                    ],
+                                ),
+                                Spacer(),
+                                Text(
+                                  '\$${gig.startingPrice}',
+                                  style: AppTextStyles.extraSmallText.copyWith(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColor.primaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: 14,
+                                  color: Color(0xff676767),
+                                ),
+                                SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    gig.postedTimeAgo,
+                                    style: AppTextStyles.extraSmallText
+                                        .copyWith(color: Color(0xff676767)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (gig.reviewStats.totalReviews > 0) ...[
+                                  Icon(
+                                    Icons.star,
+                                    size: 14,
+                                    color: Colors.amber,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    '${gig.reviewStats.averageRating.toStringAsFixed(1)} (${gig.reviewStats.totalReviews})',
+                                    style: AppTextStyles.extraSmallText
+                                        .copyWith(color: Color(0xff676767)),
                                   ),
                                 ],
-                              ),
+                              ],
                             ),
                           ],
                         ),

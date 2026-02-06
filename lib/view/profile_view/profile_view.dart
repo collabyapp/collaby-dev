@@ -111,14 +111,26 @@ class ProfileView extends StatelessWidget {
           // ),
           Stack(
             children: [
-              CircleAvatar(
-                radius: 45,
-                backgroundColor: Colors.grey[300],
-                backgroundImage: profile.imageUrl.isNotEmpty
-                    ? CachedNetworkImageProvider(profile.imageUrl)
-                    : AssetImage(ImageAssets.createProfileIcon),
+              Builder(
+                builder: (_) {
+                  ImageProvider? provider;
+                  if (profile.imageUrl.isNotEmpty) {
+                    provider = CachedNetworkImageProvider(profile.imageUrl);
+                  }
+                  return CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: provider,
+                    child: provider == null
+                        ? Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey[400],
+                          )
+                        : null,
+                  );
+                },
               ),
-
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -133,15 +145,16 @@ class ProfileView extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: BoxDecoration(
-                      color: AppColor.whiteColor,
+                      color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                        ),
+                      ],
                     ),
-                    child: Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.black,
-                      size: 16,
-                    ),
+                    child: Image.asset(ImageAssets.cameraIcon, width: 16),
                   ),
                 ),
               ),

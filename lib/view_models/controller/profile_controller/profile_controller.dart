@@ -16,7 +16,7 @@ class ProfileController extends GetxController
 
   late TabController tabController;
   final currentIndex = 0.obs;
-  final tabs = ['Portfolio', 'Gigs', 'About', 'Reviews'];
+  final tabs = ['Portfolio', 'Services', 'About', 'Reviews'];
 
   // Profile data
   final isLoadingProfile = false.obs;
