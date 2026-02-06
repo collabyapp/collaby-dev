@@ -81,7 +81,7 @@ class AppRoutes {
         ),
         GetPage(
           name: RouteName.nicheSelectionView,
-          page: () => const NicheSelectionScreen(),
+          page: () => NicheSelectionScreen(),
         ),
         GetPage(
           name: RouteName.profileSetupCreatedView,
@@ -102,15 +102,17 @@ class AppRoutes {
         ),
         GetPage(
           name: RouteName.jobDetailsView,
-          page: () => const JobDetailsView(),
+          page: () => JobDetailsView(
+            jobId: (Get.arguments?['jobId'] ?? '').toString(),
+          ),
         ),
         GetPage(
           name: RouteName.settingsView,
-          page: () => const SettingsView(),
+          page: () => SettingsView(),
         ),
         GetPage(
           name: RouteName.withdrawalView,
-          page: () => const WithdrawalView(),
+          page: () => BillingWithdrawalScreen(),
         ),
         GetPage(
           name: RouteName.gigDetailView,
