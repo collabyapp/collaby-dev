@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 // lib/view_models/controller/settings_controller/withdrawal_controller.dart
 
 import 'package:collaby_app/models/payment_models/payment_models.dart';
@@ -53,7 +54,7 @@ class BillingController extends GetxController {
       final accounts = await _paymentRepository.getBankAccounts();
       bankAccounts.value = accounts;
     } catch (e) {
-      print('Error loading bank accounts: $e');
+      log('Error loading bank accounts: $e');
       // Don't show error for individual failures
     }
   }
@@ -64,7 +65,7 @@ class BillingController extends GetxController {
       final methods = await _paymentRepository.getPaymentMethods();
       paymentMethods.value = methods;
     } catch (e) {
-      print('Error loading payment methods: $e');
+      log('Error loading payment methods: $e');
       // Don't show error for individual failures
     }
   }
@@ -577,3 +578,4 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
     );
   }
 }
+

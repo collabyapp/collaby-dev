@@ -22,7 +22,7 @@ class GigDetailView extends StatelessWidget {
         actions: [
           Obx(
             () => GestureDetector(
-              onTap: c.showStatusBottomSheet,
+              onTap: () => c.showStatusBottomSheet(context),
               child: Container(
                 margin: const EdgeInsets.only(right: 16),
                 padding: const EdgeInsets.symmetric(
@@ -121,7 +121,7 @@ class GigDetailView extends StatelessWidget {
               // Description
               _sectionTitle('Description'),
               const SizedBox(height: 8),
-              Text(c.description, style: AppTextStyles.extraSmallText),
+              Text(c.description.value, style: AppTextStyles.extraSmallText),
 
               const SizedBox(height: 20),
 
@@ -245,7 +245,7 @@ class GigDetailView extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: CachedNetworkImage(
-          imageUrl: c.gigThumbnail,
+          imageUrl: c.gigThumbnail.value,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
             color: Colors.grey[200],
@@ -266,7 +266,7 @@ class GigDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(c.title, style: AppTextStyles.h6)],
+        children: [Text(c.title.value, style: AppTextStyles.h6)],
       ),
     );
   }
@@ -326,7 +326,7 @@ class GigDetailView extends StatelessWidget {
               Image.asset(ImageAssets.dollarIcon, width: 16),
               const SizedBox(width: 8),
               Text(
-                '\$ ${c.selectedPrice}',
+                '\$ ${c.selectedPrice.value}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -350,14 +350,14 @@ class GigDetailView extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              _tinyInfo(icon: Icons.access_time, text: c.deliveryText),
+              _tinyInfo(icon: Icons.access_time, text: c.deliveryText.value),
               const SizedBox(width: 12),
               Row(
                 children: [
                   Image.asset(ImageAssets.revisionIcon, width: 14),
                   const SizedBox(width: 6),
                   Text(
-                    '${c.numberOfRevisions} Revision',
+                    '${c.numberOfRevisions.value} Revision',
                     style: AppTextStyles.extraSmallMediumText,
                   ),
                 ],

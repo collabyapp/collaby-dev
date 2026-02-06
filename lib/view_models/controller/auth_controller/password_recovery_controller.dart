@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/repository/auth_repository/forgot_repository/forgot_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -24,14 +25,14 @@ class PasswordRecoveryController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // ✅ Get arguments passed via Get.toNamed / Get.offAllNamed
+    // âœ… Get arguments passed via Get.toNamed / Get.offAllNamed
     final args = Get.arguments as Map<String, dynamic>;
     email = args['email'];
     code = args['otp'];
 
     // You can add print statements for debugging
     if (kDebugMode) {
-      print("Received email: $email, code: $code");
+      log("Received email: $email, code: $code");
     }
   }
 
@@ -120,7 +121,7 @@ class PasswordRecoveryController extends GetxController {
             (resp['message'] ?? 'Password Reset Failed. Please try again.')
                 .toString();
         Utils.snackBar('Error', msg);
-        return; // 🚫 do not navigate
+        return; // ðŸš« do not navigate
       }
       final bool isSuccess =
           (status == null || (status >= 200 && status < 300)) &&
@@ -138,7 +139,7 @@ class PasswordRecoveryController extends GetxController {
     } catch (e) {
       isSubmitting = false;
 
-      // print("Error during password reset: $e");
+      // log("Error during password reset: $e");
       Utils.snackBar('Error', 'Something went wrong. Please try again.');
     } finally {
       isSubmitting = false;
@@ -146,3 +147,4 @@ class PasswordRecoveryController extends GetxController {
     }
   }
 }
+

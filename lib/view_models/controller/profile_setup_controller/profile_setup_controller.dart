@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/models/profile_model.dart';
 import 'package:collaby_app/repository/profile_repository/profile_repository.dart';
@@ -10,8 +10,8 @@ import 'package:collaby_app/view/profile_setup_view/widgets/country_selector_bot
 import 'package:collaby_app/view/profile_setup_view/widgets/gender_selector_bottom_sheet.dart';
 import 'package:collaby_app/view/profile_setup_view/widgets/language_level_selector_bottom_sheet.dart';
 import 'package:collaby_app/view/profile_setup_view/widgets/language_selector_bottom_sheet.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -25,10 +25,12 @@ class ProfileSetUpController extends GetxController {
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final displayNameController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   // Reactive variables
   var selectedLanguages = <LanguageModel>[].obs;
   final profileImageUrl = ''.obs;
+  final profileImageLocal = ''.obs;
   final isSubmittingProfile = false.obs;
   final isLoadingProfile = false.obs;
 
@@ -43,6 +45,7 @@ class ProfileSetUpController extends GetxController {
 
   String get gender => _profile.gender;
   String get country => _profile.country;
+  String get ageGroup => _profile.ageGroup;
 
   final streetController = TextEditingController().obs;
   final cityController = TextEditingController().obs;
@@ -127,6 +130,7 @@ class ProfileSetUpController extends GetxController {
     firstNameController.addListener(_onFormChange);
     lastNameController.addListener(_onFormChange);
     displayNameController.addListener(_onFormChange);
+    descriptionController.addListener(_onFormChange);
 
     selectedLanguages.listen((_) => _onFormChange());
 
@@ -158,6 +162,7 @@ class ProfileSetUpController extends GetxController {
         firstNameController.text = profileData['firstName'] ?? '';
         lastNameController.text = profileData['lastName'] ?? '';
         displayNameController.text = profileData['displayName'] ?? '';
+        descriptionController.text = profileData['description'] ?? '';
 
         profileImageUrl.value = profileData['imageUrl'] ?? '';
 
@@ -349,10 +354,12 @@ class ProfileSetUpController extends GetxController {
     firstNameController.removeListener(_onFormChange);
     lastNameController.removeListener(_onFormChange);
     displayNameController.removeListener(_onFormChange);
+    descriptionController.removeListener(_onFormChange);
 
     firstNameController.dispose();
     lastNameController.dispose();
     displayNameController.dispose();
+    descriptionController.dispose();
 
     streetController.value.dispose();
     cityController.value.dispose();
@@ -412,6 +419,7 @@ class ProfileSetUpController extends GetxController {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image == null) return;
 
+      profileImageLocal.value = image.path;
       final uploadedUrl = await NetworkApiServices().uploadAnyFile(filePath: image.path);
 
       profileImageUrl.value = uploadedUrl;
@@ -507,7 +515,7 @@ class ProfileSetUpController extends GetxController {
     final m = RegExp(r'\(([^)]+)\)').firstMatch(label);
     if (m != null) return m.group(1)!.trim();
 
-    final m2 = RegExp(r'(\d+\s*[-–]\s*\d+|\d+\+)').firstMatch(label);
+    final m2 = RegExp(r'(\d+\s*[-â€“]\s*\d+|\d+\+)').firstMatch(label);
     if (m2 != null) return m2.group(1)!.replaceAll(' ', '');
 
     return label;
@@ -678,7 +686,7 @@ class ProfileSetUpController extends GetxController {
       return;
     }
 
-    // ✅ niches opcional: NO bloquear si viene vacío
+    // âœ… niches opcional: NO bloquear si viene vacÃ­o
 
     final payload = generateApiPayload();
 
@@ -699,9 +707,9 @@ class ProfileSetUpController extends GetxController {
       if (statusCode == 201) {
         Utils.snackBar('Success', message ?? 'Creator profile setup completed');
 
-        // ✅ aquí es donde tú enlazas “seguidito” al Servicio:
+        // âœ… aquÃ­ es donde tÃº enlazas â€œseguiditoâ€ al Servicio:
         // Cambia esta ruta a la que uses para CreateGigView renombrada como Servicio.
-        Get.offAllNamed(RouteName.createServiceView, arguments: {
+        Get.offAllNamed(RouteName.createGigView, arguments: {
           'fromOnboarding': true,
           'profileData': data,
         });
@@ -724,3 +732,6 @@ class ProfileSetUpController extends GetxController {
     }
   }
 }
+
+
+

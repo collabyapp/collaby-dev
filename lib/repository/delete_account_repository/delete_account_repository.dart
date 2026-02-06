@@ -1,16 +1,15 @@
-import 'package:collaby_app/data/network/network_api_services.dart';
+﻿import 'dart:developer';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class DeleteAccountRepository {
-  final _apiService = NetworkApiServices();
   final _userPref = UserPreference();
 
   Future<dynamic> deleteAccountApi() async {
     final token = await _userPref.getToken();
-    print('Token: $token');
+    log('Token: $token');
 
     try {
       // Make direct HTTP call to get full response
@@ -24,8 +23,8 @@ class DeleteAccountRepository {
         body: json.encode({}),
       );
 
-      print('📈 Response Status: ${response.statusCode}');
-      print('📈 Response Body: ${response.body}');
+      log('ðŸ“ˆ Response Status: ${response.statusCode}');
+      log('ðŸ“ˆ Response Body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -50,8 +49,10 @@ class DeleteAccountRepository {
         };
       }
     } catch (e) {
-      print('❌ Delete Account Error: $e');
+      log('âŒ Delete Account Error: $e');
       rethrow;
     }
   }
 }
+
+

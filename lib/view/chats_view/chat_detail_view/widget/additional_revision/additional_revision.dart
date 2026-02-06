@@ -97,7 +97,7 @@ class AdditionalRevisionScreen extends StatelessWidget {
                     senderName: 'You',
                     content:
                         'Additional revision requested: ${featureController.text}',
-                    type: MessageType.additional_revision,
+                    type: MessageType.additionalRevision,
                     timestamp: DateTime.now(),
                   );
                   Get.find<ChatController>().messages.add(message);

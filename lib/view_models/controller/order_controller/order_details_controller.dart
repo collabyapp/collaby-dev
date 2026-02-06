@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:collaby_app/repository/order_repository/order_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -174,8 +174,8 @@ class OrderDetailController extends GetxController {
       isActivityLoading.value = true;
 
       final response = await _ordersRepository.getOrderActivity(orderId);
-      // print('response');
-      // print(response['data']['orderInfo']);
+      // log('response');
+      // log(response['data']['orderInfo']);
       if (response != null && response['data'] != null) {
         final data = response['data'];
 
@@ -524,3 +524,6 @@ class OrderDetailController extends GetxController {
     super.dispose();
   }
 }
+
+
+

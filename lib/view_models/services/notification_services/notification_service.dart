@@ -1,11 +1,10 @@
-import 'dart:developer';
+﻿import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:collaby_app/view_models/services/notification_services/awesome_notification_services.dart';
 import 'package:flutter/material.dart';
 class NotificationServices {
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   Future<void> handleForegroundNotification() async {
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
@@ -30,18 +29,18 @@ class NotificationServices {
     });
   }
 
-  /// 🚀 Get FCM Token function
+  /// ðŸš€ Get FCM Token function
   static Future<String?> getDeviceToken() async {
     String? token;
     try {
       token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        log('📱 FCM Device Token: $token');
+        log('ðŸ“± FCM Device Token: $token');
       } else {
-        log('⚠️ Failed to retrieve FCM Token');
+        log('âš ï¸ Failed to retrieve FCM Token');
       }
     } catch (e) {
-      log('❌ Error retrieving FCM token: $e');
+      log('âŒ Error retrieving FCM token: $e');
     }
     return token;
   }
@@ -61,4 +60,5 @@ Future<void> handleBackgroundNotification(RemoteMessage message) async {
   // :x: Do NOT show local notification here to avoid duplicate
   // Firebase shows it automatically in background/terminated
 }
+
 

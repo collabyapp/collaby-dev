@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'package:collaby_app/data/network/network_api_services.dart';
@@ -74,7 +75,7 @@ class OrderChatController extends GetxController {
       // Load messages
       await loadMessages();
     } catch (e) {
-      print('Error initializing order chat: $e');
+      log('Error initializing order chat: $e');
       Utils.snackBar(
         'Error',
         'Failed to initialize chat: $e',
@@ -136,14 +137,14 @@ class OrderChatController extends GetxController {
 
       final messagesData = await apiService.getChatMessages(chatId);
 
-      print('Loaded ${messagesData.length} messages for chat $chatId');
+      log('Loaded ${messagesData.length} messages for chat $chatId');
 
       final newMessages = messagesData
           .map((msg) {
             try {
               return ChatMessage.fromJson(msg);
             } catch (e) {
-              print('Error parsing message: $e');
+              log('Error parsing message: $e');
               return null;
             }
           })
@@ -161,7 +162,7 @@ class OrderChatController extends GetxController {
       // Mark chat as read
       _markChatAsRead();
     } catch (e) {
-      print('Error loading messages: $e');
+      log('Error loading messages: $e');
       Utils.snackBar(
         'Error',
         'Failed to load messages: $e',
@@ -291,7 +292,7 @@ class OrderChatController extends GetxController {
         'videoTimeline': offerDetails.videoLength,
       };
 
-      print('📤 Sending custom offer: $offerData');
+      log('ðŸ“¤ Sending custom offer: $offerData');
 
       // Create offer via API
       await apiService.createCustomOffer(offerData);
@@ -317,7 +318,7 @@ class OrderChatController extends GetxController {
         // icon: Icon(Icons.check_circle, color: Colors.green),
       );
     } catch (e) {
-      print('❌ Error sending offer: $e');
+      log('âŒ Error sending offer: $e');
       Utils.snackBar(
         'Error',
         'Failed to send offer: ${e.toString()}',
@@ -397,7 +398,7 @@ class OrderChatController extends GetxController {
       socketService.markChatAsRead(chatId);
       apiService.markChatAsRead(chatId);
     } catch (e) {
-      print('Error marking chat as read: $e');
+      log('Error marking chat as read: $e');
     }
   }
 
@@ -419,7 +420,7 @@ class OrderChatController extends GetxController {
         apiService.markMessageAsRead(message.id);
       }
     } catch (e) {
-      print('Error handling message received: $e');
+      log('Error handling message received: $e');
     }
   }
 
@@ -445,7 +446,7 @@ class OrderChatController extends GetxController {
         messages.add(message);
       }
     } catch (e) {
-      print('Error handling message sent: $e');
+      log('Error handling message sent: $e');
     }
   }
 
@@ -477,7 +478,7 @@ class OrderChatController extends GetxController {
         // colorText: Colors.white,
       );
     } catch (e) {
-      print('Error handling custom offer: $e');
+      log('Error handling custom offer: $e');
     }
   }
 
@@ -520,7 +521,7 @@ class OrderChatController extends GetxController {
       //   colorText: Colors.white,
       // );
     } catch (e) {
-      print('Error handling offer status update: $e');
+      log('Error handling offer status update: $e');
     }
   }
 
@@ -981,7 +982,7 @@ class MessageBubble extends StatelessWidget {
         return _buildFileMessage();
       case MessageType.offer:
         return _buildOfferCard();
-      case MessageType.additional_revision:
+      case MessageType.additionalRevision:
         return _buildAdditionalRevisionCard();
       default:
         return Text(
@@ -1149,3 +1150,4 @@ class MessageBubble extends StatelessWidget {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 }
+

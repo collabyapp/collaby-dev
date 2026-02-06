@@ -15,13 +15,13 @@ class BoostProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Boost Profile'), centerTitle: false),
       body: Obx(() {
-        if (controller.rxRequestStatus.value == Status.LOADING) {
+        if (controller.rxRequestStatus.value == Status.loading) {
           return const Center(
             child: CircularProgressIndicator(color: Colors.black),
           );
         }
 
-        if (controller.rxRequestStatus.value == Status.ERROR) {
+        if (controller.rxRequestStatus.value == Status.error) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

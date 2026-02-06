@@ -803,53 +803,6 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
-  void _showDeliveryTimeSelector() {
-    final deliveryOptions = [1, 2, 3, 5, 7, 14, 21, 30];
-
-    Get.bottomSheet(
-      Container(
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text('Select Delivery Time', style: AppTextStyles.h6),
-            SizedBox(height: 16),
-            ...deliveryOptions
-                .map(
-                  (days) => Obx(
-                    () => ListTile(
-                      title: Text(days == 1 ? '1 day' : '$days days'),
-                      trailing: selectedDeliveryDays.value == days
-                          ? Icon(Icons.check, color: AppColor.primaryColor)
-                          : null,
-                      onTap: () {
-                        selectedDeliveryDays.value = days;
-                        Get.back();
-                      },
-                    ),
-                  ),
-                )
-                .toList(),
-            SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _sendOffer() async {
     if (!_formKey.currentState!.validate()) {
       return;

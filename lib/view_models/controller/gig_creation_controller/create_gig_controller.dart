@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,7 +11,6 @@ import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/gig_details_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -47,12 +46,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   // ===================== OVERVIEW (VIDEO STYLES) =====================
   final creatorTraits = <String>[
-    '✅ I have pets',
-    '✅ I’m a couple creator',
-    '✅ I’m a mom creator',
-    '✅ I can do green screen',
-    '✅ I can do car content',
-    '✅ I can do travel content',
+    'âœ… I have pets',
+    'âœ… Iâ€™m a couple creator',
+    'âœ… Iâ€™m a mom creator',
+    'âœ… I can do green screen',
+    'âœ… I can do car content',
+    'âœ… I can do travel content',
   ];
   final selectedTraits = <String>[].obs;
 
@@ -106,10 +105,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     'Custom request',
   ];
 
-  /// ✅ Extras personalizados globales
+  /// âœ… Extras personalizados globales
   final RxList<AdditionalFeature> globalExtras = <AdditionalFeature>[].obs;
 
-  /// ✅ Core minimal shared:
+  /// âœ… Core minimal shared:
   /// Included toggle + price if not included
   final coreScriptIncluded = false.obs;
   final coreRawIncluded = false.obs;
@@ -141,12 +140,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (v) coreSubtitlesPriceController.text = '';
   }
 
-  /// ✅ Pricing Ready:
+  /// âœ… Pricing Ready:
   /// - los 3 precios deben ser > 0 (o lo que tu isComplete requiera)
   /// - sharedDeliveryTime y sharedRevisions salen del tier 0
   bool get isPricingReady {
     // Si tu PackageModel.isComplete exige delivery/revisions, el tier0 manda.
-    // Aseguramos que el tier0 esté completo + que los 3 precios > 0.
+    // Aseguramos que el tier0 estÃ© completo + que los 3 precios > 0.
     final p0 = packages[0].value;
     final allPricesOk = packages.every((rx) => (rx.value.price) > 0);
     return p0.isComplete && allPricesOk;
@@ -300,7 +299,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
             final revisions = (getP('numberOfRevisions') ?? 0).toInt();
             packages[0].update((pkg) {
               if (pkg == null) return;
-              // Si tu PackageModel usa strings tipo "3 Days", setéalo así:
+              // Si tu PackageModel usa strings tipo "3 Days", setÃ©alo asÃ­:
               pkg.deliveryTime = deliveryDays > 0 ? '$deliveryDays Days' : pkg.deliveryTime;
               pkg.revisions = revisions;
             });
@@ -480,7 +479,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       isDeclarationAccepted.value = true;
       highestCompletedStep.value = tabs.length - 1;
     } catch (e) {
-      debugPrint('❌ Error pre-filling data: $e');
+      debugPrint('âŒ Error pre-filling data: $e');
       Utils.snackBar('Error', 'Failed to load data for editing');
     }
   }
@@ -653,8 +652,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       return false;
     }
 
-    // core rules: si no está incluido, el precio extra puede ser 0 (significa no ofrecerlo),
-    // pero si está incluido, no debe tener precio
+    // core rules: si no estÃ¡ incluido, el precio extra puede ser 0 (significa no ofrecerlo),
+    // pero si estÃ¡ incluido, no debe tener precio
     if (coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       Utils.snackBar('Invalid', 'Scriptwriting cannot be included and priced at the same time.');
       return false;
@@ -812,10 +811,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     for (final e in globalExtras) {
       final type = _inferFeatureTypeFromName(e.name);
 
-      // si el usuario escribe "script" en custom extras, lo ignoramos si está incluido
+      // si el usuario escribe "script" en custom extras, lo ignoramos si estÃ¡ incluido
       if (type == 'scriptwriting' && includesScriptwriting) continue;
 
-      // no duplicar si el core ya lo está ofreciendo (por tipo)
+      // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
       if (type == 'additionalRevision' ||
           type == 'rushDelivery' ||
           type == 'addLogo' ||
@@ -1043,6 +1042,62 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   void exploreJobs() => Get.offAllNamed(RouteName.bottomNavigationView);
 
+// ================= COMPATIBILITY LAYER =================
+
+RxList<AdditionalFeature> get additionalFeatures => globalExtras;
+
+void addAdditionalFeature(AdditionalFeature feature) {
+  globalExtras.add(feature);
+}
+
+void removeAdditionalFeature(String id) {
+  globalExtras.removeWhere((e) => e.id == id);
+}
+
+List<String> get featureOptions => extraPresets;
+
+final RxnString selectedFeature = RxnString();
+
+void selectFeature(String? value) => selectedFeature.value = value;
+void resetFeaturePicker() => selectedFeature.value = null;
+
+RxList<VideoItem> get portfolioVideos => galleryVideos;
+
+String formatDuration(Duration d) {
+  final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+  final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return '$mm:$ss';
+}
+
+final RxInt currentTierIndex = 0.obs;
+
+void setCurrentTier(int index) => currentTierIndex.value = index;
+
+void updatePackageRevisions(int revisions) {
+  packages[0].update((p) {
+    if (p == null) return;
+    p.revisions = revisions;
+  });
+}
+
+void updatePackageDeliveryTime(String deliveryTime) {
+  packages[0].update((p) {
+    if (p == null) return;
+    p.deliveryTime = deliveryTime;
+  });
+}
+
+List<String> get videoStyles => creatorTraits;
+RxList<String> get selectedStyles => selectedTraits;
+void toggleStyle(String style) => toggleTrait(style);
+
+final RxList<String> tags = <String>[].obs;
+void addTag(String tag) {
+  final t = tag.trim();
+  if (t.isNotEmpty && !tags.contains(t)) tags.add(t);
+}
+void removeTag(String tag) => tags.remove(tag);
+
   @override
   void onClose() {
     uploadedCoverUrl = null;
@@ -1061,3 +1116,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     super.onClose();
   }
 }
+
+
+

@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/models/chat_model/chat_model.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
@@ -397,9 +398,10 @@ class UserSearchDialog extends StatelessWidget {
       final results = await chatController.searchUsers(query.trim());
       searchResults.value = results;
     } catch (e) {
-      print('Search error: $e');
+      log('Search error: $e');
     } finally {
       isSearching.value = false;
     }
   }
 }
+

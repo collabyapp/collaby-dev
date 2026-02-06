@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'dart:convert';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
@@ -20,8 +21,8 @@ class WithdrawalRepository {
         },
       );
 
-      print('📊 Withdrawal History Status: ${response.statusCode}');
-      print('📊 Withdrawal History Body: ${response.body}');
+      log('ðŸ“Š Withdrawal History Status: ${response.statusCode}');
+      log('ðŸ“Š Withdrawal History Body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -39,7 +40,7 @@ class WithdrawalRepository {
         };
       }
     } catch (e) {
-      print('❌ Withdrawal History Error: $e');
+      log('âŒ Withdrawal History Error: $e');
       rethrow;
     }
   }
@@ -58,8 +59,8 @@ class WithdrawalRepository {
         },
       );
 
-      print('🏦 Bank Accounts Status: ${response.statusCode}');
-      print('🏦 Bank Accounts Body: ${response.body}');
+      log('ðŸ¦ Bank Accounts Status: ${response.statusCode}');
+      log('ðŸ¦ Bank Accounts Body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -77,7 +78,7 @@ class WithdrawalRepository {
         };
       }
     } catch (e) {
-      print('❌ Bank Accounts Error: $e');
+      log('âŒ Bank Accounts Error: $e');
       rethrow;
     }
   }
@@ -97,8 +98,8 @@ class WithdrawalRepository {
         body: json.encode({}),
       );
 
-      print('🔗 Connected Account Status: ${response.statusCode}');
-      print('🔗 Connected Account Body: ${response.body}');
+      log('ðŸ”— Connected Account Status: ${response.statusCode}');
+      log('ðŸ”— Connected Account Body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -116,7 +117,7 @@ class WithdrawalRepository {
         };
       }
     } catch (e) {
-      print('❌ Connected Account Error: $e');
+      log('âŒ Connected Account Error: $e');
       rethrow;
     }
   }
@@ -142,8 +143,8 @@ class WithdrawalRepository {
         }),
       );
 
-      print('💸 Withdrawal Request Status: ${response.statusCode}');
-      print('💸 Withdrawal Request Body: ${response.body}');
+      log('ðŸ’¸ Withdrawal Request Status: ${response.statusCode}');
+      log('ðŸ’¸ Withdrawal Request Body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -162,7 +163,7 @@ class WithdrawalRepository {
         };
       }
     } catch (e) {
-      print('❌ Withdrawal Request Error: $e');
+      log('âŒ Withdrawal Request Error: $e');
       rethrow;
     }
   }
@@ -181,8 +182,8 @@ Future<dynamic> getWithdrawalFees() async {
       },
     );
 
-    print('💰 Withdrawal Fees Status: ${response.statusCode}');
-    print('💰 Withdrawal Fees Body: ${response.body}');
+    log('ðŸ’° Withdrawal Fees Status: ${response.statusCode}');
+    log('ðŸ’° Withdrawal Fees Body: ${response.body}');
 
     final responseData = json.decode(response.body);
 
@@ -202,7 +203,7 @@ Future<dynamic> getWithdrawalFees() async {
       };
     }
   } catch (e) {
-    print('❌ Withdrawal Fees Error: $e');
+    log('âŒ Withdrawal Fees Error: $e');
     rethrow;
   }
 }

@@ -11,7 +11,7 @@ class BoostController extends GetxController {
   final _boostRepository = BoostRepository();
 
   // Observable variables
-  final rxRequestStatus = Status.LOADING.obs;
+  final rxRequestStatus = Status.loading.obs;
   final boostPlans = <BoostPlan>[].obs;
   final autoRenewal = false.obs;
 
@@ -43,20 +43,20 @@ class BoostController extends GetxController {
   /// Fetch boost plans from API
   Future<void> fetchBoostPlans() async {
     try {
-      setRxRequestStatus(Status.LOADING);
+      setRxRequestStatus(Status.loading);
 
       final response = await _boostRepository.getBoostPlans();
 
       if (response != null) {
         final boostPlansResponse = BoostPlansResponse.fromJson(response);
         setBoostPlans(boostPlansResponse.data);
-        setRxRequestStatus(Status.COMPLETED);
+        setRxRequestStatus(Status.completed);
       } else {
-        setRxRequestStatus(Status.ERROR);
+        setRxRequestStatus(Status.error);
         Utils.snackBar('Error', 'Failed to fetch boost plans');
       }
     } catch (e) {
-      setRxRequestStatus(Status.ERROR);
+      setRxRequestStatus(Status.error);
       Utils.snackBar('Error', e.toString());
     }
   }

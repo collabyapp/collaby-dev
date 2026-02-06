@@ -17,6 +17,7 @@ class VideoPlayController extends GetxController {
   final initializedRx = false.obs;
   final errorText = RxnString();
 
+  @override
   bool get initialized => initializedRx.value;
 
   @override

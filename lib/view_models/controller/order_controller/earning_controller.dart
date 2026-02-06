@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/models/orders_model/earnings_models.dart';
 import 'package:collaby_app/repository/withdrawal_repository/withdrawal_repository.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -94,7 +95,7 @@ class EarningsController extends GetxController {
         }
       }
     } catch (e) {
-      print('❌ Load History Error: $e');
+      log('âŒ Load History Error: $e');
       Utils.snackBar('Error', 'Failed to load withdrawal history');
     } finally {
       isLoading.value = false;
@@ -118,7 +119,7 @@ class EarningsController extends GetxController {
         }
       }
     } catch (e) {
-      print('❌ Load Accounts Error: $e');
+      log('âŒ Load Accounts Error: $e');
     }
   }
 
@@ -130,8 +131,8 @@ class EarningsController extends GetxController {
       if (response != null && response['success'] == true) {
         final data = response['data'];
         final onboardingUrl = data['onboardingUrl'];
-        print('data');
-        print(response['data']);
+        log('data');
+        log(response['data']);
 
         if (onboardingUrl != null &&
             onboardingUrl is String &&
@@ -157,7 +158,7 @@ class EarningsController extends GetxController {
         );
       }
     } catch (e) {
-      print('❌ Create Account Error: $e');
+      log('âŒ Create Account Error: $e');
       Utils.snackBar('Error', 'Failed to create connected account');
     } finally {
       isLoading.value = false;
@@ -181,18 +182,18 @@ class EarningsController extends GetxController {
         final List<dynamic> texts = data['infoTexts'] ?? [];
         infoTexts.assignAll(texts.map((e) => e.toString()).toList());
         if (kDebugMode) {
-          print(
-            '✅ Withdrawal fees loaded: '
+          log(
+            'âœ… Withdrawal fees loaded: '
             'commission=$standardWithdrawalFee, '
             'earlyRelease=$earlyReleaseFee, '
             'days=$standardProcessingDays',
           );
         }
       } else {
-        print('⚠️ Failed to load withdrawal fees: ${response?['message']}');
+        log('âš ï¸ Failed to load withdrawal fees: ${response?['message']}');
       }
     } catch (e) {
-      print('❌ loadWithdrawalFees Error: $e');
+      log('âŒ loadWithdrawalFees Error: $e');
     }
   }
 
@@ -220,7 +221,7 @@ class EarningsController extends GetxController {
   //       );
   //     }
   //   } catch (e) {
-  //     print('❌ Create Account Error: $e');
+  //     log('âŒ Create Account Error: $e');
   //     Utils.snackBar('Error', 'Failed to create connected account');
   //   } finally {
   //     isLoading.value = false;
@@ -264,7 +265,7 @@ class EarningsController extends GetxController {
         return false;
       }
     } catch (e) {
-      print('❌ Withdrawal Error: $e');
+      log('âŒ Withdrawal Error: $e');
       Utils.snackBar('Error', 'Failed to process withdrawal');
       return false;
     } finally {
@@ -286,3 +287,4 @@ class EarningsController extends GetxController {
   //   super.onClose();
   // }
 }
+

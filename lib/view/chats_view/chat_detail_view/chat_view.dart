@@ -366,7 +366,7 @@ class MessageBubble extends StatelessWidget {
 
     // Check if it's a system message type (order_created or overdue)
     final isSystemMessageType =
-        message.type == MessageType.order_created ||
+        message.type == MessageType.orderCreated ||
         message.type == MessageType.overdue ||
         message.type == MessageType.alert;
 
@@ -458,8 +458,9 @@ class MessageBubble extends StatelessWidget {
               ],
 
               // Additional info for overdue messages
-              if (message.type == 'overdue' ||
-                  message.type == 'alert' && message.metadata != null) ...[
+              if ((message.type == MessageType.overdue ||
+                  message.type == MessageType.alert) &&
+                  message.metadata != null) ...[
                 SizedBox(height: 8),
                 _buildOverdueDetails(),
               ],
@@ -518,11 +519,11 @@ class MessageBubble extends StatelessWidget {
   // Helper method to get background color based on message type
   Color _getSystemMessageColor() {
     switch (message.type) {
-      case 'overdue':
+      case MessageType.overdue:
         return Colors.red[50]!;
-      case 'alert':
+      case MessageType.alert:
         return Colors.red[50]!;
-      case 'order_created':
+      case MessageType.orderCreated:
         return Colors.green[50]!;
       default:
         return Colors.grey[100]!;
@@ -532,9 +533,9 @@ class MessageBubble extends StatelessWidget {
   // Helper method to get border color based on message type
   Color _getSystemMessageBorderColor() {
     switch (message.type) {
-      case 'overdue':
+      case MessageType.overdue:
         return Colors.red[200]!;
-      case 'order_created':
+      case MessageType.orderCreated:
         return Colors.green[200]!;
       default:
         return Colors.grey[300]!;
@@ -609,11 +610,11 @@ class MessageBubble extends StatelessWidget {
       case MessageType.offer:
         return _buildOfferCard();
 
-      case MessageType.additional_revision:
+      case MessageType.additionalRevision:
         return _buildAdditionalRevisionCard();
 
       case MessageType.system:
-      case MessageType.order_created:
+      case MessageType.orderCreated:
         return Text(
           message.content,
           style: TextStyle(

@@ -1,4 +1,4 @@
-import 'package:collaby_app/data/network/network_api_services.dart';
+﻿import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
 
@@ -21,7 +21,7 @@ class BoostRepository {
 
       return response;
     } catch (e) {
-      // print('Error fetching boost plans: $e');
+      // log('Error fetching boost plans: $e');
       rethrow;
     }
   }
@@ -45,7 +45,7 @@ class BoostRepository {
 
       return response;
     } catch (e) {
-      // print('Error purchasing boost: $e');
+      // log('Error purchasing boost: $e');
       rethrow;
     }
   }
@@ -65,7 +65,7 @@ class BoostRepository {
 
       return response;
     } catch (e) {
-      // print('Error fetching boost profile: $e');
+      // log('Error fetching boost profile: $e');
       rethrow;
     }
   }
@@ -85,8 +85,12 @@ class BoostRepository {
 
       return response;
     } catch (e) {
-      // print('Error canceling auto-renewal: $e');
+      // log('Error canceling auto-renewal: $e');
       rethrow;
     }
   }
 }
+
+
+
+

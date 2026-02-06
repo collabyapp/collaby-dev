@@ -1,11 +1,11 @@
-import 'package:collaby_app/data/network/network_api_services.dart';
+﻿import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
 import 'package:flutter/foundation.dart';
 
 class GigCreationRepository {
-  final _apiService = NetworkApiServices();
-  final _userPref = UserPreference();
+  final NetworkApiServices _apiService = NetworkApiServices();
+  final UserPreference _userPref = UserPreference();
 
   Future<Map<String, dynamic>?> updateGigApi(
     String gigId,
@@ -38,9 +38,9 @@ class GigCreationRepository {
     }
   }
 
-  Future<dynamic> createGigApi(var data) async {
+  Future<dynamic> createGigApi(dynamic data) async {
     final token = await _userPref.getToken();
-    // print(token);
+    // log(token);
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.gigCreationAfterSetUp(),
@@ -56,17 +56,6 @@ class GigCreationRepository {
   Future<dynamic> getMyGigsApi({int? pageNumber, int? pageSize}) async {
     final token = await _userPref.getToken();
 
-    // Build query parameters
-    String queryParams = '';
-    if (pageNumber != null || pageSize != null) {
-      queryParams = '?';
-      if (pageNumber != null) queryParams += 'pageNumber=$pageNumber';
-      if (pageSize != null) {
-        if (pageNumber != null) queryParams += '&';
-        queryParams += 'pageSize=$pageSize';
-      }
-    }
-
     dynamic response = await _apiService.getApi(
       AppUrl.myGigs(),
       headers: {
@@ -74,8 +63,8 @@ class GigCreationRepository {
         if (token != null) 'Authorization': 'Bearer $token',
       },
     );
-    // print('response');
-    // print(response);
+    // log('response');
+    // log(response);
     return response;
   }
 
@@ -111,3 +100,8 @@ class GigCreationRepository {
     return response;
   }
 }
+
+
+
+
+

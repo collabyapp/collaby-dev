@@ -1,4 +1,4 @@
-import 'package:collaby_app/repository/delete_account_repository/delete_account_repository.dart';
+﻿import 'package:collaby_app/repository/delete_account_repository/delete_account_repository.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -23,7 +23,7 @@ class DeleteAccountController extends GetxController {
       final response = await _api.deleteAccountApi();
       setLoading(false);
 
-      debugPrint('🔥 Delete Account Response: $response');
+      debugPrint('ðŸ”¥ Delete Account Response: $response');
 
       // Check if response contains error
       if (response != null && response['error'] == true) {
@@ -59,7 +59,7 @@ class DeleteAccountController extends GetxController {
       }
     } catch (error) {
       setLoading(false);
-      debugPrint('❌ Delete Account Exception: $error');
+      debugPrint('âŒ Delete Account Exception: $error');
 
       // Handle exception
       String errorMessage = 'An error occurred. Please try again.';
@@ -135,3 +135,6 @@ class DeleteAccountController extends GetxController {
     );
   }
 }
+
+
+

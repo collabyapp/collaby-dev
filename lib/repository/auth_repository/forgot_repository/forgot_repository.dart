@@ -2,9 +2,9 @@ import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 
 class ForgotRepository {
-  final _apiService = NetworkApiServices();
+  final NetworkApiServices _apiService = NetworkApiServices();
 
-  Future<dynamic> forgotApi(var data) async {
+  Future<dynamic> forgotApi(dynamic data) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.forgotPassword(),
@@ -14,7 +14,7 @@ class ForgotRepository {
     return response;
   }
 
-  Future<dynamic> verifyForgotOTPApi(var data) async {
+  Future<dynamic> verifyForgotOTPApi(dynamic data) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.verifyForgotOtp(),
@@ -24,7 +24,7 @@ class ForgotRepository {
     return response;
   }
 
-  Future<dynamic> changePasswordApi(var data) async {
+  Future<dynamic> changePasswordApi(dynamic data) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.resetPassword(),

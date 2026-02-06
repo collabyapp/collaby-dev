@@ -1,5 +1,6 @@
+﻿import 'dart:developer';
 import 'dart:async';
-import 'package:collaby_app/repository/account_&_security_repository/account_&_security_repository.dart';
+import 'package:collaby_app/repository/account_security_repository/account_security_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view/profile_setup_view/account_security_view/phone_verification.dart';
@@ -68,7 +69,7 @@ class AccountSecurityController extends GetxController {
         isPhoneVerified.value = true;
       }
     } catch (e) {
-      print('Error loading user: $e');
+      log('Error loading user: $e');
       email.value = 'Error loading email';
     } finally {
       isLoading.value = false;
@@ -90,7 +91,7 @@ class AccountSecurityController extends GetxController {
     try {
       isSendingOtp.value = true;
 
-      // shape of payload – adjust keys to match your backend
+      // shape of payload â€“ adjust keys to match your backend
       final payload = {"phoneNumber": phoneNumber.value};
 
       final raw = await phoneVerificationRepo.sendOTPApi(payload);
@@ -134,7 +135,7 @@ class AccountSecurityController extends GetxController {
 
   void verifyPhone() async {
     // use fullPhone for API / OTP send
-    // print(fullPhone);
+    // log(fullPhone);
     isPhoneVerified.value = true;
     await _userPref.saveUser(phoneNumber: phoneNumber.value);
     Get.toNamed(RouteName.accountSecurityView);
@@ -214,3 +215,5 @@ class AccountSecurityController extends GetxController {
     verificationCode.value = '';
   }
 }
+
+

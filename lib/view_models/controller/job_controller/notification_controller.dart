@@ -1,4 +1,4 @@
-import 'package:collaby_app/models/orders_model/notification_model.dart';
+﻿import 'package:collaby_app/models/orders_model/notification_model.dart';
 import 'package:collaby_app/repository/order_repository/notification_repository.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -100,7 +100,6 @@ class NotificationController extends GetxController {
       case NotificationType.payment:
         return ImageAssets.jobIcon;
       case NotificationType.other:
-      default:
         return ImageAssets.jobIcon;
     }
   }
@@ -114,3 +113,6 @@ class NotificationController extends GetxController {
     );
   }
 }
+
+
+

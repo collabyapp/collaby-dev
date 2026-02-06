@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/models/orders_model/orders_models.dart';
 import 'package:collaby_app/repository/order_repository/order_repository.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -114,7 +115,7 @@ class OrdersController extends GetxController {
         );
       }
     } catch (e) {
-      print('Error fetching orders: $e');
+      log('Error fetching orders: $e');
       Utils.snackBar('Error', 'Failed to fetch orders: ${e.toString()}');
     } finally {
       isLoading.value = false;
@@ -182,7 +183,7 @@ class OrdersController extends GetxController {
         return null;
       }
     } catch (e) {
-      print('Error fetching order details: $e');
+      log('Error fetching order details: $e');
       Utils.snackBar('Error', 'Failed to fetch order details: ${e.toString()}');
       return null;
     } finally {
@@ -266,3 +267,4 @@ class OrdersController extends GetxController {
     }
   }
 }
+

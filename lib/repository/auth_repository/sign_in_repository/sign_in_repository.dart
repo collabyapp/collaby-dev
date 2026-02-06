@@ -2,7 +2,7 @@ import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 
 class SignInRepository {
-  final _apiService = NetworkApiServices();
+  final NetworkApiServices _apiService = NetworkApiServices();
 
   Future<dynamic> signInApi(
     Map<String, dynamic> data, {
@@ -18,7 +18,7 @@ class SignInRepository {
     return response;
   }
 
-  Future<dynamic> signInWithGoogleApi(var data, String? fcmToken) async {
+  Future<dynamic> signInWithGoogleApi(dynamic data, String? fcmToken) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.loginWithGoogle(),
@@ -31,7 +31,7 @@ class SignInRepository {
     return response;
   }
 
-  Future<dynamic> signInWithAppleApi(var data, String? fcmToken) async {
+  Future<dynamic> signInWithAppleApi(dynamic data, String? fcmToken) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.loginWithApple(),

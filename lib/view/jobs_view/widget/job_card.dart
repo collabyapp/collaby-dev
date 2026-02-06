@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/view/jobs_view/helper/helper_function.dart';
-import 'package:collaby_app/view/jobs_view/widget/company_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:collaby_app/models/jobs_model/job_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

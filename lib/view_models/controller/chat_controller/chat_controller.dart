@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'package:collaby_app/data/network/network_api_services.dart';
@@ -174,7 +175,7 @@ class ChatController extends GetxController {
       _optimisticMessageIds.remove(lastOptimisticId);
       
       if (kDebugMode) {
-        print('❌ Removed failed optimistic message: $lastOptimisticId');
+        log('âŒ Removed failed optimistic message: $lastOptimisticId');
       }
     }
     
@@ -195,7 +196,7 @@ class ChatController extends GetxController {
       final messagesData = await apiService.getChatMessages(chatId);
 
       if (kDebugMode) {
-        print('Loaded ${messagesData.length} messages');
+        log('Loaded ${messagesData.length} messages');
       }
 
       final newMessages = messagesData
@@ -204,8 +205,8 @@ class ChatController extends GetxController {
               return ChatMessage.fromJson(msg);
             } catch (e) {
               if (kDebugMode) {
-                print('Error parsing message: $e');
-                print('Message data: $msg');
+                log('Error parsing message: $e');
+                log('Message data: $msg');
               }
               return null;
             }
@@ -222,7 +223,7 @@ class ChatController extends GetxController {
       hasMoreMessages.value = false;
     } catch (e) {
       if (kDebugMode) {
-        print('Error loading messages: $e');
+        log('Error loading messages: $e');
       }
       Get.snackbar('Error', 'Failed to load messages: $e');
     } finally {
@@ -241,11 +242,11 @@ class ChatController extends GetxController {
       socketService.getAllChatsOnlineStatus();
 
       if (kDebugMode) {
-        print('✅ Loaded ${users.length} chats');
+        log('âœ… Loaded ${users.length} chats');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error loading chats: $e');
+        log('Error loading chats: $e');
       }
       Get.snackbar('Error', 'Failed to load chats: $e');
     }
@@ -273,7 +274,7 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error selecting user: $e');
+        log('Error selecting user: $e');
       }
     }
   }
@@ -322,7 +323,7 @@ class ChatController extends GetxController {
         messages[optimisticIndex] = message;
         
         if (kDebugMode) {
-          print('✅ Replaced optimistic message with real message');
+          log('âœ… Replaced optimistic message with real message');
         }
       } else {
         messages.add(message);
@@ -331,7 +332,7 @@ class ChatController extends GetxController {
       _updateChatInList(message);
     } catch (e) {
       if (kDebugMode) {
-        print('Error handling message sent: $e');
+        log('Error handling message sent: $e');
       }
     }
   }
@@ -345,7 +346,7 @@ class ChatController extends GetxController {
         if (index == -1) {
           messages.add(message);
           if (kDebugMode) {
-            print('✅ Added new message to current chat');
+            log('âœ… Added new message to current chat');
           }
         }
       }
@@ -357,7 +358,7 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error handling message received: $e');
+        log('Error handling message received: $e');
       }
     }
   }
@@ -410,8 +411,8 @@ class ChatController extends GetxController {
 
       final fileUrl = uploadResult;
 
-      if (fileUrl == null) {
-        throw Exception('Upload failed: No URL returned');
+      if (fileUrl.isEmpty) {
+        throw Exception('Upload failed: Empty URL returned');
       }
 
       optimisticMessageId = _generateId();
@@ -476,13 +477,13 @@ class ChatController extends GetxController {
       };
 
       if (kDebugMode) {
-        print('📤 Sending custom offer: $offerData');
+        log('ðŸ“¤ Sending custom offer: $offerData');
       }
 
       final apiResponse = await apiService.createCustomOffer(offerData);
 
       if (kDebugMode) {
-        print('✅ API Response: $apiResponse');
+        log('âœ… API Response: $apiResponse');
       }
 
       final offerId = apiResponse['data']?['_id'] ?? apiResponse['_id'];
@@ -507,7 +508,7 @@ class ChatController extends GetxController {
       Get.snackbar('Success', 'Offer sent successfully');
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Error sending offer: $e');
+        log('âŒ Error sending offer: $e');
       }
       
       // Remove optimistic message if offer failed
@@ -584,7 +585,7 @@ class ChatController extends GetxController {
       senderId: currentUserId.value,
       senderName: 'You',
       content: 'Additional revision requested: ${revisionDetails.featureName}',
-      type: MessageType.additional_revision,
+      type: MessageType.additionalRevision,
       timestamp: DateTime.now(),
       revisionDetails: revisionDetails,
     );
@@ -629,7 +630,7 @@ class ChatController extends GetxController {
       apiService.markChatAsRead(chatId);
     } catch (e) {
       if (kDebugMode) {
-        print('Error marking chat as read: $e');
+        log('Error marking chat as read: $e');
       }
     }
   }
@@ -640,7 +641,7 @@ class ChatController extends GetxController {
       apiService.markMessageAsRead(messageId);
     } catch (e) {
       if (kDebugMode) {
-        print('Error marking message as read: $e');
+        log('Error marking message as read: $e');
       }
     }
   }
@@ -665,19 +666,19 @@ class ChatController extends GetxController {
         users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
         if (kDebugMode) {
-          print('✅ Updated existing chat: $chatId');
+          log('âœ… Updated existing chat: $chatId');
         }
       } else {
         if (kDebugMode) {
-          print(
-            '⚠️ Chat not found in list: $chatId - Reloading all chats from API',
+          log(
+            'âš ï¸ Chat not found in list: $chatId - Reloading all chats from API',
           );
         }
         _reloadChatsFromAPI();
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error handling chat list update: $e');
+        log('Error handling chat list update: $e');
       }
     }
   }
@@ -685,7 +686,7 @@ class ChatController extends GetxController {
   Future<void> _reloadChatsFromAPI() async {
     try {
       if (kDebugMode) {
-        print('📥 Fetching latest chats from API...');
+        log('ðŸ“¥ Fetching latest chats from API...');
       }
 
       final chatsData = await apiService.getUserChats(currentUserId.value);
@@ -694,11 +695,11 @@ class ChatController extends GetxController {
       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
       if (kDebugMode) {
-        print('✅ Chat list refreshed! Total chats: ${users.length}');
+        log('âœ… Chat list refreshed! Total chats: ${users.length}');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Error reloading chats: $e');
+        log('âŒ Error reloading chats: $e');
       }
     }
   }
@@ -725,7 +726,7 @@ class ChatController extends GetxController {
       Get.snackbar('New Offer', 'You received a custom offer');
     } catch (e) {
       if (kDebugMode) {
-        print('Error handling custom offer: $e');
+        log('Error handling custom offer: $e');
       }
     }
   }
@@ -738,7 +739,7 @@ class ChatController extends GetxController {
       _updateOfferStatus(offerId, status);
     } catch (e) {
       if (kDebugMode) {
-        print('Error handling offer status update: $e');
+        log('Error handling offer status update: $e');
       }
     }
   }
@@ -769,7 +770,7 @@ class ChatController extends GetxController {
     _optimisticMessageIds.add(id);
     
     if (kDebugMode) {
-      print('➕ Added optimistic message: $id');
+      log('âž• Added optimistic message: $id');
     }
   }
 
@@ -789,14 +790,14 @@ class ChatController extends GetxController {
       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
       if (kDebugMode) {
-        print(
-          '✅ Chat list updated and sorted. New last message: ${message.content}',
+        log(
+          'âœ… Chat list updated and sorted. New last message: ${message.content}',
         );
       }
     } else {
       if (kDebugMode) {
-        print(
-          '⚠️ Chat not found in list for message. chatId: ${message.chatId}',
+        log(
+          'âš ï¸ Chat not found in list for message. chatId: ${message.chatId}',
         );
       }
     }
@@ -807,7 +808,7 @@ class ChatController extends GetxController {
       return await apiService.searchUsers(query);
     } catch (e) {
       if (kDebugMode) {
-        print('Error searching users: $e');
+        log('Error searching users: $e');
       }
       return [];
     }
@@ -1138,7 +1139,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       final messagesData = await apiService.getChatMessages(chatId);
 
 //       if (kDebugMode) {
-//         print('Loaded ${messagesData.length} messages');
+//         log('Loaded ${messagesData.length} messages');
 //       }
 
 //       final newMessages = messagesData
@@ -1147,8 +1148,8 @@ extension OfferDetailsExtension on OfferDetails {
 //               return ChatMessage.fromJson(msg);
 //             } catch (e) {
 //               if (kDebugMode) {
-//                 print('Error parsing message: $e');
-//                 print('Message data: $msg');
+//                 log('Error parsing message: $e');
+//                 log('Message data: $msg');
 //               }
 //               return null;
 //             }
@@ -1165,7 +1166,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       hasMoreMessages.value = false;
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error loading messages: $e');
+//         log('Error loading messages: $e');
 //       }
 //       Get.snackbar('Error', 'Failed to load messages: $e');
 //     } finally {
@@ -1185,11 +1186,11 @@ extension OfferDetailsExtension on OfferDetails {
 //       socketService.getAllChatsOnlineStatus();
 
 //       if (kDebugMode) {
-//         print('✅ Loaded ${users.length} chats');
+//         log('âœ… Loaded ${users.length} chats');
 //       }
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error loading chats: $e');
+//         log('Error loading chats: $e');
 //       }
 //       Get.snackbar('Error', 'Failed to load chats: $e');
 //     }
@@ -1217,7 +1218,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       }
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error selecting user: $e');
+//         log('Error selecting user: $e');
 //       }
 //     }
 //   }
@@ -1260,7 +1261,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       _updateChatInList(message);
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error handling message sent: $e');
+//         log('Error handling message sent: $e');
 //       }
 //     }
 //   }
@@ -1275,7 +1276,7 @@ extension OfferDetailsExtension on OfferDetails {
 //         if (index == -1) {
 //           messages.add(message);
 //           if (kDebugMode) {
-//             print('✅ Added new message to current chat');
+//             log('âœ… Added new message to current chat');
 //           }
 //         }
 //       }
@@ -1289,7 +1290,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       }
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error handling message received: $e');
+//         log('Error handling message received: $e');
 //       }
 //     }
 //   }
@@ -1394,13 +1395,13 @@ extension OfferDetailsExtension on OfferDetails {
 //       };
 
 //       if (kDebugMode) {
-//         print('📤 Sending custom offer: $offerData');
+//         log('ðŸ“¤ Sending custom offer: $offerData');
 //       }
 
 //       final apiResponse = await apiService.createCustomOffer(offerData);
 
 //       if (kDebugMode) {
-//         print('✅ API Response: $apiResponse');
+//         log('âœ… API Response: $apiResponse');
 //       }
 
 //       final offerId = apiResponse['data']?['_id'] ?? apiResponse['_id'];
@@ -1422,7 +1423,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       Get.snackbar('Success', 'Offer sent successfully');
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('❌ Error sending offer: $e');
+//         log('âŒ Error sending offer: $e');
 //       }
 //       Get.snackbar('Error', 'Failed to send offer: ${e.toString()}');
 //     } finally {
@@ -1534,7 +1535,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       apiService.markChatAsRead(chatId);
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error marking chat as read: $e');
+//         log('Error marking chat as read: $e');
 //       }
 //     }
 //   }
@@ -1545,7 +1546,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       apiService.markMessageAsRead(messageId);
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error marking message as read: $e');
+//         log('Error marking message as read: $e');
 //       }
 //     }
 //   }
@@ -1556,7 +1557,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       final index = users.indexWhere((u) => u.chatId == chatId);
 
 //       if (index != -1) {
-//         // ✅ CHAT EXISTS - Update it
+//         // âœ… CHAT EXISTS - Update it
 //         final user = users[index];
 //         users[index] = user.copyWith(
 //           lastMessage: data['lastMessage'] ?? user.lastMessage,
@@ -1571,20 +1572,20 @@ extension OfferDetailsExtension on OfferDetails {
 //         users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
 //         if (kDebugMode) {
-//           print('✅ Updated existing chat: $chatId');
+//           log('âœ… Updated existing chat: $chatId');
 //         }
 //       } else {
-//         // ❌ CHAT DOESN'T EXIST - Fetch all chats from API
+//         // âŒ CHAT DOESN'T EXIST - Fetch all chats from API
 //         if (kDebugMode) {
-//           print(
-//             '⚠️ Chat not found in list: $chatId - Reloading all chats from API',
+//           log(
+//             'âš ï¸ Chat not found in list: $chatId - Reloading all chats from API',
 //           );
 //         }
 //         _reloadChatsFromAPI();
 //       }
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error handling chat list update: $e');
+//         log('Error handling chat list update: $e');
 //       }
 //     }
 //   }
@@ -1593,7 +1594,7 @@ extension OfferDetailsExtension on OfferDetails {
 //   Future<void> _reloadChatsFromAPI() async {
 //     try {
 //       if (kDebugMode) {
-//         print('📥 Fetching latest chats from API...');
+//         log('ðŸ“¥ Fetching latest chats from API...');
 //       }
 
 //       final chatsData = await apiService.getUserChats(currentUserId.value);
@@ -1603,11 +1604,11 @@ extension OfferDetailsExtension on OfferDetails {
 //       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
 //       if (kDebugMode) {
-//         print('✅ Chat list refreshed! Total chats: ${users.length}');
+//         log('âœ… Chat list refreshed! Total chats: ${users.length}');
 //       }
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('❌ Error reloading chats: $e');
+//         log('âŒ Error reloading chats: $e');
 //       }
 //     }
 //   }
@@ -1635,7 +1636,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       Get.snackbar('New Offer', 'You received a custom offer');
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error handling custom offer: $e');
+//         log('Error handling custom offer: $e');
 //       }
 //     }
 //   }
@@ -1648,7 +1649,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       _updateOfferStatus(offerId, status);
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error handling offer status update: $e');
+//         log('Error handling offer status update: $e');
 //       }
 //     }
 //   }
@@ -1694,14 +1695,14 @@ extension OfferDetailsExtension on OfferDetails {
 //       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
 //       if (kDebugMode) {
-//         print(
-//           '✅ Chat list updated and sorted. New last message: ${message.content}',
+//         log(
+//           'âœ… Chat list updated and sorted. New last message: ${message.content}',
 //         );
 //       }
 //     } else {
 //       if (kDebugMode) {
-//         print(
-//           '⚠️ Chat not found in list for message. chatId: ${message.chatId}',
+//         log(
+//           'âš ï¸ Chat not found in list for message. chatId: ${message.chatId}',
 //         );
 //       }
 //     }
@@ -1712,7 +1713,7 @@ extension OfferDetailsExtension on OfferDetails {
 //       return await apiService.searchUsers(query);
 //     } catch (e) {
 //       if (kDebugMode) {
-//         print('Error searching users: $e');
+//         log('Error searching users: $e');
 //       }
 //       return [];
 //     }
@@ -1864,3 +1865,4 @@ extension OfferDetailsExtension on OfferDetails {
 //     );
 //   }
 // }
+

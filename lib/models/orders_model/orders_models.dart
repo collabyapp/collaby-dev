@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class OrderModel {
   final String id;
   final String orderNumber;
@@ -197,8 +199,8 @@ class OrderModel {
         isNew: _safeString(json['status']) == 'Requested',
       );
     } catch (e) {
-      print('Error parsing OrderModel: $e');
-      print('JSON: $json');
+      log('Error parsing OrderModel: $e');
+      log('JSON: $json');
       rethrow;
     }
   }
@@ -211,7 +213,6 @@ class OrderModel {
       final orderData = data['order'] as Map<String, dynamic>? ?? data;
       final brandData = data['brand'] as Map<String, dynamic>?;
       final brandProfile = data['brandProfile'] as Map<String, dynamic>?;
-      final creatorProfile = data['creatorProfile'] as Map<String, dynamic>?;
 
       // Extract brand info safely
       String brandName = '';
@@ -295,8 +296,8 @@ class OrderModel {
         isReviewed: _safeBool(data['isReviewed']),
       );
     } catch (e) {
-      print('Error parsing OrderModel from detail: $e');
-      print('JSON: $json');
+      log('Error parsing OrderModel from detail: $e');
+      log('JSON: $json');
       rethrow;
     }
   }
@@ -326,14 +327,11 @@ class OrderModel {
     if (value is List) {
       try {
         return value
-            .where((item) => item is Map<String, dynamic>)
-            .map(
-              (item) =>
-                  OrderQuestionAnswer.fromJson(item as Map<String, dynamic>),
-            )
+            .whereType<Map<String, dynamic>>()
+            .map(OrderQuestionAnswer.fromJson)
             .toList();
       } catch (e) {
-        print('Error parsing question answers: $e');
+        log('Error parsing question answers: $e');
         return null;
       }
     }
@@ -368,12 +366,10 @@ class OrderModel {
       hasRequirementsSubmitted: false,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      activityEvents: activities != null
-          ? activities
-                .where((a) => a is Map<String, dynamic>)
-                .map((a) => ActivityEvent.fromJson(a as Map<String, dynamic>))
-                .toList()
-          : null,
+      activityEvents: activities
+          ?.whereType<Map<String, dynamic>>()
+          .map(ActivityEvent.fromJson)
+          .toList(),
       orderInfo: orderInfo != null ? OrderInfo.fromJson(orderInfo) : null,
       creatorActions: creatorsActions != null
           ? CreatorActions.fromJson(creatorsActions)

@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/models/payment_models/payment_models.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
@@ -20,7 +21,7 @@ class PaymentRepository {
         },
       );
 
-      print('Get payment methods response: $response');
+      log('Get payment methods response: $response');
 
       // Handle error response
       if (response is Map && response['error'] == true) {
@@ -45,7 +46,7 @@ class PaymentRepository {
 
       return [];
     } catch (e) {
-      print('Error fetching payment methods: $e');
+      log('Error fetching payment methods: $e');
       rethrow;
     }
   }
@@ -63,7 +64,7 @@ class PaymentRepository {
         },
       );
 
-      print('Get bank accounts response: $response');
+      log('Get bank accounts response: $response');
 
       // Handle error response
       if (response is Map && response['error'] == true) {
@@ -86,7 +87,7 @@ class PaymentRepository {
 
       return [];
     } catch (e) {
-      print('Error fetching bank accounts: $e');
+      log('Error fetching bank accounts: $e');
       rethrow;
     }
   }
@@ -105,7 +106,7 @@ class PaymentRepository {
         },
       );
 
-      print('Repository response: $response');
+      log('Repository response: $response');
 
       // Handle error response
       if (response is Map && response['error'] == true) {
@@ -136,7 +137,7 @@ class PaymentRepository {
 
       return false;
     } catch (e) {
-      print('Error attaching payment method: $e');
+      log('Error attaching payment method: $e');
       rethrow;
     }
   }
@@ -154,7 +155,7 @@ class PaymentRepository {
         },
       );
 
-      print('Delete payment method response: $response');
+      log('Delete payment method response: $response');
 
       // Handle error response
       if (response is Map && response['error'] == true) {
@@ -185,7 +186,7 @@ class PaymentRepository {
 
       return false;
     } catch (e) {
-      print('Error deleting payment method: $e');
+      log('Error deleting payment method: $e');
       rethrow;
     }
   }
@@ -211,8 +212,9 @@ class PaymentRepository {
 
       return response['data']?['clientSecret'] ?? response['clientSecret'];
     } catch (e) {
-      print('Error creating setup intent: $e');
+      log('Error creating setup intent: $e');
       rethrow;
     }
   }
 }
+

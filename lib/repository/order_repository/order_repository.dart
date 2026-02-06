@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
@@ -35,7 +36,7 @@ class OrdersRepository {
 
       return response;
     } catch (e) {
-      print('Error fetching orders: $e');
+      log('Error fetching orders: $e');
       rethrow;
     }
   }
@@ -54,7 +55,7 @@ class OrdersRepository {
       );
       return response;
     } catch (e) {
-      print('Error in getOrderRequestDetails: $e');
+      log('Error in getOrderRequestDetails: $e');
       return null;
     }
   }
@@ -73,7 +74,7 @@ class OrdersRepository {
       );
       return response;
     } catch (e) {
-      print('Error in acceptOrder: $e');
+      log('Error in acceptOrder: $e');
       return null;
     }
   }
@@ -95,7 +96,7 @@ class OrdersRepository {
       );
       return response;
     } catch (e) {
-      print('Error in declineOrder: $e');
+      log('Error in declineOrder: $e');
       return null;
     }
   }
@@ -115,7 +116,7 @@ class OrdersRepository {
 
       return response;
     } catch (e) {
-      print('Error fetching order details: $e');
+      log('Error fetching order details: $e');
       rethrow;
     }
   }
@@ -178,8 +179,9 @@ class OrdersRepository {
       );
       return response;
     } catch (e) {
-      print('Error in deliverOrder: $e');
+      log('Error in deliverOrder: $e');
       rethrow;
     }
   }
 }
+

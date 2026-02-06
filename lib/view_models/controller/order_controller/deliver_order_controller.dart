@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'dart:io';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/models/orders_model/vedio_model.dart';
@@ -84,7 +85,7 @@ class DeliverWorkController extends GetxController {
       final index2 = uploadedVideos.indexWhere(
         (v) => v.file.path == videoUpload.file.path,
       );
-      if (index2 != -1 && uploadResult != null) {
+      if (index2 != -1 && uploadResult.isNotEmpty) {
         uploadedVideos[index2] = uploadedVideos[index2].copyWith(
           uploadedUrl: uploadResult,
           progress: 1.0,
@@ -129,7 +130,7 @@ class DeliverWorkController extends GetxController {
       }
       return null;
     } catch (e) {
-      print('Error generating thumbnail: $e');
+      log('Error generating thumbnail: $e');
       return null;
     }
   }
@@ -235,3 +236,4 @@ class DeliverWorkController extends GetxController {
     }
   }
 }
+

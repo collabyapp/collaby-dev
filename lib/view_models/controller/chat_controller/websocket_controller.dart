@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -25,7 +26,7 @@ class SocketService extends GetxService {
   Future<SocketService> init(String token) async {
     try {
       if (kDebugMode) {
-        print('Initializing Socket connection...');
+        log('Initializing Socket connection...');
       }
       socket = IO.io(
         '${AppUrl.baseUrl}/chat',
@@ -40,7 +41,7 @@ class SocketService extends GetxService {
       return this;
     } catch (e) {
       if (kDebugMode) {
-        print('Socket initialization error: $e');
+        log('Socket initialization error: $e');
       }
       rethrow;
     }
@@ -52,7 +53,7 @@ class SocketService extends GetxService {
     // Connection events
     socket!.onConnect((_) {
       if (kDebugMode) {
-        print('Socket connected: ${socket!.id}');
+        log('Socket connected: ${socket!.id}');
       }
       isConnected.value = true;
       socketId.value = socket!.id ?? '';
@@ -63,7 +64,7 @@ class SocketService extends GetxService {
 
     socket!.onDisconnect((_) {
       if (kDebugMode) {
-        print('Socket disconnected');
+        log('Socket disconnected');
       }
       isConnected.value = false;
       socketId.value = '';
@@ -71,21 +72,21 @@ class SocketService extends GetxService {
 
     socket!.onConnectError((error) {
       if (kDebugMode) {
-        print('Socket connection error: $error');
+        log('Socket connection error: $error');
       }
       isConnected.value = false;
     });
 
     socket!.onError((error) {
       if (kDebugMode) {
-        print('Socket error: $error');
+        log('Socket error: $error');
       }
     });
 
     // Chat events
     socket!.on('message_received', (data) {
       if (kDebugMode) {
-        print('Message received: $data');
+        log('Message received: $data');
       }
       if (onMessageReceived != null) {
         onMessageReceived!(Map<String, dynamic>.from(data));
@@ -94,7 +95,7 @@ class SocketService extends GetxService {
 
     socket!.on('message_sent', (data) {
       if (kDebugMode) {
-        print('Message sent: $data');
+        log('Message sent: $data');
       }
       if (onMessageSent != null) {
         onMessageSent!(Map<String, dynamic>.from(data));
@@ -103,7 +104,7 @@ class SocketService extends GetxService {
 
     socket!.on('message_error', (data) {
       if (kDebugMode) {
-        print('Message error: $data');
+        log('Message error: $data');
       }
       if (onMessageError != null) {
         onMessageError!(Map<String, dynamic>.from(data));
@@ -112,7 +113,7 @@ class SocketService extends GetxService {
 
     socket!.on('message_read', (data) {
       if (kDebugMode) {
-        print('Message read: $data');
+        log('Message read: $data');
       }
       if (onMessageRead != null) {
         onMessageRead!(Map<String, dynamic>.from(data));
@@ -121,7 +122,7 @@ class SocketService extends GetxService {
 
     socket!.on('chat_list_update', (data) {
       if (kDebugMode) {
-        print('Chat list update: $data');
+        log('Chat list update: $data');
       }
       if (onChatListUpdate != null) {
         onChatListUpdate!(Map<String, dynamic>.from(data));
@@ -130,7 +131,7 @@ class SocketService extends GetxService {
 
     socket!.on('chat_read', (data) {
       if (kDebugMode) {
-        print('Chat read: $data');
+        log('Chat read: $data');
       }
       if (onChatListUpdate != null) {
         onChatListUpdate!(Map<String, dynamic>.from(data));
@@ -139,7 +140,7 @@ class SocketService extends GetxService {
 
     socket!.on('chat_unread_count_update', (data) {
       if (kDebugMode) {
-        print('Chat unread count update: $data');
+        log('Chat unread count update: $data');
       }
       if (onChatListUpdate != null) {
         onChatListUpdate!(Map<String, dynamic>.from(data));
@@ -148,7 +149,7 @@ class SocketService extends GetxService {
 
     socket!.on('user_status', (data) {
       if (kDebugMode) {
-        print('User status update: $data');
+        log('User status update: $data');
       }
       if (onUserStatus != null) {
         onUserStatus!(Map<String, dynamic>.from(data));
@@ -157,7 +158,7 @@ class SocketService extends GetxService {
 
     socket!.on('user_typing', (data) {
       if (kDebugMode) {
-        print('User typing: $data');
+        log('User typing: $data');
       }
       if (onUserTyping != null) {
         onUserTyping!(Map<String, dynamic>.from(data));
@@ -166,7 +167,7 @@ class SocketService extends GetxService {
 
     socket!.on('online_users', (data) {
       if (kDebugMode) {
-        print('Online users: $data');
+        log('Online users: $data');
       }
       if (onOnlineUsers != null) {
         onOnlineUsers!(Map<String, dynamic>.from(data));
@@ -175,7 +176,7 @@ class SocketService extends GetxService {
 
     socket!.on('all_chats_online_status', (data) {
       if (kDebugMode) {
-        print('All chats online status: $data');
+        log('All chats online status: $data');
       }
       if (onOnlineUsers != null) {
         onOnlineUsers!(Map<String, dynamic>.from(data));
@@ -185,7 +186,7 @@ class SocketService extends GetxService {
     // Custom offer events
     socket!.on('custom_offer_received', (data) {
       if (kDebugMode) {
-        print('Custom offer received: $data');
+        log('Custom offer received: $data');
       }
       if (onCustomOfferReceived != null) {
         onCustomOfferReceived!(Map<String, dynamic>.from(data));
@@ -194,7 +195,7 @@ class SocketService extends GetxService {
 
     socket!.on('custom_offer_created', (data) {
       if (kDebugMode) {
-        print('Custom offer created: $data');
+        log('Custom offer created: $data');
       }
       if (onCustomOfferStatusUpdate != null) {
         onCustomOfferStatusUpdate!(Map<String, dynamic>.from(data));
@@ -203,7 +204,7 @@ class SocketService extends GetxService {
 
     socket!.on('custom_offer_accepted', (data) {
       if (kDebugMode) {
-        print('Custom offer accepted: $data');
+        log('Custom offer accepted: $data');
       }
       if (onCustomOfferStatusUpdate != null) {
         onCustomOfferStatusUpdate!(Map<String, dynamic>.from(data));
@@ -212,7 +213,7 @@ class SocketService extends GetxService {
 
     socket!.on('custom_offer_declined', (data) {
       if (kDebugMode) {
-        print('Custom offer declined: $data');
+        log('Custom offer declined: $data');
       }
       if (onCustomOfferStatusUpdate != null) {
         onCustomOfferStatusUpdate!(Map<String, dynamic>.from(data));
@@ -221,7 +222,7 @@ class SocketService extends GetxService {
 
     socket!.on('custom_offer_withdrawn', (data) {
       if (kDebugMode) {
-        print('Custom offer withdrawn: $data');
+        log('Custom offer withdrawn: $data');
       }
       if (onCustomOfferStatusUpdate != null) {
         onCustomOfferStatusUpdate!(Map<String, dynamic>.from(data));
@@ -230,7 +231,7 @@ class SocketService extends GetxService {
 
     socket!.on('system_message', (data) {
       if (kDebugMode) {
-        print('System message: $data');
+        log('System message: $data');
       }
       if (onMessageReceived != null) {
         onMessageReceived!(Map<String, dynamic>.from(data));
@@ -239,13 +240,13 @@ class SocketService extends GetxService {
 
     socket!.on('joined_chat', (data) {
       if (kDebugMode) {
-        print('Joined chat: $data');
+        log('Joined chat: $data');
       }
     });
 
     socket!.on('left_chat', (data) {
       if (kDebugMode) {
-        print('Left chat: $data');
+        log('Left chat: $data');
       }
     });
   }
@@ -254,12 +255,12 @@ class SocketService extends GetxService {
   void emit(String event, Map<String, dynamic> data) {
     if (socket != null && isConnected.value) {
       if (kDebugMode) {
-        print('Emitting $event: $data');
+        log('Emitting $event: $data');
       }
       socket!.emit(event, data);
     } else {
       if (kDebugMode) {
-        print('Socket not connected, cannot emit $event');
+        log('Socket not connected, cannot emit $event');
       }
     }
   }
@@ -360,3 +361,4 @@ class SocketService extends GetxService {
   //   super.onClose();
   // }
 }
+

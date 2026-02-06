@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -6,7 +7,6 @@ import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import 'dart:typed_data';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import '../app_exceptions.dart';
@@ -44,6 +44,7 @@ class UploadResult {
 
 
 class NetworkApiServices extends BaseApiServices {
+  @override
   Future<dynamic> getApi(
     String url, {
     Map<String, String>? headers,
@@ -74,12 +75,12 @@ class NetworkApiServices extends BaseApiServices {
     bool sendJson = true,
   }) async {
     if (kDebugMode) {
-      print('🌐 POST URL: $url');
-      print('📋 Headers: $headers');
-      print('📦 Raw Data: $data');
-      print('📦 Data Type: ${data.runtimeType}');
+      log('ðŸŒ POST URL: $url');
+      log('ðŸ“‹ Headers: $headers');
+      log('ðŸ“¦ Raw Data: $data');
+      log('ðŸ“¦ Data Type: ${data.runtimeType}');
       if (sendJson) {
-        print('📦 JSON Data: ${jsonEncode(data)}');
+        log('ðŸ“¦ JSON Data: ${jsonEncode(data)}');
       }
     }
 
@@ -100,9 +101,9 @@ class NetworkApiServices extends BaseApiServices {
           .timeout(const Duration(seconds: 60));
 
       if (kDebugMode) {
-        print('📈 Response Status: ${response.statusCode}');
-        print('📈 Response Headers: ${response.headers}');
-        print('📈 Response Body: ${response.body}');
+        log('ðŸ“ˆ Response Status: ${response.statusCode}');
+        log('ðŸ“ˆ Response Headers: ${response.headers}');
+        log('ðŸ“ˆ Response Body: ${response.body}');
       }
 
       responseJson = returnResponse(response);
@@ -112,7 +113,7 @@ class NetworkApiServices extends BaseApiServices {
       throw RequestTimeOut('');
     }
 
-    if (kDebugMode) print('✅ Final Response: $responseJson');
+    if (kDebugMode) log('âœ… Final Response: $responseJson');
     return responseJson;
   }
 
@@ -124,12 +125,12 @@ class NetworkApiServices extends BaseApiServices {
     bool sendJson = true,
   }) async {
     if (kDebugMode) {
-      print('🌐 PUT URL: $url');
-      print('📋 Headers: $headers');
-      print('📦 Raw Data: $data');
-      print('📦 Data Type: ${data.runtimeType}');
+      log('ðŸŒ PUT URL: $url');
+      log('ðŸ“‹ Headers: $headers');
+      log('ðŸ“¦ Raw Data: $data');
+      log('ðŸ“¦ Data Type: ${data.runtimeType}');
       if (sendJson && data != null) {
-        print('📦 JSON Data: ${jsonEncode(data)}');
+        log('ðŸ“¦ JSON Data: ${jsonEncode(data)}');
       }
     }
 
@@ -150,9 +151,9 @@ class NetworkApiServices extends BaseApiServices {
           .timeout(const Duration(seconds: 60));
 
       if (kDebugMode) {
-        print('📈 Response Status: ${response.statusCode}');
-        print('📈 Response Headers: ${response.headers}');
-        print('📈 Response Body: ${response.body}');
+        log('ðŸ“ˆ Response Status: ${response.statusCode}');
+        log('ðŸ“ˆ Response Headers: ${response.headers}');
+        log('ðŸ“ˆ Response Body: ${response.body}');
       }
 
       responseJson = returnResponse(response);
@@ -161,11 +162,11 @@ class NetworkApiServices extends BaseApiServices {
     } on TimeoutException {
       throw RequestTimeOut('Request timed out');
     } catch (e) {
-      if (kDebugMode) print('❌ PUT Error: $e');
+      if (kDebugMode) log('âŒ PUT Error: $e');
       rethrow;
     }
 
-    if (kDebugMode) print('✅ Final Response: $responseJson');
+    if (kDebugMode) log('âœ… Final Response: $responseJson');
     return responseJson;
   }
 
@@ -177,12 +178,12 @@ class NetworkApiServices extends BaseApiServices {
   }) async {
     try {
       if (kDebugMode) {
-        print('🌐 PATCH URL: $url');
-        print('📋 Headers: $headers');
-        print('📦 Raw Data: $data');
-        print('📦 Data Type: ${data.runtimeType}');
+        log('ðŸŒ PATCH URL: $url');
+        log('ðŸ“‹ Headers: $headers');
+        log('ðŸ“¦ Raw Data: $data');
+        log('ðŸ“¦ Data Type: ${data.runtimeType}');
 
-        print('📦 JSON Data: ${jsonEncode(data)}');
+        log('ðŸ“¦ JSON Data: ${jsonEncode(data)}');
       }
 
       // Make the PATCH request
@@ -199,16 +200,16 @@ class NetworkApiServices extends BaseApiServices {
           )
           .timeout(const Duration(seconds: 60)); // Timeout for the request
       if (kDebugMode) {
-        print('📈 Response Status: ${response.statusCode}');
-        print('📈 Response Headers: ${response.headers}');
-        print('📈 Response Body: ${response.body}');
+        log('ðŸ“ˆ Response Status: ${response.statusCode}');
+        log('ðŸ“ˆ Response Headers: ${response.headers}');
+        log('ðŸ“ˆ Response Body: ${response.body}');
       }
 
-      if (kDebugMode) print('✅ Final Response: $response');
+      if (kDebugMode) log('âœ… Final Response: $response');
       // Process the response
       return returnResponse(response);
     } catch (e) {
-      if (kDebugMode) print('❌ PUT Error: $e');
+      if (kDebugMode) log('âŒ PUT Error: $e');
       return {
         'statusCode': 500,
         'message': 'Network Error',
@@ -296,8 +297,8 @@ class NetworkApiServices extends BaseApiServices {
     final response = await http.Response.fromStream(streamed);
 
     if (kDebugMode) {
-      print('📤 Upload → ${response.statusCode}');
-      print('📤 Body → ${response.body}');
+      log('ðŸ“¤ Upload â†’ ${response.statusCode}');
+      log('ðŸ“¤ Body â†’ ${response.body}');
     }
 
     // Reuse your existing JSON handler
@@ -347,7 +348,7 @@ class NetworkApiServices extends BaseApiServices {
     req.fields['useCase'] = useCase;
 
     // Helper to guess content type
-    MediaType _mt(String filename, {String fallback = 'application/octet-stream'}) {
+    MediaType mt(String filename, {String fallback = 'application/octet-stream'}) {
       final mime = lookupMimeType(filename) ?? fallback;
       return MediaType.parse(mime);
     }
@@ -360,7 +361,7 @@ class NetworkApiServices extends BaseApiServices {
           'file', // <-- MUST be 'file'
           videoPath,
           filename: vName,
-          contentType: _mt(vName),
+          contentType: mt(vName),
         ),
       );
 
@@ -371,7 +372,7 @@ class NetworkApiServices extends BaseApiServices {
           'thumbnail', // <-- MUST be 'thumbnail'
           thumbnailPath,
           filename: tName,
-          contentType: _mt(tName, fallback: 'image/png'),
+          contentType: mt(tName, fallback: 'image/png'),
         ),
       );
     } else {
@@ -382,7 +383,7 @@ class NetworkApiServices extends BaseApiServices {
           'file',
           videoBytes!,
           filename: vName,
-          contentType: _mt(vName),
+          contentType: mt(vName),
         ),
       );
 
@@ -392,25 +393,25 @@ class NetworkApiServices extends BaseApiServices {
           'thumbnail',
           thumbnailBytes!,
           filename: tName,
-          contentType: _mt(tName, fallback: 'image/png'),
+          contentType: mt(tName, fallback: 'image/png'),
         ),
       );
     }
 
     if (kDebugMode) {
-      print('📤 Sending single-call upload to: $uri');
+      log('ðŸ“¤ Sending single-call upload to: $uri');
       for (final f in req.files) {
-        print('  • ${f.field} -> ${f.filename} (${f.contentType})');
+        log('  â€¢ ${f.field} -> ${f.filename} (${f.contentType})');
       }
-      print('  • useCase: $useCase');
+      log('  â€¢ useCase: $useCase');
     }
 
     final streamed = await req.send().timeout(const Duration(seconds: 180));
     final resp = await http.Response.fromStream(streamed);
 
     if (kDebugMode) {
-      print('📤 Status: ${resp.statusCode}');
-      print('📤 Body  : ${resp.body}');
+      log('ðŸ“¤ Status: ${resp.statusCode}');
+      log('ðŸ“¤ Body  : ${resp.body}');
     }
 
     if (resp.statusCode != 200 && resp.statusCode != 201) {
@@ -442,11 +443,11 @@ class NetworkApiServices extends BaseApiServices {
 
     final statusCode = response.statusCode;
 
-    // ✅ Success
+    // âœ… Success
     if (statusCode >= 200 && statusCode < 300) {
       return responseJson;
     }
-    // ❌ Client Error (400–499)
+    // âŒ Client Error (400â€“499)
     else if (statusCode >= 400 && statusCode < 500) {
       // Extract the proper message from server if present
       final message = responseJson is Map && responseJson['message'] != null
@@ -456,14 +457,14 @@ class NetworkApiServices extends BaseApiServices {
       // Return a unified error map that controllers can directly read
       return {'error': true, 'statusCode': statusCode, 'message': message};
     }
-    // 💥 Server Error (500–599)
+    // ðŸ’¥ Server Error (500â€“599)
     else if (statusCode >= 500 && statusCode < 600) {
       final message = responseJson is Map && responseJson['message'] != null
           ? responseJson['message'].toString()
           : 'Server error ($statusCode)';
       throw FetchDataException(message);
     }
-    // ⚠️ Unexpected
+    // âš ï¸ Unexpected
     else {
       throw FetchDataException('Unexpected error: $statusCode');
     }
@@ -491,3 +492,4 @@ class NetworkApiServices extends BaseApiServices {
   //   }
   // }
 }
+

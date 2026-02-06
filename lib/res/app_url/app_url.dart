@@ -117,7 +117,7 @@ class AppUrl {
 
   /// Submit order deliverable
   static String deliverOrder(String orderId) =>
-      '${baseUrl}/orders/$orderId/deliver';
+      '$baseUrl/orders/$orderId/deliver';
 
   /// Request revision
   static String requestRevision(String orderId) {
@@ -146,24 +146,24 @@ class AppUrl {
   static const String boostCancel = '$baseUrl/boost/cancel';
 
   // Logout and delete endpoint
-  static String logout() => '${baseUrl}/auth/logout';
+  static String logout() => '$baseUrl/auth/logout';
   static String deleteAccount() => '$baseUrl/creator/delete-account';
 
   static String withdrawalHistory({int page = 1, int limit = 10}) {
-    return '${baseUrl}/payment/wallet/withdrawal-history?page=$page&limit=$limit';
+    return '$baseUrl/payment/wallet/withdrawal-history?page=$page&limit=$limit';
   }
 
   static String withdrawalFees() => '$baseUrl/payment/withdrawal-fees';
 
   static String bankAccounts() {
-    return '${baseUrl}/payment/wallet/bank-accounts';
+    return '$baseUrl/payment/wallet/bank-accounts';
   }
 
   static String connectedAccount() {
-    return '${baseUrl}/payment/stripe/connected-account';
+    return '$baseUrl/payment/stripe/connected-account';
   }
 
   static String withdraw() {
-    return '${baseUrl}/payment/wallet/withdraw';
+    return '$baseUrl/payment/wallet/withdraw';
   }
 }

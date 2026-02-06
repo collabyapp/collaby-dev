@@ -1,4 +1,3 @@
-import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/view_models/services/notification_services/notification_service.dart';
 import 'package:collaby_app/view_models/services/splash_services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

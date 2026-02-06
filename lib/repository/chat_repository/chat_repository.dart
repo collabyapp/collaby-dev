@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class ChatRepository {
-  String BASE_URL = AppUrl.baseUrl;
+  final String baseUrl = AppUrl.baseUrl;
   String? _token;
 
   void setToken(String token) {
@@ -20,7 +21,7 @@ class ChatRepository {
   // Verify token and get user data
   Future<Map<String, dynamic>> verifyToken(String token) async {
     final response = await http.get(
-      Uri.parse('$BASE_URL/auth/verify-token'),
+      Uri.parse('$baseUrl/auth/verify-token'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -37,11 +38,11 @@ class ChatRepository {
   // Get user chats
   Future<List<dynamic>> getUserChats(String userId) async {
     final response = await http.get(
-      Uri.parse('$BASE_URL/chat/user/$userId'),
+      Uri.parse('$baseUrl/chat/user/$userId'),
       headers: _headers,
     );
 
-    print(json.decode(response.body));
+    log('getUserChats response: ${json.decode(response.body)}');
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       // Handle both array and wrapped response
@@ -59,12 +60,12 @@ class ChatRepository {
     try {
       // Remove page and limit parameters - backend doesn't support them
       final response = await http.get(
-        Uri.parse('$BASE_URL/chat/$chatId/messages?orderId=$orderId'),
+        Uri.parse('$baseUrl/chat/$chatId/messages?orderId=$orderId'),
         headers: _headers,
       );
 
-      print('Get messages response status: ${response.statusCode}');
-      print('Get messages response body: ${response.body}');
+      log('Get messages response status: ${response.statusCode}');
+      log('Get messages response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -86,13 +87,13 @@ class ChatRepository {
           }
         }
 
-        print('Unexpected response format: $data');
+        log('Unexpected response format: $data');
         return [];
       } else {
         throw Exception('Failed to load messages: ${response.body}');
       }
     } catch (e) {
-      print('Error in getChatMessages: $e');
+      log('Error in getChatMessages: $e');
       throw Exception('Failed to load messages: $e');
     }
   }
@@ -102,12 +103,12 @@ class ChatRepository {
     try {
       // Remove page and limit parameters - backend doesn't support them
       final response = await http.get(
-        Uri.parse('$BASE_URL/chat/$chatId/messages'),
+        Uri.parse('$baseUrl/chat/$chatId/messages'),
         headers: _headers,
       );
 
-      print('Get messages response status: ${response.statusCode}');
-      print('Get messages response body: ${response.body}');
+      log('Get messages response status: ${response.statusCode}');
+      log('Get messages response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -129,13 +130,13 @@ class ChatRepository {
           }
         }
 
-        print('Unexpected response format: $data');
+        log('Unexpected response format: $data');
         return [];
       } else {
         throw Exception('Failed to load messages: ${response.body}');
       }
     } catch (e) {
-      print('Error in getChatMessages: $e');
+      log('Error in getChatMessages: $e');
       throw Exception('Failed to load messages: $e');
     }
   }
@@ -143,7 +144,7 @@ class ChatRepository {
   // Create new chat
   Future<Map<String, dynamic>> createChat(String targetUserId) async {
     final response = await http.post(
-      Uri.parse('$BASE_URL/chat'),
+      Uri.parse('$baseUrl/chat'),
       headers: _headers,
       body: json.encode({'targetUserId': targetUserId}),
     );
@@ -159,7 +160,7 @@ class ChatRepository {
   // Search users
   Future<List<dynamic>> searchUsers(String query) async {
     final response = await http.get(
-      Uri.parse('$BASE_URL/chat/search?q=${Uri.encodeComponent(query)}'),
+      Uri.parse('$baseUrl/chat/search?q=${Uri.encodeComponent(query)}'),
       headers: _headers,
     );
 
@@ -174,7 +175,7 @@ class ChatRepository {
   // Mark chat as read
   Future<void> markChatAsRead(String chatId) async {
     final response = await http.put(
-      Uri.parse('$BASE_URL/chat/$chatId/read'),
+      Uri.parse('$baseUrl/chat/$chatId/read'),
       headers: _headers,
     );
 
@@ -186,7 +187,7 @@ class ChatRepository {
   // Mark message as read
   Future<void> markMessageAsRead(String messageId) async {
     final response = await http.put(
-      Uri.parse('$BASE_URL/chat/messages/$messageId/read'),
+      Uri.parse('$baseUrl/chat/messages/$messageId/read'),
       headers: _headers,
     );
 
@@ -200,7 +201,7 @@ class ChatRepository {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('$BASE_URL/s3/upload-media'),
+        Uri.parse('$baseUrl/s3/upload-media'),
       );
 
       if (_token != null) {
@@ -263,7 +264,7 @@ class ChatRepository {
     Map<String, dynamic> offerData,
   ) async {
     final response = await http.post(
-      Uri.parse('$BASE_URL/custom-offers'),
+      Uri.parse('$baseUrl/custom-offers'),
       headers: _headers,
       body: json.encode(offerData),
     );
@@ -309,7 +310,7 @@ class ChatRepository {
     String message = '',
   }) async {
     final response = await http.put(
-      Uri.parse('$BASE_URL/custom-offers/$offerId/accept'),
+      Uri.parse('$baseUrl/custom-offers/$offerId/accept'),
       headers: _headers,
       body: json.encode({'message': message}),
     );
@@ -326,7 +327,7 @@ class ChatRepository {
     String reason = '',
   }) async {
     final response = await http.put(
-      Uri.parse('$BASE_URL/custom-offers/$offerId/decline'),
+      Uri.parse('$baseUrl/custom-offers/$offerId/decline'),
       headers: _headers,
       body: json.encode({'reason': reason}),
     );
@@ -343,7 +344,7 @@ class ChatRepository {
     String? reason,
   }) async {
     final response = await http.put(
-      Uri.parse('$BASE_URL/custom-offers/$offerId/withdraw'),
+      Uri.parse('$baseUrl/custom-offers/$offerId/withdraw'),
       headers: _headers,
       body: json.encode({'reason': reason}),
     );
@@ -357,7 +358,7 @@ class ChatRepository {
 
   Future<List<dynamic>> getUserGigs(String userId) async {
     final response = await http.get(
-      Uri.parse('$BASE_URL/gig/creator/$userId'),
+      Uri.parse('$baseUrl/gig/creator/$userId'),
       headers: _headers,
     );
 

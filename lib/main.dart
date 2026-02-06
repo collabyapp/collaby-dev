@@ -2,14 +2,12 @@ import 'package:collaby_app/firebase_options.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'view_models/services/notification_services/awesome_notification_services.dart';
-import 'view_models/services/notification_services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +44,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Color(0xffF4F7FF),
           appBarTheme: AppBarTheme(
             surfaceTintColor: Color(0xffF4F7FF),
-            color: Color(0xffF4F7FF),
+            backgroundColor: Color(0xffF4F7FF),
             elevation: 0,
             centerTitle: true,
             iconTheme: IconThemeData(color: Colors.black),

@@ -1,4 +1,3 @@
-import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/view_models/controller/gig_creation_controller/create_gig_controller.dart';
 import 'package:flutter/material.dart';

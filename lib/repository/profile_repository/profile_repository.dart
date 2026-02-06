@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
@@ -8,7 +9,7 @@ class ProfileRepository {
 
   Future<dynamic> getCreatorProfileApi() async {
     final token = await _userPref.getToken();
-    // print(token);
+    // log(token);
     dynamic response = await _apiServices.getApi(
       AppUrl.creatorProfileUrl,
       headers: {
@@ -33,12 +34,13 @@ class ProfileRepository {
         },
       );
 
-      // print(data);
+      // log(data);
 
       return response;
     } catch (e) {
-      print('Error updating creator profile: $e');
+      log('Error updating creator profile: $e');
       rethrow;
     }
   }
 }
+

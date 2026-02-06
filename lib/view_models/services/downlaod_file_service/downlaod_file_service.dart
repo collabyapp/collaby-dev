@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +73,7 @@ class DownloadService {
       );
 
       // Success
-      debugPrint('✅ File downloaded successfully: $savePath');
+      debugPrint('âœ… File downloaded successfully: $savePath');
       onSuccess?.call();
 
       // Show success snackbar
@@ -89,7 +89,7 @@ class DownloadService {
       //   duration: Duration(seconds: 3),
       // );
     } catch (e) {
-      debugPrint('❌ Download error: $e');
+      debugPrint('âŒ Download error: $e');
       onError?.call(e.toString());
 
       Utils.snackBar(
@@ -710,7 +710,7 @@ class _DownloadProgressDialog extends StatelessWidget {
 //       );
 
 //       // Success
-//       debugPrint('✅ File downloaded successfully: $savePath');
+//       debugPrint('âœ… File downloaded successfully: $savePath');
 //       onSuccess?.call();
 
 //       // Show success snackbar
@@ -724,7 +724,7 @@ class _DownloadProgressDialog extends StatelessWidget {
 //         icon: Icon(Icons.check_circle, color: Colors.white),
 //       );
 //     } catch (e) {
-//       debugPrint('❌ Download error: $e');
+//       debugPrint('âŒ Download error: $e');
 //       onError?.call(e.toString());
 
 //       Utils.snackBar(
@@ -1116,3 +1116,6 @@ class _DownloadProgressDialog extends StatelessWidget {
 //     );
 //   }
 // }
+
+
+

@@ -1,14 +1,15 @@
+import 'dart:developer';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
 
 class AccountSecurityRepository {
-  final _apiService = NetworkApiServices();
-  final _userPref = UserPreference();
+  final NetworkApiServices _apiService = NetworkApiServices();
+  final UserPreference _userPref = UserPreference();
 
-  Future<dynamic> sendOTPApi(var data) async {
+  Future<dynamic> sendOTPApi(dynamic data) async {
     final token = await _userPref.getToken();
-    print(token);
+    log('Token: $token');
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.phoneOtpSend(),
@@ -21,9 +22,9 @@ class AccountSecurityRepository {
     return response;
   }
 
-  Future<dynamic> verifyOTPApi(var data) async {
+  Future<dynamic> verifyOTPApi(dynamic data) async {
     final token = await _userPref.getToken();
-    print(token);
+    log('Token: $token');
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.phoneVerifyOtp(),

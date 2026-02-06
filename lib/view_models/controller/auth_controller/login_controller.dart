@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:collaby_app/view_models/services/auth_service/apple_signin_service/apple_signin_service.dart';
 import 'package:collaby_app/view_models/services/auth_service/auth_service.dart';
 import 'package:flutter/material.dart';

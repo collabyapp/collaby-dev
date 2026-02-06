@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 import 'package:collaby_app/repository/auth_repository/sign_in_repository/sign_in_repository.dart';
 import 'package:collaby_app/repository/auth_repository/verify_token_repository/verify_token_repository.dart';
 import 'package:collaby_app/repository/auth_repository/otp_verification_repository/otp_verification_repository.dart';
@@ -51,7 +52,7 @@ class AuthService {
       throw 'Failed to retrieve device token';
     }
 
-    print('fcmToken: $fcmToken');
+    log('fcmToken: $fcmToken');
 
     await _prefs.saveFCMToken(fcmToken);
     final resp = await _signInRepo.signInApi({
@@ -62,8 +63,8 @@ class AuthService {
     // Check for error response first
     if (resp?['error'] != null) {
       final errorMessage = resp?['message'] ?? resp?['error'] ?? 'Login failed';
-      print('errorMessage');
-      print(errorMessage);
+      log('errorMessage');
+      log(errorMessage);
       throw errorMessage;
     }
 
@@ -74,7 +75,7 @@ class AuthService {
 
     final token = (data['token'] ?? '') as String;
 
-    print(data);
+    log('data: ${data.toString()}');
     if (token.isEmpty) {
       throw 'Login failed: token missing in response.';
     }
@@ -92,7 +93,7 @@ class AuthService {
       throw 'Failed to retrieve device token';
     }
 
-    print('fcmToken: $fcmToken');
+    log('fcmToken: $fcmToken');
 
     await _prefs.saveFCMToken(fcmToken);
     // If your server expects "id_token", change the key accordingly.
@@ -133,7 +134,7 @@ class AuthService {
       throw 'Failed to retrieve device token';
     }
 
-    print('fcmToken: $fcmToken');
+    log('fcmToken: $fcmToken');
 
     await _prefs.saveFCMToken(fcmToken);
     // If your server expects "id_token", change the key accordingly.
@@ -170,7 +171,7 @@ class AuthService {
     final user = response['data'] != null
         ? Map<String, dynamic>.from(response['data'] as Map)
         : <String, dynamic>{};
-    print(response);
+    log(response);
     if (user.isEmpty) {
       throw 'Verification succeeded but user data is empty.';
     }
@@ -245,8 +246,8 @@ class AuthService {
     fallbackEmailForOtp, // use Google account email if you have it
   }) async {
     final token = await signInWithGoogle(idToken: googleIdToken);
-    print('auth service token');
-    print(token);
+    log('auth service token');
+    log(token);
     final user = await verifyToken(token);
     await persistSession(token: token, user: user);
     return decideNextRoute(user: user, emailForOtp: fallbackEmailForOtp);
@@ -259,8 +260,8 @@ class AuthService {
     fallbackEmailForOtp, // use Google account email if you have it
   }) async {
     final token = await signInWithApple(idToken: appleIdToken);
-    print('auth service token');
-    print(token);
+    log('auth service token');
+    log(token);
     final user = await verifyToken(token);
     await persistSession(token: token, user: user);
     return decideNextRoute(user: user, emailForOtp: fallbackEmailForOtp);
@@ -268,3 +269,4 @@ class AuthService {
 
 
 }
+

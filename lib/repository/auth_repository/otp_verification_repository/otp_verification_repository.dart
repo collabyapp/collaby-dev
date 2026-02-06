@@ -2,9 +2,9 @@ import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 
 class OtpVerificationRepository {
-  final _apiService = NetworkApiServices();
+  final NetworkApiServices _apiService = NetworkApiServices();
 
-  Future<dynamic> sendOTPApi(var data) async {
+  Future<dynamic> sendOTPApi(dynamic data) async {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.otpSend(),
@@ -14,7 +14,7 @@ class OtpVerificationRepository {
     return response;
   }
 
-  Future<dynamic> verifyOTPApi(var data) async {
+  Future<dynamic> verifyOTPApi(dynamic data) async {
     dynamic response = await _apiService.postApi(data, AppUrl.verifyOtp());
     return response;
   }

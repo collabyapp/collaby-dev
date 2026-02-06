@@ -1,3 +1,5 @@
+﻿import 'dart:developer';
+
 // class ChatUser {
 //   final String id;
 //   final String name;
@@ -159,7 +161,7 @@
 //       try {
 //         return OfferDetails.fromJson(json);
 //       } catch (e) {
-//         print('Error parsing offer details: $e');
+//         log('Error parsing offer details: $e');
 //         return null;
 //       }
 //     }
@@ -173,7 +175,7 @@
 //             .map((a) => Attachment.fromJson(a as Map<String, dynamic>))
 //             .toList();
 //       } catch (e) {
-//         print('Error parsing attachments: $e');
+//         log('Error parsing attachments: $e');
 //         return null;
 //       }
 //     }
@@ -672,9 +674,9 @@ enum MessageType {
   offer,
   overdue,
   alert,
-  additional_revision,
+  additionalRevision,
   system,
-  order_created,
+  orderCreated,
 }
 
 class ChatMessage {
@@ -730,11 +732,11 @@ class ChatMessage {
         case 'custom_offer':
           return MessageType.offer;
         case 'additional_revision':
-          return MessageType.additional_revision;
+          return MessageType.additionalRevision;
         case 'system':
           return MessageType.system;
         case 'order_created':
-          return MessageType.order_created;
+          return MessageType.orderCreated;
         default:
           return MessageType.text;
       }
@@ -745,7 +747,7 @@ class ChatMessage {
       try {
         return OfferDetails.fromJson(json);
       } catch (e) {
-        print('Error parsing offer details: $e');
+        log('Error parsing offer details: $e');
         return null;
       }
     }
@@ -759,7 +761,7 @@ class ChatMessage {
             .map((a) => Attachment.fromJson(a as Map<String, dynamic>))
             .toList();
       } catch (e) {
-        print('Error parsing attachments: $e');
+        log('Error parsing attachments: $e');
         return null;
       }
     }
@@ -816,11 +818,11 @@ class ChatMessage {
           return 'file';
         case MessageType.offer:
           return 'custom_offer';
-        case MessageType.additional_revision:
+        case MessageType.additionalRevision:
           return 'additional_revision';
         case MessageType.system:
           return 'system';
-        case MessageType.order_created:
+        case MessageType.orderCreated:
           return 'order_created';
         default:
           return 'text';
@@ -1218,3 +1220,5 @@ class MediaFile {
     };
   }
 }
+
+

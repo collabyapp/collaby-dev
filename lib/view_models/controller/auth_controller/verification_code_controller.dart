@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:collaby_app/repository/auth_repository/forgot_repository/forgot_repository.dart';
 import 'package:collaby_app/repository/auth_repository/otp_verification_repository/otp_verification_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
@@ -151,7 +151,7 @@ class VerificationCodeController extends GetxController {
         await otpVerificationRepo.sendOTPApi({'email': email});
       }
 
-      Utils.snackBar('OTP sent', 'We’ve sent a new code to $email.');
+      Utils.snackBar('OTP sent', 'Weâ€™ve sent a new code to $email.');
       _startTimer(); // should handle enabling after countdown completes
     } catch (e) {
       // On failure, allow user to try again
@@ -168,3 +168,6 @@ class VerificationCodeController extends GetxController {
     super.onClose();
   }
 }
+
+
+

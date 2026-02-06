@@ -120,12 +120,18 @@ class _FeatureCard extends StatelessWidget {
 
               const SizedBox(width: 6),
               Text("\$${feature.price.toStringAsFixed(0)}"),
-              if (feature.revisions != null) ...[
+              if (feature.revisions > 0) ...[
                 const SizedBox(width: 12),
                 Image.asset(ImageAssets.revisionIcon, height: 12),
 
                 const SizedBox(width: 4),
                 Text("${feature.revisions} Revisions"),
+              ],
+              if (feature.extraDays > 0) ...[
+                const SizedBox(width: 12),
+                const Icon(Icons.access_time, size: 12),
+                const SizedBox(width: 4),
+                Text("+${feature.extraDays} day(s)"),
               ],
             ],
           ),
@@ -139,6 +145,8 @@ void _showFeatureDetails(String featureName) {
   final c = Get.find<CreateGigController>();
   final priceCtrl = TextEditingController();
   final revCtrl = TextEditingController();
+  final daysCtrl = TextEditingController();
+  final isRevisionFeature = featureName.toLowerCase().contains('revision');
 
   Get.bottomSheet(
     Container(
@@ -208,7 +216,7 @@ void _showFeatureDetails(String featureName) {
           const SizedBox(height: 16),
 
           // Revisions only for Additional Revision
-          if (featureName == "Additional Revision")
+          if (isRevisionFeature)
             Text(
               'Number of Revisions',
               style: AppTextStyles.extraSmallText.copyWith(
@@ -216,7 +224,7 @@ void _showFeatureDetails(String featureName) {
               ),
             ),
           const SizedBox(height: 10),
-          if (featureName == "Additional Revision")
+          if (isRevisionFeature)
             TextField(
               controller: revCtrl,
               decoration: const InputDecoration(
@@ -226,6 +234,24 @@ void _showFeatureDetails(String featureName) {
               keyboardType: TextInputType.number,
             ),
 
+          const SizedBox(height: 16),
+
+          Text(
+            'Extra Delivery Days',
+            style: AppTextStyles.extraSmallText.copyWith(
+              color: Color(0xff606A79),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: daysCtrl,
+            decoration: const InputDecoration(
+              hintText: "Extra days (e.g. 2)",
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+
           Spacer(),
           CustomButton(
             title: 'Add',
@@ -234,9 +260,8 @@ void _showFeatureDetails(String featureName) {
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
                 name: featureName,
                 price: double.tryParse(priceCtrl.text) ?? 0,
-                revisions: featureName == "Additional Revision"
-                    ? int.tryParse(revCtrl.text)
-                    : null,
+                extraDays: int.tryParse(daysCtrl.text) ?? 0,
+                revisions: isRevisionFeature ? int.tryParse(revCtrl.text) ?? 0 : 0,
               );
               c.addAdditionalFeature(f);
               Get.back();
@@ -292,8 +317,8 @@ void _showFeaturePicker(BuildContext context) {
                   title: Text(f, style: const TextStyle(color: Colors.black)),
                   trailing: Radio<String>(
                     value: f,
-                    groupValue: ctrl.selectedFeature,
-                    onChanged: ctrl.selectFeature,
+                    groupValue: ctrl.selectedFeature.value,
+                    onChanged: (v) => ctrl.selectFeature(v),
                   ),
                   onTap: () => ctrl.selectFeature(f),
                 ),
@@ -303,9 +328,9 @@ void _showFeaturePicker(BuildContext context) {
             const SizedBox(height: 16),
             CustomButton(
               title: 'Done',
-              isDisabled: ctrl.selectedFeature == null,
+              isDisabled: ctrl.selectedFeature.value == null,
               onPressed: () {
-                final sel = ctrl.selectedFeature;
+                final sel = ctrl.selectedFeature.value;
                 if (sel != null) {
                   Get.back(); // close picker sheet
                   ctrl.resetFeaturePicker();

@@ -1,4 +1,4 @@
-import 'package:collaby_app/repository/log_out_repository/log_out_repository.dart';
+﻿import 'package:collaby_app/repository/log_out_repository/log_out_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
@@ -93,7 +93,7 @@ class LogoutController extends GetxController {
       }
     } catch (e) {
       Utils.snackBar('Error', 'Logout failed. Please try again.');
-      debugPrint('❌ Logout Exception: $e');
+      debugPrint('âŒ Logout Exception: $e');
     } finally {
       setLoading(false);
     }
@@ -147,9 +147,12 @@ class LogoutController extends GetxController {
 //         'Logout failed. Please try again.',
      
 //       );
-//       debugPrint('❌ Logout Exception: $e');
+//       debugPrint('âŒ Logout Exception: $e');
 //     } finally {
 //       setLoading(false);
 //     }
 //   }
 // }
+
+
+

@@ -365,7 +365,7 @@ class JobModel {
     this.submittedInterest,
     this.brandProfile,
     this.interestSubmitted = false,
-  }) : this.createdAt = createdAt ?? updatedAt;
+  }) : createdAt = createdAt ?? updatedAt;
 
   // Factory constructor for API response
   factory JobModel.fromJson(Map<String, dynamic> json) {
@@ -549,7 +549,7 @@ class BrandProfile {
     this.imageUrl,
     this.industry,
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+  }) : createdAt = createdAt ?? DateTime.now();
 
   factory BrandProfile.fromJson(Map<String, dynamic> json) {
     return BrandProfile(

@@ -1,3 +1,4 @@
+﻿import 'dart:developer';
 
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
@@ -10,8 +11,8 @@ class LogoutRepository {
   Future<dynamic> logoutApi() async {
     final token = await _userPref.getToken();
     final fcmToken = await _userPref.getFMCToken();
-    // print('Token: $token');
-    // print('FCM Token: $fcmToken');
+    // log('Token: $token');
+    // log('FCM Token: $fcmToken');
 
     try {
       final response = await _apiService.postApi(
@@ -26,8 +27,9 @@ class LogoutRepository {
 
       return response;
     } catch (e) {
-      print('❌ Logout Error: $e');
+      log('âŒ Logout Error: $e');
       rethrow;
     }
   }
 }
+

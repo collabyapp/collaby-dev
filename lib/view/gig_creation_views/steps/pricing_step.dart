@@ -126,8 +126,6 @@ class PricingStep extends GetView<CreateGigController> {
 
   // ===================== Only Tier Price Form =====================
   Widget _buildTierPriceForm(int tierIndex) {
-    final package = controller.packages[tierIndex].value;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -232,7 +230,7 @@ class PricingStep extends GetView<CreateGigController> {
           controller: TextEditingController(text: controller.packages[0].value.revisions == 0 ? '' : controller.packages[0].value.revisions.toString()),
           onChanged: (value) {
             final revisions = int.tryParse(value) ?? 0;
-            controller.updatePackageRevisions(0, revisions);
+            controller.updatePackageRevisions(revisions);
           },
         ),
 
@@ -464,10 +462,10 @@ class PricingStep extends GetView<CreateGigController> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final name = nameCtrl.text.trim();
-                    final price = double.tryParse(priceCtrl.text.trim()) ?? 0;
-                    final days = int.tryParse(daysCtrl.text.trim()) ?? 0;
+                      onPressed: () {
+                        final name = nameCtrl.text.trim();
+                        final price = double.tryParse(priceCtrl.text.trim()) ?? 0;
+                        final days = int.tryParse(daysCtrl.text.trim()) ?? 0;
 
                     if (name.isEmpty || price <= 0) {
                       Utils.snackBar('Invalid Input', 'Please enter a name and a valid price.');
@@ -490,7 +488,7 @@ class PricingStep extends GetView<CreateGigController> {
                   ),
                   child: const Text(
                     'Save',
-                    style: TextStyle(color: Colors.white, textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w600).textStyle),
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -601,7 +599,7 @@ class PricingStep extends GetView<CreateGigController> {
                         final isSelected = pkg.deliveryTime == option;
 
                         return GestureDetector(
-                          onTap: () => controller.updatePackageDeliveryTime(tierIndex, option),
+                          onTap: () => controller.updatePackageDeliveryTime(option),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                             decoration: BoxDecoration(color: const Color(0xffF4F7FF), borderRadius: BorderRadius.circular(12)),
