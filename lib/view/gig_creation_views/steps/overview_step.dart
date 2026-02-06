@@ -22,35 +22,10 @@ class OverviewStep extends GetView<CreateGigController> {
           ),
           const SizedBox(height: 18),
 
-          // Traits chips
+          // Traits questions
           Obx(() {
-            return Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: controller.creatorTraits.map((t) {
-                final selected = controller.selectedTraits.contains(t);
-
-                return InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () => controller.toggleTrait(t),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: selected ? const Color(0xFF917DE5) : const Color(0xffF4F7FF),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: selected ? const Color(0xFF917DE5) : Colors.grey.shade300,
-                      ),
-                    ),
-                    child: Text(
-                      t,
-                      style: AppTextStyles.extraSmallMediumText.copyWith(
-                        color: selected ? Colors.white : const Color(0xff3F4146),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
+            return Column(
+              children: controller.creatorTraits.map((t) => _traitItem(t)).toList(),
             );
           }),
 
@@ -72,6 +47,33 @@ class OverviewStep extends GetView<CreateGigController> {
 
           const SizedBox(height: 16),
         ],
+      ),
+    );
+  }
+
+  Widget _traitItem(String text) {
+    final selected = controller.selectedTraits.contains(text);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: selected ? const Color(0xFFF3EFFF) : const Color(0xffF4F7FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: selected ? const Color(0xFF917DE5) : Colors.grey.shade300,
+        ),
+      ),
+      child: CheckboxListTile(
+        value: selected,
+        onChanged: (_) => controller.toggleTrait(text),
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Text(
+          text,
+          style: AppTextStyles.extraSmallMediumText.copyWith(
+            color: const Color(0xff3F4146),
+          ),
+        ),
+        activeColor: const Color(0xFF917DE5),
+        dense: true,
       ),
     );
   }

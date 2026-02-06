@@ -117,6 +117,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   late final TextEditingController coreScriptPriceController;
   late final TextEditingController coreRawPriceController;
   late final TextEditingController coreSubtitlesPriceController;
+  late final TextEditingController revisionsController;
 
   double get coreScriptExtraPrice =>
       double.tryParse(coreScriptPriceController.text.trim().replaceAll(',', '.')) ?? 0;
@@ -141,14 +142,14 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   }
 
   /// Pricing Ready:
-  /// - los 3 precios deben ser > 0 (o lo que tu isComplete requiera)
-  /// - sharedDeliveryTime y sharedRevisions salen del tier 0
+  /// - los 3 precios deben ser > 0
+  /// - deliveryTime y revisions (tier 0) deben estar completos
   bool get isPricingReady {
-    // Si tu PackageModel.isComplete exige delivery/revisions, el tier0 manda.
-    // Aseguramos que el tier0 estÃ© completo + que los 3 precios > 0.
     final p0 = packages[0].value;
     final allPricesOk = packages.every((rx) => (rx.value.price) > 0);
-    return p0.isComplete && allPricesOk;
+    final deliveryOk = p0.deliveryTime.trim().isNotEmpty;
+    final revisionsOk = p0.revisions > 0;
+    return allPricesOk && deliveryOk && revisionsOk;
   }
 
   // ===================== DESCRIPTION =====================
@@ -208,6 +209,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     coreScriptPriceController = TextEditingController();
     coreRawPriceController = TextEditingController();
     coreSubtitlesPriceController = TextEditingController();
+    revisionsController = TextEditingController();
 
     tabController = TabController(length: tabs.length, vsync: this);
     tabController.addListener(() {
@@ -303,6 +305,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
               pkg.deliveryTime = deliveryDays > 0 ? '$deliveryDays Days' : pkg.deliveryTime;
               pkg.revisions = revisions;
             });
+            final revText = revisions == 0 ? '' : revisions.toString();
+            if (revisionsController.text != revText) {
+              revisionsController.text = revText;
+            }
           }
 
           // includesScriptwriting
@@ -648,7 +654,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   bool _validatePricing() {
     if (!isPricingReady) {
-      Utils.snackBar('Incomplete Pricing', 'Please set prices for 15/30/60 and complete tier 15 details.');
+      Utils.snackBar(
+        'Incomplete Pricing',
+        'Please set prices for 15/30/60, delivery time, and revisions.',
+      );
       return false;
     }
 
@@ -1078,6 +1087,10 @@ void updatePackageRevisions(int revisions) {
     if (p == null) return;
     p.revisions = revisions;
   });
+  final nextText = revisions == 0 ? '' : revisions.toString();
+  if (revisionsController.text != nextText) {
+    revisionsController.text = nextText;
+  }
 }
 
 void updatePackageDeliveryTime(String deliveryTime) {
@@ -1110,6 +1123,7 @@ void removeTag(String tag) => tags.remove(tag);
     coreScriptPriceController.dispose();
     coreRawPriceController.dispose();
     coreSubtitlesPriceController.dispose();
+    revisionsController.dispose();
 
     cleanupGalleryVideos();
     tabController.dispose();
