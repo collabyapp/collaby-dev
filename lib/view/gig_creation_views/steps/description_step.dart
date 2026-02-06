@@ -17,7 +17,7 @@ class DescriptionStep extends GetView<CreateGigController> {
           Text('Service Description', style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            'This text will appear in the "About" section on your profile.',
+            'Tell us about the services you offer and introduce yourself briefly.',
             style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 16),

@@ -187,7 +187,7 @@ class AuthService {
       token: token,
       email: user['email'],
       userId: user['_id'],
-      isLogin: false,
+      isLogin: true,
     );
   }
 

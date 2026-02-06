@@ -30,10 +30,6 @@ class PricingStep extends GetView<CreateGigController> {
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
           const SizedBox(height: 12),
-
-          _durationLabels(),
-          const SizedBox(height: 12),
-
           _buildAllTierPrices(),
 
           const SizedBox(height: 24),
@@ -81,37 +77,6 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 
-  Widget _durationLabels() {
-    return Row(
-      children: [
-        Expanded(child: _durationPill('15 Sec')),
-        const SizedBox(width: 8),
-        Expanded(child: _durationPill('30 Sec')),
-        const SizedBox(width: 8),
-        Expanded(child: _durationPill('60 Sec')),
-      ],
-    );
-  }
-
-  Widget _durationPill(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xffCBD9FF).withOpacity(0.33),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: AppTextStyles.extraSmallText.copyWith(
-            color: const Color(0xff5E5E5E),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-
   // ===================== Prices for all tiers =====================
   Widget _buildAllTierPrices() {
     return Column(
@@ -137,11 +102,25 @@ class PricingStep extends GetView<CreateGigController> {
           ),
         ),
         const SizedBox(height: 16),
-        _tierPriceCard('15 Sec', 0),
-        const SizedBox(height: 12),
-        _tierPriceCard('30 Sec', 1),
-        const SizedBox(height: 12),
-        _tierPriceCard('60 Sec', 2),
+        Row(
+          children: [
+            Expanded(child: _tierLabel('15 Sec')),
+            const SizedBox(width: 8),
+            Expanded(child: _tierLabel('30 Sec')),
+            const SizedBox(width: 8),
+            Expanded(child: _tierLabel('60 Sec')),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(child: _tierPriceField(0)),
+            const SizedBox(width: 8),
+            Expanded(child: _tierPriceField(1)),
+            const SizedBox(width: 8),
+            Expanded(child: _tierPriceField(2)),
+          ],
+        ),
         const SizedBox(height: 18),
         Text('Delivery Time', style: AppTextStyles.smallText),
         const SizedBox(height: 12),
@@ -154,49 +133,53 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 
-  Widget _tierPriceCard(String title, int tierIndex) {
+  Widget _tierLabel(String title) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xffF4F7FF),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        color: const Color(0xffCBD9FF).withOpacity(0.33),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: AppTextStyles.smallTextBold),
-          const SizedBox(height: 10),
-          TextField(
-            controller: controller.priceControllers[tierIndex],
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-            onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
-            ],
-            decoration: InputDecoration(
-              hintText: 'Type Price e.g. 50',
-              hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: AppColor.primaryColor),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-            ),
-            onChanged: (value) {
-              final price = double.tryParse(value) ?? 0;
-              controller.updatePackagePrice(tierIndex, price);
-            },
+      child: Center(
+        child: Text(
+          title,
+          style: AppTextStyles.extraSmallText.copyWith(
+            color: const Color(0xff5E5E5E),
+            fontWeight: FontWeight.w600,
           ),
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _tierPriceField(int tierIndex) {
+    return TextField(
+      controller: controller.priceControllers[tierIndex],
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      textInputAction: TextInputAction.done,
+      onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
+      ],
+      decoration: InputDecoration(
+        hintText: 'Price',
+        hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColor.primaryColor),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      ),
+      onChanged: (value) {
+        final price = double.tryParse(value) ?? 0;
+        controller.updatePackagePrice(tierIndex, price);
+      },
     );
   }
 

@@ -74,6 +74,7 @@ class GalleryStep extends GetView<CreateGigController> {
             child: Obx(() {
               final portfolio = controller.portfolioVideos;
               final canAdd = controller.galleryVideos.length < controller.maxVideosAllowed;
+              final itemCount = portfolio.length + 1; // +1 for add tile
 
               return GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -81,24 +82,15 @@ class GalleryStep extends GetView<CreateGigController> {
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 12,
                 ),
-                itemCount: 4, // fixed: 4 slots => 3 portfolio + 1 add slot (or placeholders)
+                itemCount: itemCount,
                 itemBuilder: (context, index) {
-                  // We want exactly 3 portfolio slots + 1 add slot.
-                  // index 0..2 => portfolio slots
-                  // index 3 => add slot
-                  if (index < 3) {
-                    if (index < portfolio.length) {
-                      return _VideoTile(
-                        key: ValueKey(portfolio[index].id),
-                        item: portfolio[index],
-                        isIntro: false,
-                      );
-                    }
-                    // Empty placeholder tile
-                    return _EmptyTile();
+                  if (index < portfolio.length) {
+                    return _VideoTile(
+                      key: ValueKey(portfolio[index].id),
+                      item: portfolio[index],
+                      isIntro: false,
+                    );
                   }
-
-                  // Add slot
                   return _AddVideoTile(
                     isDisabled: !canAdd,
                     onTap: controller.pickVideoFromGallery,
@@ -564,21 +556,5 @@ class _AddVideoTile extends StatelessWidget {
   }
 }
 
-class _EmptyTile extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-        color: Colors.grey.shade50,
-      ),
-      child: const Center(
-        child: Icon(Icons.video_library_outlined, size: 28, color: Colors.grey),
-      ),
-    );
-  }
-}
-
-
+ 
 
