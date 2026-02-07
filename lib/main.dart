@@ -10,6 +10,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'res/localization/app_translations.dart';
 import 'view_models/services/notification_services/awesome_notification_services.dart';
 
 void main() {
@@ -79,6 +80,9 @@ class _BootstrapAppState extends State<BootstrapApp> {
       child: GetMaterialApp(
         title: 'Collaby',
         debugShowCheckedModeBanner: false,
+        translations: AppTranslations(),
+        locale: Get.deviceLocale,
+        fallbackLocale: AppTranslations.fallbackLocale,
         localizationsDelegates: const [
           FlutterQuillLocalizations.delegate, // <- required
         ],

@@ -142,6 +142,10 @@ class ProfileController extends GetxController
 
   /// Navigate to gig detail
   void navigateToGigDetail(MyGigModel gig, int index) {
+    if (gig.gigId == null || gig.gigId.toString().isEmpty) {
+      Utils.snackBar('Error', 'error_no_service'.tr);
+      return;
+    }
     Get.toNamed(
       RouteName.gigDetailView,
       arguments: {'gigId': gig.gigId, 'gigIndex': index},

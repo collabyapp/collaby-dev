@@ -20,7 +20,7 @@ class GigsTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Services', style: AppTextStyles.normalTextBold),
+              Text('services'.tr, style: AppTextStyles.normalTextBold),
               Obx(() {
                 final hasService = controller.myGigs.isNotEmpty;
                 return GestureDetector(
@@ -41,7 +41,7 @@ class GigsTab extends StatelessWidget {
                     Get.toNamed(RouteName.createGigView);
                   },
                   child: Text(
-                    hasService ? 'Edit Service' : 'Create New Service',
+                    hasService ? 'edit_service_cta'.tr : 'create_new_service'.tr,
                     style: AppTextStyles.smallMediumText.copyWith(
                       color: AppColor.primaryColor,
                     ),
@@ -64,13 +64,10 @@ class GigsTab extends StatelessWidget {
                     children: [
                       Icon(Icons.work_outline, size: 64, color: Colors.grey),
                       SizedBox(height: 16),
-                      Text(
-                        'No services yet',
-                        style: AppTextStyles.normalTextBold,
-                      ),
+                      Text('no_services_yet'.tr, style: AppTextStyles.normalTextBold),
                       SizedBox(height: 8),
                       Text(
-                        'Create your first service to get started',
+                        'create_first_service'.tr,
                         style: AppTextStyles.smallText,
                       ),
                     ],

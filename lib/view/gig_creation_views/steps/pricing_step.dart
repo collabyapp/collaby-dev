@@ -137,7 +137,7 @@ class PricingStep extends GetView<CreateGigController> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xffCBD9FF).withOpacity(0.33),
+        color: const Color(0xffD9CCFF),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Center(
@@ -779,7 +779,7 @@ class PricingStep extends GetView<CreateGigController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            hasAnyPrice || controller.globalExtras.isNotEmpty ? 'Preview' : 'Preview (fill to see)',
+            hasAnyPrice || controller.globalExtras.isNotEmpty ? 'preview'.tr : 'preview_hint'.tr,
             style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),

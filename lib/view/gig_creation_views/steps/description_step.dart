@@ -14,19 +14,19 @@ class DescriptionStep extends GetView<CreateGigController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Service Description', style: AppTextStyles.h6Bold),
+          Text('service_description'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            'Tell us about the services you offer and introduce yourself briefly.',
+            'service_description_hint'.tr,
             style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 16),
           Obx(() {
-            final count = controller.descriptionWordCount.value;
-            final min = controller.descriptionMinWords;
+            final count = controller.descriptionCharCount.value;
+            final min = controller.descriptionMinChars;
             final ok = count >= min;
             return Text(
-              'Word count: $count / $min',
+              'char_count'.trParams({'count': '$count', 'min': '$min'}),
               style: AppTextStyles.extraSmallText.copyWith(
                 color: ok ? const Color(0xff2E7D32) : Colors.grey.shade600,
               ),
@@ -57,7 +57,7 @@ class DescriptionStep extends GetView<CreateGigController> {
                         },
                         showCursor: true,
                         customStyles: DefaultStyles(),
-                        placeholder: 'Write what you offer, what the client gets, and any important notes...',
+                        placeholder: 'description_placeholder'.tr,
                       ),
                     ),
                   ),

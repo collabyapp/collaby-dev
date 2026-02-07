@@ -41,8 +41,8 @@ class CreateGigView extends GetView<CreateGigController> {
                 Obx(
                   () => Text(
                     controller.isEditMode.value
-                        ? 'Edit Service'
-                        : 'Create Service',
+                        ? 'edit_service'.tr
+                        : 'create_service'.tr,
                     style: AppTextStyles.normalTextBold.copyWith(
                       color: Colors.white,
                     ),
@@ -144,9 +144,9 @@ class CreateGigView extends GetView<CreateGigController> {
               isDisabled: !controller.isCurrentStepReady,
               title: isLast
                   ? (controller.isEditMode.value
-                      ? 'Update Service'
-                      : 'Publish Service')
-                  : 'Next',
+                      ? 'update_service'.tr
+                      : 'publish_service'.tr)
+                  : 'next'.tr,
               onPressed: controller.onNext,
             );
           }),

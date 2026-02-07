@@ -155,10 +155,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   // ===================== DESCRIPTION =====================
   final QuillController quillController = QuillController.basic();
   final FocusNode descriptionFocusNode = FocusNode();
-  final int descriptionMinWords = 100;
-  final RxInt descriptionWordCount = 0.obs;
+  final int descriptionMinChars = 200;
+  final RxInt descriptionCharCount = 0.obs;
 
-  bool get isDescriptionReady => descriptionWordCount.value >= descriptionMinWords;
+  bool get isDescriptionReady => descriptionCharCount.value >= descriptionMinChars;
 
   // ===================== GALLERY =====================
   final ImagePicker _picker = ImagePicker();
@@ -685,10 +685,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   }
 
   bool _validateDescription() {
-    if (descriptionWordCount.value < descriptionMinWords) {
+    if (descriptionCharCount.value < descriptionMinChars) {
       Utils.snackBar(
-        'Description Too Short',
-        'Please write at least $descriptionMinWords words.',
+        'description_too_short'.tr,
+        'description_min_chars'.trParams({'min': '$descriptionMinChars'}),
       );
       return false;
     }
@@ -1141,13 +1141,13 @@ void removeTag(String tag) => tags.remove(tag);
 
   void _updateDescriptionStats() {
     final text = quillController.document.toPlainText();
-    descriptionWordCount.value = _countWords(text);
+    descriptionCharCount.value = _countChars(text);
   }
 
-  int _countWords(String text) {
-    final cleaned = text.replaceAll('\n', ' ').trim();
+  int _countChars(String text) {
+    final cleaned = text.replaceAll(RegExp(r'\s+'), '').trim();
     if (cleaned.isEmpty) return 0;
-    return cleaned.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
+    return cleaned.length;
   }
 }
 
