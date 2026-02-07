@@ -786,8 +786,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     final sharedDeliveryDays = _parseDeliveryTime(packages[0].value.deliveryTime);
     final sharedRevisions = packages[0].value.revisions;
 
-    final includesScriptwriting = coreScriptIncluded.value;
-
     // shared features (incluidos)
     final sharedFeatures = <String>[
       'Commercial Use License',
@@ -803,6 +801,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'scriptwriting',
+        'title': 'Scriptwriting',
         'price': coreScriptExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -811,6 +810,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'rawFiles',
+        'title': 'Raw Video Files',
         'price': coreRawExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -819,6 +819,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'subtitles',
+        'title': 'Subtitles',
         'price': coreSubtitlesExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -828,9 +829,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     for (final e in globalExtras) {
       final type = _inferFeatureTypeFromName(e.name);
 
-      // si el usuario escribe "script" en custom extras, lo ignoramos si estÃ¡ incluido
-      if (type == 'scriptwriting' && includesScriptwriting) continue;
-
       // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
       if (type == 'additionalRevision' ||
           type == 'rushDelivery' ||
@@ -839,6 +837,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           type == 'custom') {
         sharedExtras.add({
           'featureType': type,
+          'title': e.name,
           'price': e.price,
           'deliveryTimesIndays': e.extraDays,
         });
@@ -857,7 +856,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         'deliveryTimeDays': sharedDeliveryDays,
         'numberOfRevisions': sharedRevisions,
         'features': sharedFeatures,
-        'includesScriptwriting': includesScriptwriting,
         'additionalFeatures': sharedExtras,
       });
     }

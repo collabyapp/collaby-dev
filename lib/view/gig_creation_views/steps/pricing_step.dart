@@ -755,102 +755,114 @@ class PricingStep extends GetView<CreateGigController> {
 
   // ===================== Preview =====================
   Widget _buildPackagePreview() {
-    return Obx(() {
-      final currency = controller.selectedCurrency.value;
-      final prices = controller.packages.map((p) => p.value.price).toList();
-      final delivery = controller.packages[0].value.deliveryTime;
-      final revisions = controller.packages[0].value.revisions;
-      final hasAnyPrice = prices.any((p) => p > 0);
+    final currency = controller.selectedCurrency.value;
+    final prices = controller.packages.map((p) => p.value.price).toList();
+    final delivery = controller.packages[0].value.deliveryTime;
+    final revisions = controller.packages[0].value.revisions;
+    final hasAnyPrice = prices.any((p) => p > 0);
 
-      final lines = <String>[
-        'Commercial Use License',
-        if (controller.coreRawIncluded.value) 'Raw Video Files - Included',
-        if (!controller.coreRawIncluded.value && (controller.coreRawPriceController.text.trim().isNotEmpty))
-          'Raw Video Files - +$currency ${controller.coreRawExtraPrice.toStringAsFixed(0)}',
-        if (controller.coreSubtitlesIncluded.value) 'Subtitles Included - Included',
-        if (!controller.coreSubtitlesIncluded.value && (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
-          'Subtitles Included - +$currency ${controller.coreSubtitlesExtraPrice.toStringAsFixed(0)}',
-        if (controller.coreScriptIncluded.value) 'Custom Scriptwriting - Included',
-        if (!controller.coreScriptIncluded.value && (controller.coreScriptPriceController.text.trim().isNotEmpty))
-          'Custom Scriptwriting - +$currency ${controller.coreScriptExtraPrice.toStringAsFixed(0)}',
-      ];
+    final lines = <String>[
+      'Commercial Use License',
+      if (controller.coreRawIncluded.value) 'Raw Video Files - Included',
+      if (!controller.coreRawIncluded.value &&
+          (controller.coreRawPriceController.text.trim().isNotEmpty))
+        'Raw Video Files - +$currency ${controller.coreRawExtraPrice.toStringAsFixed(0)}',
+      if (controller.coreSubtitlesIncluded.value) 'Subtitles Included - Included',
+      if (!controller.coreSubtitlesIncluded.value &&
+          (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
+        'Subtitles Included - +$currency ${controller.coreSubtitlesExtraPrice.toStringAsFixed(0)}',
+      if (controller.coreScriptIncluded.value) 'Custom Scriptwriting - Included',
+      if (!controller.coreScriptIncluded.value &&
+          (controller.coreScriptPriceController.text.trim().isNotEmpty))
+        'Custom Scriptwriting - +$currency ${controller.coreScriptExtraPrice.toStringAsFixed(0)}',
+    ];
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            hasAnyPrice || controller.globalExtras.isNotEmpty ? 'preview'.tr : 'preview_hint'.tr,
-            style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          hasAnyPrice || controller.globalExtras.isNotEmpty
+              ? 'preview'.tr
+              : 'preview_hint'.tr,
+          style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8F7FF),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFF6B46C1).withOpacity(0.2)),
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8F7FF),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF6B46C1).withOpacity(0.2)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _previewPriceRow('15 Sec', prices[0], currency),
-                const SizedBox(height: 8),
-                _previewPriceRow('30 Sec', prices[1], currency),
-                const SizedBox(height: 8),
-                _previewPriceRow('60 Sec', prices[2], currency),
-                const SizedBox(height: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _previewPriceRow('15 Sec', prices[0], currency),
+              const SizedBox(height: 8),
+              _previewPriceRow('30 Sec', prices[1], currency),
+              const SizedBox(height: 8),
+              _previewPriceRow('60 Sec', prices[2], currency),
+              const SizedBox(height: 16),
 
-                ...lines.map((f) {
+              ...lines.map((f) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check, color: Colors.black, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(f, style: const TextStyle(fontSize: 14))),
+                    ],
+                  ),
+                );
+              }).toList(),
+
+              if (controller.globalExtras.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text('Custom extras:', style: AppTextStyles.extraSmallMediumText),
+                const SizedBox(height: 8),
+                ...controller.globalExtras.map((e) {
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check, color: Colors.black, size: 16),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(f, style: const TextStyle(fontSize: 14))),
-                      ],
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Text(
+                      '- ${e.name} (+$currency ${e.price.toStringAsFixed(0)})',
+                      style: AppTextStyles.extraSmallText,
                     ),
                   );
                 }).toList(),
-
-                if (controller.globalExtras.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text('Custom extras:', style: AppTextStyles.extraSmallMediumText),
-                  const SizedBox(height: 8),
-                  ...controller.globalExtras.map((e) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text('- ${e.name} (+$currency ${e.price.toStringAsFixed(0)})', style: AppTextStyles.extraSmallText),
-                    );
-                  }).toList(),
-                ],
-
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.access_time, color: Color(0xFFFBBB00), size: 14),
-                        const SizedBox(width: 8),
-                        Text(delivery.isEmpty ? 'Delivery time' : delivery, style: AppTextStyles.extraSmallMediumText),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Row(
-                      children: [
-                        Image.asset(ImageAssets.revisionIcon, width: 12),
-                        const SizedBox(width: 8),
-                        Text('${revisions == 0 ? '-' : revisions} Revisions', style: AppTextStyles.extraSmallMediumText),
-                      ],
-                    ),
-                  ],
-                ),
               ],
-            ),
+
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time, color: Color(0xFFFBBB00), size: 14),
+                      const SizedBox(width: 8),
+                      Text(
+                        delivery.isEmpty ? 'Delivery time' : delivery,
+                        style: AppTextStyles.extraSmallMediumText,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 12),
+                  Row(
+                    children: [
+                      Image.asset(ImageAssets.revisionIcon, width: 12),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${revisions == 0 ? '-' : revisions} Revisions',
+                        style: AppTextStyles.extraSmallMediumText,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   Widget _previewPriceRow(String label, double price, String currency) {
