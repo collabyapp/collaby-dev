@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
+import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,16 @@ class GigsTab extends StatelessWidget {
               Obx(() {
                 final hasService = controller.myGigs.isNotEmpty;
                 return GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    if (controller.isLoadingGigs.value) return;
+                    if (controller.myGigs.isEmpty) {
+                      await controller.fetchMyGigs(refresh: true);
+                    }
+                    if (controller.myGigs.isEmpty) {
+                      Utils.snackBar('No services yet', 'Create your first service to get started.');
+                      Get.toNamed(RouteName.createGigView);
+                      return;
+                    }
                     if (hasService) {
                       controller.navigateToGigDetail(controller.myGigs.first, 0);
                       return;
