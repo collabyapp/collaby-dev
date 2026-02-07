@@ -20,17 +20,24 @@ class GigsTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Services', style: AppTextStyles.normalTextBold),
-              GestureDetector(
-                onTap: () {
-                  Get.toNamed(RouteName.createGigView);
-                },
-                child: Text(
-                  'Create New Service',
-                  style: AppTextStyles.smallMediumText.copyWith(
-                    color: AppColor.primaryColor,
+              Obx(() {
+                final hasService = controller.myGigs.isNotEmpty;
+                return GestureDetector(
+                  onTap: () {
+                    if (hasService) {
+                      controller.navigateToGigDetail(controller.myGigs.first, 0);
+                      return;
+                    }
+                    Get.toNamed(RouteName.createGigView);
+                  },
+                  child: Text(
+                    hasService ? 'Edit Service' : 'Create New Service',
+                    style: AppTextStyles.smallMediumText.copyWith(
+                      color: AppColor.primaryColor,
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
             ],
           ),
           SizedBox(height: 16),

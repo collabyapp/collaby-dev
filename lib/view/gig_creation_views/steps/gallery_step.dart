@@ -74,26 +74,43 @@ class GalleryStep extends GetView<CreateGigController> {
             child: Obx(() {
               final portfolio = controller.portfolioVideos;
               final canAdd = controller.galleryVideos.length < controller.maxVideosAllowed;
-              final itemCount = portfolio.length + 1; // +1 for add tile
+              const slots = 4;
 
-              return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 12,
-                ),
-                itemCount: itemCount,
-                itemBuilder: (context, index) {
-                  if (index < portfolio.length) {
-                    return _VideoTile(
-                      key: ValueKey(portfolio[index].id),
-                      item: portfolio[index],
-                      isIntro: false,
-                    );
-                  }
-                  return _AddVideoTile(
-                    isDisabled: !canAdd,
-                    onTap: controller.pickVideoFromGallery,
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final tile = (constraints.maxWidth - 16) / 2;
+                  final gridHeight = (tile * 2) + 12;
+
+                  return SizedBox(
+                    height: gridHeight,
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: slots,
+                      itemBuilder: (context, index) {
+                        if (index < portfolio.length) {
+                          return _VideoTile(
+                            key: ValueKey(portfolio[index].id),
+                            item: portfolio[index],
+                            isIntro: false,
+                          );
+                        }
+
+                        if (index == portfolio.length) {
+                          return _AddVideoTile(
+                            isDisabled: !canAdd,
+                            onTap: controller.pickVideoFromGallery,
+                          );
+                        }
+
+                        return const _EmptyVideoSlot();
+                      },
+                    ),
                   );
                 },
               );
@@ -551,6 +568,21 @@ class _AddVideoTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _EmptyVideoSlot extends StatelessWidget {
+  const _EmptyVideoSlot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+        color: Colors.grey.shade50,
       ),
     );
   }

@@ -762,10 +762,6 @@ class PricingStep extends GetView<CreateGigController> {
       final revisions = controller.packages[0].value.revisions;
       final hasAnyPrice = prices.any((p) => p > 0);
 
-      if (!hasAnyPrice && controller.globalExtras.isEmpty) {
-        return const SizedBox();
-      }
-
       final lines = <String>[
         'Commercial Use License',
         if (controller.coreRawIncluded.value) 'Raw Video Files - Included',
@@ -782,7 +778,10 @@ class PricingStep extends GetView<CreateGigController> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Preview', style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            hasAnyPrice || controller.globalExtras.isNotEmpty ? 'Preview' : 'Preview (fill to see)',
+            style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(20),
