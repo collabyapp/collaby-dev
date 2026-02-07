@@ -1,4 +1,5 @@
-﻿import 'package:get/get.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AppTranslations extends Translations {
   static const fallbackLocale = Locale('en', 'US');
@@ -51,3 +52,4 @@ class AppTranslations extends Translations {
         },
       };
 }
+
