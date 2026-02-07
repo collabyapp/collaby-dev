@@ -21,6 +21,18 @@ class DescriptionStep extends GetView<CreateGigController> {
             style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
           ),
           const SizedBox(height: 16),
+          Obx(() {
+            final count = controller.descriptionWordCount.value;
+            final min = controller.descriptionMinWords;
+            final ok = count >= min;
+            return Text(
+              'Word count: $count / $min',
+              style: AppTextStyles.extraSmallText.copyWith(
+                color: ok ? const Color(0xff2E7D32) : Colors.grey.shade600,
+              ),
+            );
+          }),
+          const SizedBox(height: 10),
 
           Container(
             height: 420,

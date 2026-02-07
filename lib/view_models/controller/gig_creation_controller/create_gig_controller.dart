@@ -155,8 +155,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   // ===================== DESCRIPTION =====================
   final QuillController quillController = QuillController.basic();
   final FocusNode descriptionFocusNode = FocusNode();
+  final int descriptionMinWords = 100;
+  final RxInt descriptionWordCount = 0.obs;
 
-  bool get isDescriptionReady => quillController.document.toPlainText().trim().isNotEmpty;
+  bool get isDescriptionReady => descriptionWordCount.value >= descriptionMinWords;
 
   // ===================== GALLERY =====================
   final ImagePicker _picker = ImagePicker();
@@ -230,6 +232,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (isEditMode.value && existingGigData != null) {
       _prefillGigData();
     }
+
+    quillController.addListener(_updateDescriptionStats);
+    _updateDescriptionStats();
   }
 
   // ===================== PREFILL (EDIT) =====================
@@ -680,8 +685,11 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   }
 
   bool _validateDescription() {
-    if (quillController.document.toPlainText().trim().isEmpty) {
-      Utils.snackBar('Error', 'Please Enter Description');
+    if (descriptionWordCount.value < descriptionMinWords) {
+      Utils.snackBar(
+        'Description Too Short',
+        'Please write at least $descriptionMinWords words.',
+      );
       return false;
     }
     return true;
@@ -1115,6 +1123,7 @@ void removeTag(String tag) => tags.remove(tag);
   void onClose() {
     uploadedCoverUrl = null;
     descriptionFocusNode.dispose();
+    quillController.removeListener(_updateDescriptionStats);
 
     for (final c in priceControllers) {
       c.dispose();
@@ -1128,6 +1137,17 @@ void removeTag(String tag) => tags.remove(tag);
     cleanupGalleryVideos();
     tabController.dispose();
     super.onClose();
+  }
+
+  void _updateDescriptionStats() {
+    final text = quillController.document.toPlainText();
+    descriptionWordCount.value = _countWords(text);
+  }
+
+  int _countWords(String text) {
+    final cleaned = text.replaceAll('\n', ' ').trim();
+    if (cleaned.isEmpty) return 0;
+    return cleaned.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).length;
   }
 }
 
