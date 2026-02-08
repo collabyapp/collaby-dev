@@ -814,7 +814,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       pricingList.add({
         'pricingName': packageNames[i],
-        'title': packageNames[i],
         'currency': selectedCurrency.value,
         'price': pkg.price,
         'deliveryTimeDays': sharedDeliveryDays,
@@ -865,11 +864,18 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     uploadedCoverUrl = introVideo?.thumbnailUrl.value ?? '';
 
     final description = quillController.document.toPlainText().trim();
+    String _deriveTitle(String text) {
+      final cleaned = text.replaceAll('\n', ' ').trim();
+      if (cleaned.isEmpty) return 'UGC Video';
+      return cleaned.length > 60 ? cleaned.substring(0, 60).trim() : cleaned;
+    }
+    final title = _deriveTitle(description);
 
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
       'videoStyle': <String>[],
       'pricing': sanitizedPricingList,
+      'title': title,
       'description': description,
       'gallery': galleryList,
     };
