@@ -29,6 +29,13 @@ class PricingStep extends GetView<CreateGigController> {
     }
   }
 
+  String _dayLabel(int days) {
+    if (days == 1) {
+      return '$days ${'day_singular'.tr}';
+    }
+    return '$days ${'day_plural'.tr}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -707,7 +714,8 @@ class PricingStep extends GetView<CreateGigController> {
 
   // ===================== Delivery Time Selector (uses tier 0 as shared) =====================
   void _showDeliveryTimeSelector(int tierIndex) {
-    final options = ['1 Day', '2 Days', '3 Days', '5 Days', '7 Days', '14 Days'];
+    final dayOptions = [1, 2, 3, 5, 7, 14];
+    final options = dayOptions.map(_dayLabel).toList();
 
     Get.bottomSheet(
       DraggableScrollableSheet(

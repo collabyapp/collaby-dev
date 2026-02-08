@@ -755,10 +755,15 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     // shared extras (paid)
     final sharedExtras = <Map<String, dynamic>>[];
 
+    String _safeTitle(dynamic value) {
+      final t = value == null ? '' : value.toString().trim();
+      return t.isEmpty ? 'Extra' : t;
+    }
+
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'scriptwriting',
-        'title': 'Scriptwriting',
+        'title': _safeTitle('Scriptwriting'),
         'price': coreScriptExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -767,7 +772,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'rawFiles',
-        'title': 'Raw Video Files',
+        'title': _safeTitle('Raw Video Files'),
         'price': coreRawExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -776,7 +781,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
       sharedExtras.add({
         'featureType': 'subtitles',
-        'title': 'Subtitles',
+        'title': _safeTitle('Subtitles'),
         'price': coreSubtitlesExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -785,7 +790,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     // custom extras
     for (final e in globalExtras) {
       final type = _inferFeatureTypeFromName(e.name);
-      final title = e.name.trim().isEmpty ? 'Extra' : e.name.trim();
+      final title = _safeTitle(e.name);
 
       // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
       if (type == 'additionalRevision' ||
@@ -795,7 +800,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           type == 'custom') {
         sharedExtras.add({
           'featureType': type,
-          'title': title,
+          'title': _safeTitle(title),
           'price': e.price,
           'deliveryTimesIndays': e.extraDays,
         });
