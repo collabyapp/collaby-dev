@@ -904,9 +904,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       uploadProgress.value = 0.7;
 
       final updatePayload = isEditMode.value
-          ? {
-              ...payload,
-            }..removeWhere((key, _) => key == 'videoStyle' || key == 'pricing')
+          ? (Map<String, dynamic>.from(payload)
+            ..removeWhere((key, _) => key == 'videoStyle' || key == 'pricing'))
           : payload;
 
       final response = isEditMode.value
