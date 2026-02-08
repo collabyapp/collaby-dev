@@ -33,7 +33,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   // ===================== TABS =====================
   late TabController tabController;
-  final tabs = const ['tab_pricing', 'tab_description', 'tab_gallery'];
+  final tabs = const ['tab_niches', 'tab_pricing', 'tab_description', 'tab_gallery'];
   final currentIndex = 0.obs;
   final RxInt highestCompletedStep = 0.obs;
 
@@ -44,7 +44,71 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   // cover (thumbnail del intro video)
   String? uploadedCoverUrl;
 
-  // ===================== OVERVIEW (REMOVED) =====================
+  // ===================== SERVICE NICHES =====================
+  final List<String> allServiceNiches = [
+    'niche_couple_creator',
+    'niche_have_pets',
+    'niche_mom_creator',
+    'niche_green_screen',
+    'niche_car_content',
+    'niche_travel_content',
+    'niche_outside',
+    'niche_inside',
+    'niche_interviews',
+    'niche_podcast',
+  ];
+
+  final RxList<String> selectedServiceNiches = <String>[].obs;
+
+  void toggleServiceNiche(String niche) {
+    if (selectedServiceNiches.contains(niche)) {
+      selectedServiceNiches.remove(niche);
+    } else {
+      selectedServiceNiches.add(niche);
+    }
+  }
+
+  String _nicheKeyToPayload(String key) {
+    switch (key) {
+      case 'niche_couple_creator':
+        return "I'm a couple creator";
+      case 'niche_have_pets':
+        return 'I have pets';
+      case 'niche_mom_creator':
+        return "I'm a mom creator";
+      case 'niche_green_screen':
+        return 'I can do green screen';
+      case 'niche_car_content':
+        return 'I can do car content';
+      case 'niche_travel_content':
+        return 'I can do travel content';
+      case 'niche_outside':
+        return 'I can do outdoor content';
+      case 'niche_inside':
+        return 'I can do indoor content';
+      case 'niche_interviews':
+        return 'I can do interviews';
+      case 'niche_podcast':
+        return 'I can do podcasts';
+      default:
+        return key;
+    }
+  }
+
+  String _payloadToNicheKey(String value) {
+    final v = value.toLowerCase().trim();
+    if (v.contains('couple')) return 'niche_couple_creator';
+    if (v.contains('pets')) return 'niche_have_pets';
+    if (v.contains('mom')) return 'niche_mom_creator';
+    if (v.contains('green')) return 'niche_green_screen';
+    if (v.contains('car')) return 'niche_car_content';
+    if (v.contains('travel')) return 'niche_travel_content';
+    if (v.contains('outdoor')) return 'niche_outside';
+    if (v.contains('indoor')) return 'niche_inside';
+    if (v.contains('interview')) return 'niche_interviews';
+    if (v.contains('podcast')) return 'niche_podcast';
+    return value;
+  }
 
   // ===================== PRICING =====================
   final selectedCurrency = 'USD'.obs;
@@ -132,6 +196,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     final revisionsOk = p0.revisions > 0;
     return allPricesOk && deliveryOk && revisionsOk;
   }
+
+  bool get isNichesReady => selectedServiceNiches.isNotEmpty;
 
   // ===================== DESCRIPTION =====================
   final QuillController quillController = QuillController.basic();
@@ -430,6 +496,13 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         }
       }
 
+      // video styles / niches
+      final styles = readField(gig, 'videoStyles') ?? readField(gig, 'videoStyle');
+      if (styles is List) {
+        selectedServiceNiches.value =
+            styles.map((e) => _payloadToNicheKey(e.toString())).toList();
+      }
+
       // description
       final desc = (readField(gig, 'description') ?? '').toString();
       quillController.document = Document()..insert(0, desc);
@@ -655,6 +728,14 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     return true;
   }
 
+  bool _validateNiches() {
+    if (!isNichesReady) {
+      Utils.snackBar('select_niches'.tr, 'select_niches_msg'.tr);
+      return false;
+    }
+    return true;
+  }
+
   bool _validateGallery() {
     if (!hasIntroVideo) {
       Utils.snackBar('add_intro_video'.tr, 'add_intro_video_msg'.tr);
@@ -675,10 +756,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   bool get isCurrentStepReady {
     switch (currentIndex.value) {
       case 0:
-        return isPricingReady;
+        return isNichesReady;
       case 1:
-        return isDescriptionReady;
+        return isPricingReady;
       case 2:
+        return isDescriptionReady;
+      case 3:
         return isGalleryReady;
       default:
         return false;
@@ -700,9 +783,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   void onNext() {
     final idx = currentIndex.value;
     final valid = switch (idx) {
-      0 => _validatePricing(),
-      1 => _validateDescription(),
-      2 => _validateGallery(),
+      0 => _validateNiches(),
+      1 => _validatePricing(),
+      2 => _validateDescription(),
+      3 => _validateGallery(),
       _ => true,
     };
 
@@ -873,7 +957,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
-      'videoStyle': <String>[],
+      'videoStyle': selectedServiceNiches.map(_nicheKeyToPayload).toList(),
       'pricing': sanitizedPricingList,
       'title': title,
       'description': description,
@@ -905,7 +989,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       final updatePayload = isEditMode.value
           ? (Map<String, dynamic>.from(payload)
-            ..removeWhere((key, _) => key == 'videoStyle' || key == 'pricing'))
+            ..remove('videoStyle')
+            ..remove('pricing')
+            ..addAll({
+              'videoStyles': payload['videoStyle'],
+              'pricings': payload['pricing'],
+            }))
           : payload;
 
       final response = isEditMode.value

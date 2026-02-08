@@ -8,6 +8,7 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
         'en_US': {
           'tab_overview': 'Overview',
+          'tab_niches': 'Niches',
           'tab_pricing': 'Pricing',
           'tab_description': 'Description',
           'tab_gallery': 'Gallery',
@@ -188,6 +189,7 @@ class AppTranslations extends Translations {
         },
         'es_ES': {
           'tab_overview': 'Resumen',
+          'tab_niches': 'Nichos',
           'tab_pricing': 'Precios',
           'tab_description': 'Descripcion',
           'tab_gallery': 'Galeria',
@@ -369,3 +371,15 @@ class AppTranslations extends Translations {
       };
 }
 
+          'service_niches_title': 'Which niches do you work with?',
+          'service_niches_hint': 'Select all that apply to this service.',
+          'service_niches_note':
+              'You can update these later if your setup changes.',
+          'select_niches': 'Select niches',
+          'select_niches_msg': 'Please choose at least one niche to continue.',
+          'service_niches_title': 'Con que nichos trabajas?',
+          'service_niches_hint': 'Selecciona todo lo que aplique a este servicio.',
+          'service_niches_note':
+              'Podras actualizarlo mas adelante si cambia tu setup.',
+          'select_niches': 'Selecciona nichos',
+          'select_niches_msg': 'Elige al menos un nicho para continuar.',

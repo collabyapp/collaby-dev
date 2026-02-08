@@ -13,25 +13,25 @@ class OverviewStep extends GetView<CreateGigController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
-          Text('overview_title'.tr, style: AppTextStyles.h6Bold),
+          Text('service_niches_title'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            'overview_subtitle'.tr,
+            'service_niches_hint'.tr,
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
 
-          // Traits questions
           Obx(() {
-            return Column(
-              children: controller.creatorTraits.map((t) => _traitItem(t)).toList(),
+            return Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: controller.allServiceNiches
+                  .map((niche) => _nicheChip(niche))
+                  .toList(),
             );
           }),
 
           const SizedBox(height: 18),
-
-          // Info box
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -40,40 +40,32 @@ class OverviewStep extends GetView<CreateGigController> {
               border: Border.all(color: Colors.grey.shade200),
             ),
             child: Text(
-              'overview_info'.tr,
+              'service_niches_note'.tr,
               style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
             ),
           ),
-
-          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
-  Widget _traitItem(String text) {
-    final selected = controller.selectedTraits.contains(text);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: selected ? const Color(0xFFF3EFFF) : const Color(0xffF4F7FF),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: selected ? const Color(0xFF917DE5) : Colors.grey.shade300,
+  Widget _nicheChip(String niche) {
+    final selected = controller.selectedServiceNiches.contains(niche);
+    return GestureDetector(
+      onTap: () => controller.toggleServiceNiche(niche),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xff917DE5) : const Color(0xff898A8D).withOpacity(0.10),
+          borderRadius: BorderRadius.circular(60),
         ),
-      ),
-      child: CheckboxListTile(
-        value: selected,
-        onChanged: (_) => controller.toggleTrait(text),
-        controlAffinity: ListTileControlAffinity.leading,
-        title: Text(
-          text.tr,
-          style: AppTextStyles.extraSmallMediumText.copyWith(
-            color: const Color(0xff3F4146),
+        child: Text(
+          niche.tr,
+          style: AppTextStyles.extraSmallText.copyWith(
+            color: selected ? Colors.white : const Color(0xff5E5E5E),
+            fontWeight: FontWeight.bold,
           ),
         ),
-        activeColor: const Color(0xFF917DE5),
-        dense: true,
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:collaby_app/view_models/controller/gig_creation_controller/creat
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'steps/overview_step.dart';
 import 'steps/pricing_step.dart';
 import 'steps/description_step.dart';
 
@@ -125,6 +126,7 @@ class CreateGigView extends GetView<CreateGigController> {
           controller: controller.tabController,
           physics: const NeverScrollableScrollPhysics(),
           children: const [
+            OverviewStep(),
             PricingStep(),
             DescriptionStep(),
             GalleryStep(),

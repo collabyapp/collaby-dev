@@ -240,14 +240,6 @@ class ProfileSetUpController extends GetxController {
           countryController.value.text = shippingAddress['country'] ?? '';
         }
 
-        // niches
-        final niches = profileData['niches'] as List?;
-        if (niches != null) {
-          selectedNiches.value = niches
-              .map((e) => _payloadToNicheKey(e.toString()))
-              .toList();
-        }
-
         originalData = {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
@@ -263,7 +255,6 @@ class ProfileSetUpController extends GetxController {
             'zipCode': zipCodeController.value.text,
             'country': countryController.value.text,
           },
-          'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
         };
 
         hasChanges.value = false;
@@ -300,7 +291,6 @@ class ProfileSetUpController extends GetxController {
           'zipCode': zipCodeController.value.text,
           'country': countryController.value.text,
         },
-        'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
       };
 
       hasChanges.value = !_mapsAreEqual(originalData, currentData);
@@ -590,7 +580,6 @@ class ProfileSetUpController extends GetxController {
         "zipCode": zipCodeController.value.text.trim(),
         "country": countryController.value.text.trim(),
       },
-      "niches": selectedNiches.map(_nicheKeyToPayload).toList(), // opcional
     };
   }
 
@@ -639,13 +628,6 @@ class ProfileSetUpController extends GetxController {
         originalShipping['zipCode'] != currentShipping['zipCode'] ||
         originalShipping['country'] != currentShipping['country']) {
       payload['shippingAddress'] = currentShipping;
-    }
-
-    // niches changes
-    final originalNiches = originalData['niches'] as List?;
-    final currentNiches = selectedNiches.map(_nicheKeyToPayload).toList();
-    if (originalNiches == null || originalNiches.length != currentNiches.length || !_listsAreEqual(originalNiches, currentNiches)) {
-      payload['niches'] = currentNiches;
     }
 
     return payload;
@@ -702,7 +684,6 @@ class ProfileSetUpController extends GetxController {
             'zipCode': zipCodeController.value.text,
             'country': countryController.value.text,
           },
-          'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
         };
 
         hasChanges.value = false;

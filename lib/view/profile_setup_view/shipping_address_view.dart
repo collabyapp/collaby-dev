@@ -108,7 +108,7 @@ class ShippingAddressView extends StatelessWidget {
                       controller.updateProfile();
                     } else {
                       // Continue to next step in creation mode
-                      Get.toNamed(RouteName.nicheSelectionView);
+                      controller.submitToApi();
                     }
                   },
                   isLoading: controller.isSubmittingProfile.value,
