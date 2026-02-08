@@ -20,16 +20,16 @@ class GalleryStep extends GetView<CreateGigController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Portfolio & Intro Video', style: AppTextStyles.h6Bold),
+          Text('portfolio_intro_title'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 8),
           Text(
-            'Upload 1 intro video (required). This will be your profile cover.\nYou can add up to 3 more portfolio videos.',
+            'portfolio_intro_desc'.tr,
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
           const SizedBox(height: 18),
 
           // Intro (required)
-          Text('Intro video (required)', style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
+          Text('intro_video_required'.tr, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
 
           SizedBox(
@@ -38,8 +38,8 @@ class GalleryStep extends GetView<CreateGigController> {
               final hasIntro = controller.galleryVideos.isNotEmpty;
               if (!hasIntro) {
                 return _AddVideoCard(
-                  title: 'Add intro video',
-                  subtitle: 'This video will appear in search as your cover',
+                  title: 'add_intro_video'.tr,
+                  subtitle: 'intro_video_cover_hint'.tr,
                   onTap: controller.pickVideoFromGallery,
                 );
               }
@@ -58,7 +58,7 @@ class GalleryStep extends GetView<CreateGigController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Portfolio videos (optional)', style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
+              Text('portfolio_videos_optional'.tr, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
               Obx(() {
                 final count = controller.portfolioVideos.length;
                 return Text(
@@ -145,7 +145,7 @@ class GalleryStep extends GetView<CreateGigController> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'I declare that these materials were created by myself or by my team and do not infringe on any 3rd party rights. I understand that the illegal use of digital assets is against UGC Terms of Service and may result in blocking my account.',
+                    'declaration_text'.tr,
                     style: AppTextStyles.extraSmallText,
                   ),
                 ),
@@ -307,8 +307,8 @@ class _VideoTileState extends State<_VideoTile> {
                     color: const Color(0xff4C1CAE),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'COVER',
+                  child: Text(
+                    'cover_badge'.tr,
                     style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -441,7 +441,7 @@ class _VideoTileState extends State<_VideoTile> {
         children: [
           const Icon(Icons.videocam, color: Colors.grey, size: 32),
           const SizedBox(height: 8),
-          Text('Video Ready', style: TextStyle(color: Colors.grey.shade600, fontSize: 10)),
+          Text('video_ready'.tr, style: TextStyle(color: Colors.grey.shade600, fontSize: 10)),
         ],
       ),
     );
@@ -450,7 +450,7 @@ class _VideoTileState extends State<_VideoTile> {
   void _openVideoPlayer() {
     try {
       if (widget.item.isUploading.value) {
-        Utils.snackBar('Please Wait', 'Video is still uploading...');
+        Utils.snackBar('please_wait'.tr, 'video_still_uploading'.tr);
         return;
       }
 
@@ -466,7 +466,7 @@ class _VideoTileState extends State<_VideoTile> {
       );
     } catch (e) {
       debugPrint('Error opening video player: $e');
-      Utils.snackBar('Error', 'Unable to open video player');
+      Utils.snackBar('error'.tr, 'unable_open_video'.tr);
     }
   }
 

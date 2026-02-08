@@ -82,19 +82,59 @@ class ProfileSetUpController extends GetxController {
   ];
 
   final List<String> allNiches = [
-    'Beauty & Personal Care',
-    'Fashion',
-    'Technology',
-    'Home & Garden',
-    'Sports & Outdoor',
-    'Pets',
-    'Kids & Toys',
-    'Travel',
-    'Food & Recipes',
-    'Finance & Trading',
-    'Education & Courses',
-    'Video Games',
+    'niche_couple_creator',
+    'niche_have_pets',
+    'niche_mom_creator',
+    'niche_green_screen',
+    'niche_car_content',
+    'niche_travel_content',
+    'niche_outside',
+    'niche_inside',
+    'niche_interviews',
+    'niche_podcast',
   ];
+
+  String _nicheKeyToPayload(String key) {
+    switch (key) {
+      case 'niche_couple_creator':
+        return "I'm a couple creator";
+      case 'niche_have_pets':
+        return 'I have pets';
+      case 'niche_mom_creator':
+        return "I'm a mom creator";
+      case 'niche_green_screen':
+        return 'I can do green screen';
+      case 'niche_car_content':
+        return 'I can do car content';
+      case 'niche_travel_content':
+        return 'I can do travel content';
+      case 'niche_outside':
+        return 'I can do outdoor content';
+      case 'niche_inside':
+        return 'I can do indoor content';
+      case 'niche_interviews':
+        return 'I can do interviews';
+      case 'niche_podcast':
+        return 'I can do podcasts';
+      default:
+        return key;
+    }
+  }
+
+  String _payloadToNicheKey(String value) {
+    final v = value.toLowerCase().trim();
+    if (v.contains('couple')) return 'niche_couple_creator';
+    if (v.contains('pets')) return 'niche_have_pets';
+    if (v.contains('mom')) return 'niche_mom_creator';
+    if (v.contains('green')) return 'niche_green_screen';
+    if (v.contains('car')) return 'niche_car_content';
+    if (v.contains('travel')) return 'niche_travel_content';
+    if (v.contains('outdoor')) return 'niche_outside';
+    if (v.contains('indoor')) return 'niche_inside';
+    if (v.contains('interview')) return 'niche_interviews';
+    if (v.contains('podcast')) return 'niche_podcast';
+    return value;
+  }
 
   void toggleNiche(String niche) {
     if (selectedNiches.contains(niche)) {
@@ -106,7 +146,7 @@ class ProfileSetUpController extends GetxController {
   }
 
   List<String> get filteredNiches => allNiches
-      .where((n) => n.toLowerCase().contains(searchQuery.value.toLowerCase()))
+      .where((n) => n.tr.toLowerCase().contains(searchQuery.value.toLowerCase()))
       .toList();
 
   void _validateShipping() {
@@ -203,7 +243,9 @@ class ProfileSetUpController extends GetxController {
         // niches
         final niches = profileData['niches'] as List?;
         if (niches != null) {
-          selectedNiches.value = niches.cast<String>();
+          selectedNiches.value = niches
+              .map((e) => _payloadToNicheKey(e.toString()))
+              .toList();
         }
 
         originalData = {
@@ -221,7 +263,7 @@ class ProfileSetUpController extends GetxController {
             'zipCode': zipCodeController.value.text,
             'country': countryController.value.text,
           },
-          'niches': selectedNiches.toList(),
+          'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
         };
 
         hasChanges.value = false;
@@ -258,7 +300,7 @@ class ProfileSetUpController extends GetxController {
           'zipCode': zipCodeController.value.text,
           'country': countryController.value.text,
         },
-        'niches': selectedNiches.toList(),
+        'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
       };
 
       hasChanges.value = !_mapsAreEqual(originalData, currentData);
@@ -548,7 +590,7 @@ class ProfileSetUpController extends GetxController {
         "zipCode": zipCodeController.value.text.trim(),
         "country": countryController.value.text.trim(),
       },
-      "niches": selectedNiches.toList(), // opcional
+      "niches": selectedNiches.map(_nicheKeyToPayload).toList(), // opcional
     };
   }
 
@@ -601,7 +643,7 @@ class ProfileSetUpController extends GetxController {
 
     // niches changes
     final originalNiches = originalData['niches'] as List?;
-    final currentNiches = selectedNiches.toList();
+    final currentNiches = selectedNiches.map(_nicheKeyToPayload).toList();
     if (originalNiches == null || originalNiches.length != currentNiches.length || !_listsAreEqual(originalNiches, currentNiches)) {
       payload['niches'] = currentNiches;
     }
@@ -660,7 +702,7 @@ class ProfileSetUpController extends GetxController {
             'zipCode': zipCodeController.value.text,
             'country': countryController.value.text,
           },
-          'niches': selectedNiches.toList(),
+          'niches': selectedNiches.map(_nicheKeyToPayload).toList(),
         };
 
         hasChanges.value = false;

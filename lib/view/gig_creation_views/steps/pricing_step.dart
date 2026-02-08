@@ -12,6 +12,23 @@ import 'package:get/get.dart';
 class PricingStep extends GetView<CreateGigController> {
   const PricingStep({super.key});
 
+  String _presetLabel(String name) {
+    switch (name) {
+      case 'Additional revision':
+        return 'preset_additional_revision'.tr;
+      case 'Rush delivery':
+        return 'preset_rush_delivery'.tr;
+      case 'Add logo':
+        return 'preset_add_logo'.tr;
+      case '4K export':
+        return 'preset_4k_export'.tr;
+      case 'Custom request':
+        return 'preset_custom_request'.tr;
+      default:
+        return name;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,10 +40,10 @@ class PricingStep extends GetView<CreateGigController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text('Pricing', style: AppTextStyles.h6Bold),
+          Text('pricing_title'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            'Set your price for each duration.',
+            'pricing_subtitle'.tr,
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
           const SizedBox(height: 12),
@@ -35,7 +52,7 @@ class PricingStep extends GetView<CreateGigController> {
           const SizedBox(height: 24),
 
           // Extras
-          Text('Extras', style: AppTextStyles.h6Bold),
+          Text('extras_title'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 10),
           _coreMinimalExtras(),
 
@@ -45,7 +62,7 @@ class PricingStep extends GetView<CreateGigController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Custom Extras', style: AppTextStyles.h6Bold),
+              Text('custom_extras_title'.tr, style: AppTextStyles.h6Bold),
               GestureDetector(
                 onTap: () => _openAddGlobalExtraSheet(existing: null),
                 child: const Icon(Icons.add_circle_outline, size: 22),
@@ -58,7 +75,7 @@ class PricingStep extends GetView<CreateGigController> {
             final extras = controller.globalExtras;
             if (extras.isEmpty) {
               return Text(
-                'No custom extras added yet.',
+                'no_custom_extras'.tr,
                 style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
               );
             }
@@ -82,7 +99,7 @@ class PricingStep extends GetView<CreateGigController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Currency', style: AppTextStyles.smallText),
+        Text('currency_label'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         GestureDetector(
           onTap: _showCurrencySelector,
@@ -104,11 +121,11 @@ class PricingStep extends GetView<CreateGigController> {
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _tierLabel('15 Sec')),
+            Expanded(child: _tierLabel('tier_15'.tr)),
             const SizedBox(width: 8),
-            Expanded(child: _tierLabel('30 Sec')),
+            Expanded(child: _tierLabel('tier_30'.tr)),
             const SizedBox(width: 8),
-            Expanded(child: _tierLabel('60 Sec')),
+            Expanded(child: _tierLabel('tier_60'.tr)),
           ],
         ),
         const SizedBox(height: 8),
@@ -122,11 +139,11 @@ class PricingStep extends GetView<CreateGigController> {
           ],
         ),
         const SizedBox(height: 18),
-        Text('Delivery Time', style: AppTextStyles.smallText),
+        Text('delivery_time'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         _deliveryTimeSelector(),
         const SizedBox(height: 15),
-        Text('Number of Revisions', style: AppTextStyles.smallText),
+        Text('revisions_label'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         _revisionsField(),
       ],
@@ -163,7 +180,7 @@ class PricingStep extends GetView<CreateGigController> {
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
       ],
       decoration: InputDecoration(
-        hintText: 'Price',
+        hintText: 'price_hint'.tr,
         hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
@@ -198,7 +215,7 @@ class PricingStep extends GetView<CreateGigController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                delivery.isEmpty ? 'Select Delivery Time in Days' : delivery,
+                delivery.isEmpty ? 'select_delivery_time'.tr : delivery,
                 style: AppTextStyles.smallText.copyWith(
                   color: delivery.isEmpty ? Colors.grey.shade500 : Colors.black,
                 ),
@@ -219,7 +236,7 @@ class PricingStep extends GetView<CreateGigController> {
       onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
-        hintText: 'Type Number',
+        hintText: 'type_number'.tr,
         hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
@@ -245,7 +262,7 @@ class PricingStep extends GetView<CreateGigController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Price', style: AppTextStyles.smallText),
+        Text('price_label'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -274,7 +291,7 @@ class PricingStep extends GetView<CreateGigController> {
                 onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
                 decoration: InputDecoration(
-                  hintText: 'Type Price e.g. 50',
+                  hintText: 'type_price_hint'.tr,
                   hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                   enabledBorder: OutlineInputBorder(
@@ -300,7 +317,7 @@ class PricingStep extends GetView<CreateGigController> {
 
         // delivery time and revisions -> use tier 0 as "shared source"
         // Keep UI minimal: still allow edit but it applies "shared" in payload (controller uses tier 0)
-        Text('Delivery Time (shared)', style: AppTextStyles.smallText),
+        Text('delivery_time_shared'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () => _showDeliveryTimeSelector(0),
@@ -315,7 +332,7 @@ class PricingStep extends GetView<CreateGigController> {
               children: [
                 Text(
                   controller.packages[0].value.deliveryTime.isEmpty
-                      ? 'Select Delivery Time in Days'
+                      ? 'select_delivery_time'.tr
                       : controller.packages[0].value.deliveryTime,
                   style: AppTextStyles.smallText.copyWith(
                     color: controller.packages[0].value.deliveryTime.isEmpty ? Colors.grey.shade500 : Colors.black,
@@ -329,14 +346,14 @@ class PricingStep extends GetView<CreateGigController> {
 
         const SizedBox(height: 15),
 
-        Text('Number of Revisions (shared)', style: AppTextStyles.smallText),
+        Text('revisions_shared'.tr, style: AppTextStyles.smallText),
         const SizedBox(height: 12),
         TextField(
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
           decoration: InputDecoration(
-            hintText: 'Type Number',
+            hintText: 'type_number'.tr,
             hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
@@ -352,7 +369,7 @@ class PricingStep extends GetView<CreateGigController> {
 
         const SizedBox(height: 6),
         Text(
-          'Applies to all durations.',
+          'applies_all_durations'.tr,
           style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
         ),
       ],
@@ -364,21 +381,21 @@ class PricingStep extends GetView<CreateGigController> {
     return Column(
       children: [
         _coreRow(
-          title: 'Custom Scriptwriting',
+          title: 'extra_script'.tr,
           includedObs: controller.coreScriptIncluded,
           onToggle: controller.setCoreScriptIncluded,
           priceController: controller.coreScriptPriceController,
         ),
         const SizedBox(height: 10),
         _coreRow(
-          title: 'Raw Video Files',
+          title: 'extra_raw'.tr,
           includedObs: controller.coreRawIncluded,
           onToggle: controller.setCoreRawIncluded,
           priceController: controller.coreRawPriceController,
         ),
         const SizedBox(height: 10),
         _coreRow(
-          title: 'Subtitles Included',
+          title: 'extra_subtitles'.tr,
           includedObs: controller.coreSubtitlesIncluded,
           onToggle: controller.setCoreSubtitlesIncluded,
           priceController: controller.coreSubtitlesPriceController,
@@ -427,7 +444,7 @@ class PricingStep extends GetView<CreateGigController> {
                       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
                       decoration: InputDecoration(
-                        hintText: 'Extra price (e.g. 20)',
+                        hintText: 'extra_price_hint'.tr,
                         hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
@@ -442,7 +459,7 @@ class PricingStep extends GetView<CreateGigController> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'If you set a price, it will appear as an extra for all durations.',
+                  'extra_price_note'.tr,
                   style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
                 ),
               ),
@@ -471,7 +488,11 @@ class PricingStep extends GetView<CreateGigController> {
                 Text(e.name, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Obx(() => Text(
-                      '${controller.selectedCurrency.value} ${e.price.toStringAsFixed(2)} - +${e.extraDays} day(s)',
+                      'custom_extra_summary'.trParams({
+                        'currency': controller.selectedCurrency.value,
+                        'price': e.price.toStringAsFixed(2),
+                        'days': '${e.extraDays}',
+                      }),
                       style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade700),
                     )),
               ],
@@ -514,12 +535,15 @@ class PricingStep extends GetView<CreateGigController> {
             children: [
               Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 12),
-              Text(existing == null ? 'Add Custom Extra' : 'Edit Custom Extra', style: AppTextStyles.h6Bold),
+              Text(
+                existing == null ? 'add_custom_extra'.tr : 'edit_custom_extra'.tr,
+                style: AppTextStyles.h6Bold,
+              ),
               const SizedBox(height: 14),
 
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Quick add', style: AppTextStyles.extraSmallMediumText),
+                child: Text('quick_add'.tr, style: AppTextStyles.extraSmallMediumText),
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -536,7 +560,7 @@ class PricingStep extends GetView<CreateGigController> {
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Text(t, style: AppTextStyles.extraSmallText),
+                        child: Text(_presetLabel(t), style: AppTextStyles.extraSmallText),
                       ),
                     );
                   },
@@ -550,7 +574,7 @@ class PricingStep extends GetView<CreateGigController> {
               TextField(
                 controller: nameCtrl,
                 decoration: InputDecoration(
-                  labelText: 'Extra name',
+                  labelText: 'extra_name'.tr,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
@@ -561,7 +585,9 @@ class PricingStep extends GetView<CreateGigController> {
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
                 decoration: InputDecoration(
-                  labelText: 'Extra price (${controller.selectedCurrency.value})',
+                  labelText: 'extra_price_label'.trParams(
+                    {'currency': controller.selectedCurrency.value},
+                  ),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
@@ -572,7 +598,7 @@ class PricingStep extends GetView<CreateGigController> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
-                  labelText: 'Extra delivery days',
+                  labelText: 'extra_days'.tr,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
@@ -587,7 +613,7 @@ class PricingStep extends GetView<CreateGigController> {
                         final days = int.tryParse(daysCtrl.text.trim()) ?? 0;
 
                     if (name.isEmpty || price <= 0) {
-                      Utils.snackBar('Invalid Input', 'Please enter a name and a valid price.');
+                      Utils.snackBar('invalid_input'.tr, 'enter_name_valid_price'.tr);
                       return;
                     }
 
@@ -605,9 +631,9 @@ class PricingStep extends GetView<CreateGigController> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                   ),
-                  child: const Text(
-                    'Save',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    'save'.tr,
+                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -636,9 +662,9 @@ class PricingStep extends GetView<CreateGigController> {
               height: 4,
               decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
             ),
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('Select Currency', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text('select_currency'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -668,7 +694,7 @@ class PricingStep extends GetView<CreateGigController> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                   ),
-                  child: const Text('Done', style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: Text('done'.tr, style: const TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
             ),
@@ -702,7 +728,7 @@ class PricingStep extends GetView<CreateGigController> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Text('Delivery Time', style: AppTextStyles.h6),
+                  child: Text('delivery_time'.tr, style: AppTextStyles.h6),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -740,7 +766,7 @@ class PricingStep extends GetView<CreateGigController> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: SizedBox(width: double.infinity, child: CustomButton(title: 'Done', onPressed: () => Get.back())),
+                  child: SizedBox(width: double.infinity, child: CustomButton(title: 'done'.tr, onPressed: () => Get.back())),
                 ),
               ],
             ),
@@ -762,19 +788,19 @@ class PricingStep extends GetView<CreateGigController> {
     final hasAnyPrice = prices.any((p) => p > 0);
 
     final lines = <String>[
-      'Commercial Use License',
-      if (controller.coreRawIncluded.value) 'Raw Video Files - Included',
+      'feature_commercial_use'.tr,
+      if (controller.coreRawIncluded.value) 'feature_raw_included'.tr,
       if (!controller.coreRawIncluded.value &&
           (controller.coreRawPriceController.text.trim().isNotEmpty))
-        'Raw Video Files - +$currency ${controller.coreRawExtraPrice.toStringAsFixed(0)}',
-      if (controller.coreSubtitlesIncluded.value) 'Subtitles Included - Included',
+        'feature_raw_extra'.trParams({'currency': currency, 'price': controller.coreRawExtraPrice.toStringAsFixed(0)}),
+      if (controller.coreSubtitlesIncluded.value) 'feature_subtitles_included'.tr,
       if (!controller.coreSubtitlesIncluded.value &&
           (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
-        'Subtitles Included - +$currency ${controller.coreSubtitlesExtraPrice.toStringAsFixed(0)}',
-      if (controller.coreScriptIncluded.value) 'Custom Scriptwriting - Included',
+        'feature_subtitles_extra'.trParams({'currency': currency, 'price': controller.coreSubtitlesExtraPrice.toStringAsFixed(0)}),
+      if (controller.coreScriptIncluded.value) 'feature_script_included'.tr,
       if (!controller.coreScriptIncluded.value &&
           (controller.coreScriptPriceController.text.trim().isNotEmpty))
-        'Custom Scriptwriting - +$currency ${controller.coreScriptExtraPrice.toStringAsFixed(0)}',
+        'feature_script_extra'.trParams({'currency': currency, 'price': controller.coreScriptExtraPrice.toStringAsFixed(0)}),
     ];
 
     return Column(
@@ -797,11 +823,11 @@ class PricingStep extends GetView<CreateGigController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _previewPriceRow('15 Sec', prices[0], currency),
+              _previewPriceRow('tier_15'.tr, prices[0], currency),
               const SizedBox(height: 8),
-              _previewPriceRow('30 Sec', prices[1], currency),
+              _previewPriceRow('tier_30'.tr, prices[1], currency),
               const SizedBox(height: 8),
-              _previewPriceRow('60 Sec', prices[2], currency),
+              _previewPriceRow('tier_60'.tr, prices[2], currency),
               const SizedBox(height: 16),
 
               ...lines.map((f) {
@@ -819,13 +845,17 @@ class PricingStep extends GetView<CreateGigController> {
 
               if (controller.globalExtras.isNotEmpty) ...[
                 const SizedBox(height: 10),
-                Text('Custom extras:', style: AppTextStyles.extraSmallMediumText),
+                  Text('custom_extras_label'.tr, style: AppTextStyles.extraSmallMediumText),
                 const SizedBox(height: 8),
                 ...controller.globalExtras.map((e) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Text(
-                      '- ${e.name} (+$currency ${e.price.toStringAsFixed(0)})',
+                      'custom_extra_line'.trParams({
+                        'name': e.name,
+                        'currency': currency,
+                        'price': e.price.toStringAsFixed(0),
+                      }),
                       style: AppTextStyles.extraSmallText,
                     ),
                   );
@@ -840,7 +870,7 @@ class PricingStep extends GetView<CreateGigController> {
                       const Icon(Icons.access_time, color: Color(0xFFFBBB00), size: 14),
                       const SizedBox(width: 8),
                       Text(
-                        delivery.isEmpty ? 'Delivery time' : delivery,
+                        delivery.isEmpty ? 'delivery_time'.tr : delivery,
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                     ],
@@ -851,7 +881,7 @@ class PricingStep extends GetView<CreateGigController> {
                       Image.asset(ImageAssets.revisionIcon, width: 12),
                       const SizedBox(width: 8),
                       Text(
-                        '${revisions == 0 ? '-' : revisions} Revisions',
+                        'revisions_count'.trParams({'count': '${revisions == 0 ? '-' : revisions}'}),
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                     ],

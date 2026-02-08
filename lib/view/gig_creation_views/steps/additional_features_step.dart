@@ -11,6 +11,23 @@ import 'package:get/get.dart';
 class AdditionalFeaturesStep extends GetView<CreateGigController> {
   const AdditionalFeaturesStep({super.key});
 
+  String _presetLabel(String name) {
+    switch (name) {
+      case 'Additional revision':
+        return 'preset_additional_revision'.tr;
+      case 'Rush delivery':
+        return 'preset_rush_delivery'.tr;
+      case 'Add logo':
+        return 'preset_add_logo'.tr;
+      case '4K export':
+        return 'preset_4k_export'.tr;
+      case 'Custom request':
+        return 'preset_custom_request'.tr;
+      default:
+        return name;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -19,7 +36,7 @@ class AdditionalFeaturesStep extends GetView<CreateGigController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Add Additional Features',
+            'add_additional_features'.tr,
             style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -46,7 +63,7 @@ class AdditionalFeaturesStep extends GetView<CreateGigController> {
                   ),
                   SizedBox(width: 8),
                   Text(
-                    "Add Additional Features",
+                    "add_additional_features".tr,
                     style: AppTextStyles.normalTextMedium,
                   ),
                 ],
@@ -60,9 +77,9 @@ class AdditionalFeaturesStep extends GetView<CreateGigController> {
           Obx(() {
             final list = controller.additionalFeatures;
             if (list.isEmpty) {
-              return const Text(
-                "No additional features added yet.",
-                style: TextStyle(color: Colors.grey),
+              return Text(
+                "no_additional_features".tr,
+                style: const TextStyle(color: Colors.grey),
               );
             }
             return Column(
@@ -100,7 +117,7 @@ class _FeatureCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                feature.name,
+                _presetLabel(feature.name),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -125,13 +142,13 @@ class _FeatureCard extends StatelessWidget {
                 Image.asset(ImageAssets.revisionIcon, height: 12),
 
                 const SizedBox(width: 4),
-                Text("${feature.revisions} Revisions"),
-              ],
+              Text("revisions_count".trParams({'count': '${feature.revisions}'})),
+            ],
               if (feature.extraDays > 0) ...[
                 const SizedBox(width: 12),
                 const Icon(Icons.access_time, size: 12),
                 const SizedBox(width: 4),
-                Text("+${feature.extraDays} day(s)"),
+                Text("extra_days_count".trParams({'count': '${feature.extraDays}'})),
               ],
             ],
           ),
@@ -173,14 +190,14 @@ void _showFeatureDetails(String featureName) {
           ),
           Center(
             child: Text(
-              "Add Additional Features",
+              "add_additional_features".tr,
               style: AppTextStyles.h6.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(height: 16),
 
           // Feature name
-          const Text("Select Feature"),
+          Text("select_feature".tr),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
@@ -197,7 +214,7 @@ void _showFeatureDetails(String featureName) {
           ),
           const SizedBox(height: 16),
           Text(
-            'Your Price',
+            'your_price'.tr,
             style: AppTextStyles.extraSmallText.copyWith(
               color: Color(0xff606A79),
             ),
@@ -207,9 +224,9 @@ void _showFeatureDetails(String featureName) {
           // Price
           TextField(
             controller: priceCtrl,
-            decoration: const InputDecoration(
-              hintText: "Your Price (USD)",
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: "your_price_usd".tr,
+              border: const OutlineInputBorder(),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
@@ -218,7 +235,7 @@ void _showFeatureDetails(String featureName) {
           // Revisions only for Additional Revision
           if (isRevisionFeature)
             Text(
-              'Number of Revisions',
+              'number_of_revisions'.tr,
               style: AppTextStyles.extraSmallText.copyWith(
                 color: Color(0xff606A79),
               ),
@@ -227,9 +244,9 @@ void _showFeatureDetails(String featureName) {
           if (isRevisionFeature)
             TextField(
               controller: revCtrl,
-              decoration: const InputDecoration(
-                hintText: "Number of Revisions",
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: "number_of_revisions".tr,
+                border: const OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
             ),
@@ -237,7 +254,7 @@ void _showFeatureDetails(String featureName) {
           const SizedBox(height: 16),
 
           Text(
-            'Extra Delivery Days',
+            'extra_delivery_days'.tr,
             style: AppTextStyles.extraSmallText.copyWith(
               color: Color(0xff606A79),
             ),
@@ -245,16 +262,16 @@ void _showFeatureDetails(String featureName) {
           const SizedBox(height: 10),
           TextField(
             controller: daysCtrl,
-            decoration: const InputDecoration(
-              hintText: "Extra days (e.g. 2)",
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: "extra_days_hint".tr,
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.number,
           ),
 
           Spacer(),
           CustomButton(
-            title: 'Add',
+            title: 'add'.tr,
             onPressed: () {
               final f = AdditionalFeature(
                 id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -300,9 +317,9 @@ void _showFeaturePicker(BuildContext context) {
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const Text(
-              "Features",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            Text(
+              "features".tr,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 12),
 
@@ -314,7 +331,7 @@ void _showFeaturePicker(BuildContext context) {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  title: Text(f, style: const TextStyle(color: Colors.black)),
+                  title: Text(_presetLabel(f), style: const TextStyle(color: Colors.black)),
                   trailing: Radio<String>(
                     value: f,
                     groupValue: ctrl.selectedFeature.value,
@@ -327,7 +344,7 @@ void _showFeaturePicker(BuildContext context) {
 
             const SizedBox(height: 16),
             CustomButton(
-              title: 'Done',
+              title: 'done'.tr,
               isDisabled: ctrl.selectedFeature.value == null,
               onPressed: () {
                 final sel = ctrl.selectedFeature.value;

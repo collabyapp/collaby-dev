@@ -19,7 +19,7 @@ class NicheSelectionScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: Text('Profile Setup'),
+        title: Text('profile_setup_title'.tr),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -39,7 +39,7 @@ class NicheSelectionScreen extends StatelessWidget {
             SizedBox(height: 16),
 
             Text(
-              'Select the niches that match your content',
+              'profile_setup_niches_title'.tr,
               style: AppTextStyles.smallTextBold,
             ),
             SizedBox(height: 16),
@@ -52,7 +52,7 @@ class NicheSelectionScreen extends StatelessWidget {
                 FocusManager.instance.primaryFocus?.unfocus();
               },
               decoration: InputDecoration(
-                hintText: 'Search...',
+                hintText: 'search'.tr,
                 hintStyle: AppTextStyles.extraSmallText.copyWith(
                   color: Color(0xff000000).withOpacity(0.41),
                 ),
@@ -122,7 +122,7 @@ class NicheSelectionScreen extends StatelessWidget {
                 () => CustomButton(
                   isLoading: controller.isSubmittingProfile.value,
                   isDisabled: controller.selectedNiches.isEmpty,
-                  title: 'Next',
+                  title: 'next'.tr,
                   onPressed: () {
                     controller.submitToApi();
                   },
@@ -149,7 +149,7 @@ class NicheSelectionScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(60),
         ),
         child: Text(
-          niche,
+          niche.tr,
           style: AppTextStyles.extraSmallText.copyWith(
             color: controller.selectedNiches.contains(niche)
                 ? Colors.white

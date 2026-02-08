@@ -42,12 +42,12 @@ class GigSuccessView extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Congratulations text
-              Text("Congratulations!", style: AppTextStyles.h5),
+              Text("gig_congrats".tr, style: AppTextStyles.h5),
               const SizedBox(height: 8),
-              Text("Your Gig is open for business!", style: AppTextStyles.h5),
+              Text("gig_open_for_business".tr, style: AppTextStyles.h5),
               const SizedBox(height: 8),
               Text(
-                "Let share with your client",
+                "gig_share_with_client".tr,
                 style: AppTextStyles.smallMediumText,
               ),
 
@@ -100,7 +100,7 @@ class GigSuccessView extends StatelessWidget {
 
               // Explore Jobs button
               CustomButton(
-                title: "Let's Explore Jobs",
+                title: "gig_explore_jobs".tr,
                 onPressed: () {
                   controller.exploreJobs();
                 },

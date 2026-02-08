@@ -33,10 +33,10 @@ Future<void> showSelectVideoStyleSheet(BuildContext context) async {
                 ),
               ),
               const SizedBox(height: 12),
-              Text('Select Video Style', style: AppTextStyles.h6),
+              Text('select_video_style'.tr, style: AppTextStyles.h6),
               const SizedBox(height: 4),
               Text(
-                'You can select maximum 3 Video styles',
+                'select_video_style_hint'.tr,
                 style: AppTextStyles.extraSmallText.copyWith(
                   color: Color(0xff77787A),
                 ),
@@ -55,7 +55,7 @@ Future<void> showSelectVideoStyleSheet(BuildContext context) async {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       tileColor: Color(0xffF4F7FF),
-                      title: Text(style),
+                      title: Text(style.tr),
                       trailing: Obx(() {
                         final checked = c.selectedStyles.contains(
                           style,
@@ -100,7 +100,7 @@ Future<void> showSelectVideoStyleSheet(BuildContext context) async {
                     width: double.infinity,
                     height: 52,
                     child: CustomButton(
-                      title: 'Done',
+                      title: 'done'.tr,
                       onPressed: () => Navigator.pop(ctx),
                     ),
                   ),

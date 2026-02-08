@@ -5,7 +5,6 @@ import 'package:collaby_app/view_models/controller/gig_creation_controller/creat
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'steps/overview_step.dart';
 import 'steps/pricing_step.dart';
 import 'steps/description_step.dart';
 
@@ -60,6 +59,7 @@ class CreateGigView extends GetView<CreateGigController> {
                     itemCount: controller.tabs.length,
                     itemBuilder: (context, index) {
                       final tab = controller.tabs[index];
+                      final tabLabel = tab.tr;
 
                       return Obx(() {
                         final isSelected =
@@ -78,7 +78,7 @@ class CreateGigView extends GetView<CreateGigController> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  tab,
+                                  tabLabel,
                                   style: AppTextStyles.extraSmallMediumText
                                       .copyWith(
                                     color: isLocked
@@ -92,7 +92,7 @@ class CreateGigView extends GetView<CreateGigController> {
                                 const SizedBox(height: 8),
                                 Container(
                                   height: 3,
-                                  width: tab.length * 8,
+                                  width: tabLabel.length * 8,
                                   decoration: BoxDecoration(
                                     color: isSelected
                                         ? Colors.white
@@ -123,7 +123,6 @@ class CreateGigView extends GetView<CreateGigController> {
           controller: controller.tabController,
           physics: const NeverScrollableScrollPhysics(),
           children: const [
-            OverviewStep(),
             PricingStep(),
             DescriptionStep(),
             GalleryStep(),

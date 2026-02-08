@@ -14,10 +14,10 @@ class OverviewStep extends GetView<CreateGigController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          Text('Overview', style: AppTextStyles.h6Bold),
+          Text('overview_title'.tr, style: AppTextStyles.h6Bold),
           const SizedBox(height: 6),
           Text(
-            "What describes you best? (optional)\nSelect everything that applies.",
+            'overview_subtitle'.tr,
             style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
           ),
           const SizedBox(height: 18),
@@ -40,7 +40,7 @@ class OverviewStep extends GetView<CreateGigController> {
               border: Border.all(color: Colors.grey.shade200),
             ),
             child: Text(
-              "If you don't select anything, you'll be listed as a general UGC creator by default.",
+              'overview_info'.tr,
               style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
             ),
           ),
@@ -67,7 +67,7 @@ class OverviewStep extends GetView<CreateGigController> {
         onChanged: (_) => controller.toggleTrait(text),
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(
-          text,
+          text.tr,
           style: AppTextStyles.extraSmallMediumText.copyWith(
             color: const Color(0xff3F4146),
           ),

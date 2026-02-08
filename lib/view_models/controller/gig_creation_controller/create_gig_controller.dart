@@ -33,7 +33,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   // ===================== TABS =====================
   late TabController tabController;
-  final tabs = const ['Overview', 'Pricing', 'Description', 'Gallery'];
+  final tabs = const ['tab_pricing', 'tab_description', 'tab_gallery'];
   final currentIndex = 0.obs;
   final RxInt highestCompletedStep = 0.obs;
 
@@ -44,26 +44,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   // cover (thumbnail del intro video)
   String? uploadedCoverUrl;
 
-  // ===================== OVERVIEW (VIDEO STYLES) =====================
-  final creatorTraits = <String>[
-    'I have pets',
-    "I'm a couple creator",
-    "I'm a mom creator",
-    'I can do green screen',
-    'I can do car content',
-    'I can do travel content',
-  ];
-  final selectedTraits = <String>[].obs;
-
-  void toggleTrait(String trait) {
-    if (selectedTraits.contains(trait)) {
-      selectedTraits.remove(trait);
-    } else {
-      selectedTraits.add(trait);
-    }
-  }
-
-  bool get isOverviewReady => true;
+  // ===================== OVERVIEW (REMOVED) =====================
 
   // ===================== PRICING =====================
   final selectedCurrency = 'USD'.obs;
@@ -220,8 +201,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         if (!canNavigateToTab(targetIndex)) {
           Future.microtask(() => tabController.animateTo(currentIndex.value));
           Utils.snackBar(
-            'Complete Current Step',
-            'Please complete the current step before moving forward.',
+            'complete_current_step'.tr,
+            'complete_current_step_msg'.tr,
           );
         } else {
           currentIndex.value = targetIndex;
@@ -254,28 +235,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         } catch (_) {}
         return null;
       }
-
-      // video styles
-      try {
-        final styles = readField(gig, 'videoStyles') ?? readField(gig, 'videoStyle');
-        if (styles is List) {
-          final names = styles
-              .map((x) {
-                if (x is String) return x;
-                if (x is Map && x['name'] is String) return x['name'] as String;
-                try {
-                  final n = (x as dynamic).name;
-                  if (n is String) return n;
-                } catch (_) {}
-                return null;
-              })
-              .whereType<String>()
-              .map((s) => s.trim())
-              .where((s) => s.isNotEmpty)
-              .toList();
-          selectedTraits.assignAll(names);
-        }
-      } catch (_) {}
 
       // pricing
       final pricings = readField(gig, 'pricings') ?? readField(gig, 'pricing');
@@ -491,7 +450,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       highestCompletedStep.value = tabs.length - 1;
     } catch (e) {
       debugPrint('Error pre-filling data: $e');
-      Utils.snackBar('Error', 'Failed to load data for editing');
+      Utils.snackBar('error'.tr, 'edit_load_failed'.tr);
     }
   }
 
@@ -536,7 +495,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   Future<void> pickVideoFromGallery() async {
     if (galleryVideos.length >= maxVideosAllowed) {
-      Utils.snackBar('Limit Reached', 'You can upload maximum $maxVideosAllowed videos.');
+      Utils.snackBar(
+        'limit_reached'.tr,
+        'max_videos_msg'.trParams({'max': '$maxVideosAllowed'}),
+      );
       return;
     }
 
@@ -549,7 +511,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       await _ingestPickedVideo(File(x.path));
     } catch (e) {
       debugPrint('Error picking video: $e');
-      Utils.snackBar('Error', 'Failed to pick video. Please try again.');
+      Utils.snackBar('error'.tr, 'pick_video_failed'.tr);
     }
   }
 
@@ -561,16 +523,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     try {
       item.isUploading.value = true;
       item.uploadProgress.value = 0.0;
-      item.uploadStatus.value = 'Preparing video...';
+      item.uploadStatus.value = 'upload_preparing_video'.tr;
 
-      item.uploadStatus.value = 'Generating thumbnail...';
+      item.uploadStatus.value = 'upload_generating_thumbnail'.tr;
       final thumbPath = await _generateThumbnail(file.path);
       if (thumbPath == null) throw Exception('Failed to generate thumbnail');
 
       item.thumbnailUrl.value = thumbPath;
       item.uploadProgress.value = 0.4;
 
-      item.uploadStatus.value = 'Uploading video & thumbnail...';
+      item.uploadStatus.value = 'upload_uploading_video'.tr;
       final result = await _networkService.uploadVideoWithThumbnail(
         videoPath: file.path,
         thumbnailPath: thumbPath,
@@ -589,16 +551,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       await _setVideoDuration(item, file.path);
 
       item.isUploading.value = false;
-      item.uploadStatus.value = 'Upload complete';
+      item.uploadStatus.value = 'upload_complete'.tr;
     } catch (e) {
       debugPrint('Error processing video: $e');
       galleryVideos.removeWhere((v) => v.id == id);
 
       Utils.snackBar(
-        'Error',
+        'error'.tr,
         e.toString().contains('thumbnail')
-            ? 'Failed to generate thumbnail. Please try again.'
-            : 'Failed to upload video. Please try again.',
+            ? 'thumbnail_failed'.tr
+            : 'upload_video_failed'.tr,
       );
     }
   }
@@ -639,7 +601,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       galleryVideos.removeAt(idx);
     } catch (e) {
       debugPrint('Error removing video: $e');
-      Utils.snackBar('Error', 'Failed to remove video.');
+      Utils.snackBar('error'.tr, 'remove_video_failed'.tr);
     }
   }
 
@@ -655,13 +617,11 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   void cleanupGalleryVideos() => galleryVideos.clear();
 
   // ===================== VALIDATION =====================
-  bool _validateOverview() => true;
-
   bool _validatePricing() {
     if (!isPricingReady) {
       Utils.snackBar(
-        'Incomplete Pricing',
-        'Please set prices for 15/30/60, delivery time, and revisions.',
+        'incomplete_pricing'.tr,
+        'incomplete_pricing_msg'.tr,
       );
       return false;
     }
@@ -669,15 +629,15 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     // core rules: si no estÃ¡ incluido, el precio extra puede ser 0 (significa no ofrecerlo),
     // pero si estÃ¡ incluido, no debe tener precio
     if (coreScriptIncluded.value && coreScriptExtraPrice > 0) {
-      Utils.snackBar('Invalid', 'Scriptwriting cannot be included and priced at the same time.');
+      Utils.snackBar('invalid'.tr, 'script_included_priced'.tr);
       return false;
     }
     if (coreRawIncluded.value && coreRawExtraPrice > 0) {
-      Utils.snackBar('Invalid', 'Raw files cannot be included and priced at the same time.');
+      Utils.snackBar('invalid'.tr, 'raw_included_priced'.tr);
       return false;
     }
     if (coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
-      Utils.snackBar('Invalid', 'Subtitles cannot be included and priced at the same time.');
+      Utils.snackBar('invalid'.tr, 'subtitles_included_priced'.tr);
       return false;
     }
 
@@ -697,16 +657,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   bool _validateGallery() {
     if (!hasIntroVideo) {
-      Utils.snackBar('Add Intro Video', 'Please upload your intro video (required).');
+      Utils.snackBar('add_intro_video'.tr, 'add_intro_video_msg'.tr);
       return false;
     }
     if (!isDeclarationAccepted.value) {
-      Utils.snackBar('Accept Declaration', 'Please accept the declaration to continue.');
+      Utils.snackBar('accept_declaration'.tr, 'accept_declaration_msg'.tr);
       return false;
     }
     final uploadingVideos = galleryVideos.where((v) => v.isUploading.value).toList();
     if (uploadingVideos.isNotEmpty) {
-      Utils.snackBar('Upload in Progress', 'Please wait for all videos to finish uploading.');
+      Utils.snackBar('upload_in_progress'.tr, 'upload_in_progress_msg'.tr);
       return false;
     }
     return true;
@@ -715,12 +675,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   bool get isCurrentStepReady {
     switch (currentIndex.value) {
       case 0:
-        return isOverviewReady;
-      case 1:
         return isPricingReady;
-      case 2:
+      case 1:
         return isDescriptionReady;
-      case 3:
+      case 2:
         return isGalleryReady;
       default:
         return false;
@@ -735,17 +693,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       tabController.animateTo(index);
       currentIndex.value = index;
     } else {
-      Utils.snackBar('Complete Current Step', 'Please complete the current step before moving forward.');
+      Utils.snackBar('complete_current_step'.tr, 'complete_current_step_msg'.tr);
     }
   }
 
   void onNext() {
     final idx = currentIndex.value;
     final valid = switch (idx) {
-      0 => _validateOverview(),
-      1 => _validatePricing(),
-      2 => _validateDescription(),
-      3 => _validateGallery(),
+      0 => _validatePricing(),
+      1 => _validateDescription(),
+      2 => _validateGallery(),
       _ => true,
     };
 
@@ -879,12 +836,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     uploadedCoverUrl = introVideo?.thumbnailUrl.value ?? '';
 
-    final videoStyle = selectedTraits.map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
     final description = quillController.document.toPlainText().trim();
 
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
-      'videoStyle': videoStyle,
       'pricing': pricingList,
       'description': description,
       'gallery': galleryList,
@@ -904,7 +859,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       uploadProgress.value = 0.2;
 
       final allUploaded = galleryVideos.every((v) => v.isReady);
-      if (!allUploaded) throw Exception('Some videos are still uploading. Please wait.');
+      if (!allUploaded) throw Exception('upload_in_progress_msg'.tr);
       uploadProgress.value = 0.5;
 
       final payload = _generateGigPayload();
@@ -920,7 +875,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       if (Get.isDialogOpen ?? false) Get.back();
 
-      if (response == null) throw Exception('No response from server. Please try again.');
+      if (response == null) throw Exception('error_no_response'.tr);
 
       final statusCode = response['statusCode'] as int?;
       final message = response['message'] as String?;
@@ -932,11 +887,11 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
             Get.find<GigDetailController>().fetchGigDetail();
           } catch (_) {}
         } else {
-          Utils.snackBar('Success!', message ?? 'Your profile has been published successfully');
+          Utils.snackBar('success'.tr, message ?? 'publish_success'.tr);
           _navigateToSuccessScreen();
         }
       } else {
-        throw Exception(message ?? 'Failed (Status: $statusCode)');
+        throw Exception(message ?? 'error_failed_status'.trParams({'code': '$statusCode'}));
       }
     } catch (e, stackTrace) {
       debugPrint('Submission error: $e');
@@ -945,18 +900,19 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       if (Get.isDialogOpen ?? false) Get.back();
 
       final s = e.toString();
-      String errorMessage =
-          'Failed to ${isEditMode.value ? "update" : "publish"} profile. Please try again.';
+      String errorMessage = isEditMode.value
+          ? 'error_update_failed'.tr
+          : 'error_publish_failed'.tr;
 
       if (s.contains('SocketException')) {
-        errorMessage = 'No internet connection. Please check your network.';
+        errorMessage = 'error_no_internet'.tr;
       } else if (s.contains('TimeoutException')) {
-        errorMessage = 'Request timeout. Please try again.';
+        errorMessage = 'error_timeout'.tr;
       } else {
         errorMessage = s.replaceFirst('Exception: ', '');
       }
 
-      Utils.snackBar('Error', errorMessage);
+      Utils.snackBar('error'.tr, errorMessage);
     } finally {
       isUploadingGig.value = false;
       uploadProgress.value = 0.0;
@@ -991,16 +947,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isEditMode.value ? 'Updating Profile' : 'Publishing Profile',
+                  isEditMode.value ? 'uploading_title_update'.tr : 'uploading_title_create'.tr,
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Obx(() {
                   final progress = uploadProgress.value;
-                  String message = 'Preparing...';
-                  if (progress < 0.5) message = 'Uploading videos...';
-                  else if (progress < 1.0) message = 'Finalizing...';
-                  else message = 'Complete!';
+                  String message = 'upload_preparing'.tr;
+                  if (progress < 0.5) message = 'upload_uploading_videos'.tr;
+                  else if (progress < 1.0) message = 'upload_finalizing'.tr;
+                  else message = 'upload_complete'.tr;
                   return Text(
                     message,
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
@@ -1035,7 +991,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
                 }),
                 const SizedBox(height: 16),
                 Text(
-                  'Please wait while we upload your files...',
+                  'upload_wait'.tr,
                   style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   textAlign: TextAlign.center,
                 ),
@@ -1052,7 +1008,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   void copyLink() {
     Clipboard.setData(ClipboardData(text: gigLink.value));
-    Utils.snackBar("Copied!", "Link copied to clipboard");
+    Utils.snackBar('copied'.tr, 'link_copied'.tr);
   }
 
   void exploreJobs() => Get.offAllNamed(RouteName.bottomNavigationView);
@@ -1106,9 +1062,9 @@ void updatePackageDeliveryTime(String deliveryTime) {
   });
 }
 
-List<String> get videoStyles => creatorTraits;
-RxList<String> get selectedStyles => selectedTraits;
-void toggleStyle(String style) => toggleTrait(style);
+List<String> get videoStyles => <String>[];
+RxList<String> get selectedStyles => <String>[].obs;
+void toggleStyle(String style) {}
 
 final RxList<String> tags = <String>[].obs;
 void addTag(String tag) {
