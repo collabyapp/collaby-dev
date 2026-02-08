@@ -785,6 +785,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     // custom extras
     for (final e in globalExtras) {
       final type = _inferFeatureTypeFromName(e.name);
+      final title = e.name.trim().isEmpty ? 'Extra' : e.name.trim();
 
       // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
       if (type == 'additionalRevision' ||
@@ -794,7 +795,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           type == 'custom') {
         sharedExtras.add({
           'featureType': type,
-          'title': e.name,
+          'title': title,
           'price': e.price,
           'deliveryTimesIndays': e.extraDays,
         });
@@ -840,6 +841,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
+      'videoStyle': <String>[],
       'pricing': pricingList,
       'description': description,
       'gallery': galleryList,
@@ -1032,7 +1034,10 @@ final RxnString selectedFeature = RxnString();
 void selectFeature(String? value) => selectedFeature.value = value;
 void resetFeaturePicker() => selectedFeature.value = null;
 
-RxList<VideoItem> get portfolioVideos => galleryVideos;
+List<VideoItem> get portfolioVideos {
+  if (galleryVideos.length <= 1) return <VideoItem>[];
+  return galleryVideos.sublist(1);
+}
 
 String formatDuration(Duration d) {
   final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');

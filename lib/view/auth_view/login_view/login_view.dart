@@ -98,11 +98,11 @@ class _LoginForm extends StatelessWidget {
   Widget _buildHeader() {
     return Column(
       children: [
-        Center(child: Text('Welcome Back', style: AppTextStyles.h3)),
+        Center(child: Text('login_welcome'.tr, style: AppTextStyles.h3)),
         const SizedBox(height: 6),
         Center(
           child: Text(
-            'Enter your email & password to login.',
+            'login_subtitle'.tr,
             style: AppTextStyles.smallText.copyWith(
               color: const Color(0xFF4F4F4F),
             ),
@@ -118,7 +118,7 @@ class _LoginForm extends StatelessWidget {
       child: TextButton(
         onPressed: controller.forgotPassword,
         child: Text(
-          'Forgot Password?',
+          'forgot_password'.tr,
           style: AppTextStyles.smallMediumText.copyWith(
             color: AppColor.primaryColor,
           ),
@@ -133,7 +133,7 @@ class _LoginForm extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text(
-            "Don't have an account?  ",
+            "no_account".tr + "  ",
             style: AppTextStyles.extraSmallMediumText.copyWith(
               color: const Color(0xFF727172),
             ),
@@ -141,7 +141,7 @@ class _LoginForm extends StatelessWidget {
           GestureDetector(
             onTap: () => Get.offAllNamed(RouteName.signUpView),
             child: Text(
-              'SignUp',
+              'signup'.tr,
               style: AppTextStyles.smallMediumText.copyWith(
                 color: AppColor.primaryColor,
               ),
@@ -171,7 +171,7 @@ class _EmailField extends StatelessWidget {
 
         return CustomTextField(
           label: 'Email',
-          hint: 'Enter your email address',
+          hint: 'login_email_hint'.tr,
           keyboardType: TextInputType.emailAddress,
           prefixIcon: _buildPrefixIcon(ImageAssets.emailIcon, iconColor),
           errorText: controller.emailError,
@@ -209,8 +209,8 @@ class _PasswordField extends StatelessWidget {
             : AppColor.blackColor;
 
         return CustomTextField(
-          label: 'Password',
-          hint: 'Enter your password',
+          label: 'login_password_label'.tr,
+          hint: 'login_password_hint'.tr,
           obscureText: controller.obscure,
           prefixIcon: _buildPrefixIcon(ImageAssets.lockIcon, iconColor),
           suffixIcon: _buildVisibilityToggle(),
@@ -284,7 +284,7 @@ class _Divider extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('OR', style: AppTextStyles.extraSmallText),
+          child: Text('or'.tr, style: AppTextStyles.extraSmallText),
         ),
         const Expanded(
           child: Padding(

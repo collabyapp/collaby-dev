@@ -73,7 +73,7 @@ class GalleryStep extends GetView<CreateGigController> {
           Expanded(
             child: Obx(() {
               final portfolio = controller.portfolioVideos;
-              final canAdd = controller.galleryVideos.length < controller.maxVideosAllowed;
+              final canAdd = portfolio.length < 3;
               const slots = 4;
 
               return LayoutBuilder(

@@ -53,62 +53,64 @@ class CreateGigView extends GetView<CreateGigController> {
                 // ✅ STEPS TAB BAR
                 SizedBox(
                   height: 48,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: controller.tabs.length,
-                    itemBuilder: (context, index) {
-                      final tab = controller.tabs[index];
-                      final tabLabel = tab.tr;
+                  child: Obx(() {
+                    return Row(
+                      children: List.generate(
+                        controller.tabs.length,
+                        (index) {
+                          final tab = controller.tabs[index];
+                          final tabLabel = tab.tr;
+                          final isSelected =
+                              controller.currentIndex.value == index;
+                          final isCompleted =
+                              index < controller.highestCompletedStep.value;
+                          final isLocked =
+                              index > controller.highestCompletedStep.value;
 
-                      return Obx(() {
-                        final isSelected =
-                            controller.currentIndex.value == index;
-                        final isCompleted =
-                            index < controller.highestCompletedStep.value;
-                        final isLocked =
-                            index > controller.highestCompletedStep.value;
-
-                        return GestureDetector(
-                          onTap: () => controller.onTabTapped(index),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 14),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  tabLabel,
-                                  style: AppTextStyles.extraSmallMediumText
-                                      .copyWith(
-                                    color: isLocked
-                                        ? Colors.white.withOpacity(0.4)
-                                        : Colors.white,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                  ),
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () => controller.onTabTapped(index),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      tabLabel,
+                                      textAlign: TextAlign.center,
+                                      style: AppTextStyles.extraSmallMediumText
+                                          .copyWith(
+                                        color: isLocked
+                                            ? Colors.white.withOpacity(0.4)
+                                            : Colors.white,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      height: 3,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : isCompleted
+                                                ? Colors.white.withOpacity(0.7)
+                                                : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  height: 3,
-                                  width: tabLabel.length * 8,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : isCompleted
-                                            ? Colors.white.withOpacity(0.7)
-                                            : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        );
-                      });
-                    },
-                  ),
+                          );
+                        },
+                      ),
+                    );
+                  }),
                 ),
               ],
             ),
