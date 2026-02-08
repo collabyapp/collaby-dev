@@ -903,8 +903,14 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       // Debug payload dialog removed for production builds.
       uploadProgress.value = 0.7;
 
+      final updatePayload = isEditMode.value
+          ? {
+              ...payload,
+            }..removeWhere((key, _) => key == 'videoStyle' || key == 'pricing')
+          : payload;
+
       final response = isEditMode.value
-          ? await gigCreationRepo.updateGigApi(editingGigId!, payload)
+          ? await gigCreationRepo.updateGigApi(editingGigId!, updatePayload)
           : await gigCreationRepo.createGigApi(payload);
 
       uploadProgress.value = 1.0;
