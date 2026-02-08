@@ -53,7 +53,7 @@ class ProfileView extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          Text('Profile', style: AppTextStyles.normalTextBold),
+          Text('profile_title'.tr, style: AppTextStyles.normalTextBold),
           Spacer(),
           Container(
             width: 40,
@@ -183,7 +183,7 @@ class ProfileView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              '${profile.activeBoost?.type ?? 'Pro'} - Level',
+                              '${profile.activeBoost?.type ?? 'boost_pro'.tr} - ${'boost_level'.tr}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 11,
@@ -249,7 +249,7 @@ class ProfileView extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Boost Your Profile and get\nmore UGC Deals',
+              'boost_card_title'.tr,
               style: AppTextStyles.extraSmallText.copyWith(color: Colors.white),
             ),
           ),
@@ -259,7 +259,7 @@ class ProfileView extends StatelessWidget {
               Get.to(() => BoostProfileScreen());
             },
             icon: Image.asset(ImageAssets.boostIcon, width: 20, height: 20),
-            label: Text('Boost Now', style: AppTextStyles.extraSmallMediumText),
+            label: Text('boost_now'.tr, style: AppTextStyles.extraSmallMediumText),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
@@ -294,7 +294,7 @@ class ProfileView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Analytic Overview',
+                    'analytics_overview'.tr,
                     style: AppTextStyles.extraSmallText.copyWith(
                       color: Colors.white,
                     ),
@@ -302,7 +302,7 @@ class ProfileView extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Get.to(() => BoostDetailsScreen()),
                     child: Text(
-                      'View Details',
+                      'view_details'.tr,
                       style: AppTextStyles.extraSmallMediumText.copyWith(
                         color: Colors.white,
                       ),
@@ -317,17 +317,17 @@ class ProfileView extends StatelessWidget {
               children: [
                 _buildAnalyticsItem(
                   '${analytics.profileViews}',
-                  'Profile View',
+                  'profile_view_label'.tr,
                   ImageAssets.eyeIcon,
                 ),
                 _buildAnalyticsItem(
                   '${analytics.responseRate} %',
-                  'Response Rate',
+                  'response_rate'.tr,
                   ImageAssets.responseIcon,
                 ),
                 _buildAnalyticsItem(
                   '${analytics.newLeads}',
-                  'New Leads',
+                  'new_leads'.tr,
                   ImageAssets.leadIcon,
                 ),
               ],
@@ -380,7 +380,7 @@ class ProfileView extends StatelessWidget {
       height: 50,
       child: TabBar(
         controller: controller.tabController,
-        tabs: controller.tabs.map((t) => Tab(text: t)).toList(),
+        tabs: controller.tabs.map((t) => Tab(text: t.tr)).toList(),
         indicator: const UnderlineTabIndicator(
           borderSide: BorderSide(width: 2, color: Colors.black),
         ),

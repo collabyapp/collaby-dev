@@ -14,7 +14,7 @@ class BoostDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Boost Profile'), centerTitle: false),
+      appBar: AppBar(title: Text('boost_profile_title'.tr), centerTitle: false),
       body: Obx(() {
         if (controller.isLoading.value && controller.boostData.value == null) {
           return const Center(child: CircularProgressIndicator());
@@ -25,11 +25,11 @@ class BoostDetailsScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Failed to load boost profile'),
+                Text('boost_profile_load_failed'.tr),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: controller.refreshData,
-                  child: const Text('Retry'),
+                  child: Text('retry'.tr),
                 ),
               ],
             ),
@@ -92,7 +92,7 @@ class BoostDetailsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Premium Boost', style: AppTextStyles.h6),
+              Text('premium_boost'.tr, style: AppTextStyles.h6),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -174,7 +174,7 @@ class BoostDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Start Date',
+                    'start_date'.tr,
                     style: AppTextStyles.extraSmallText.copyWith(fontSize: 10),
                   ),
                   const SizedBox(height: 4),
@@ -188,7 +188,7 @@ class BoostDetailsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'End Date',
+                    'end_date'.tr,
                     style: AppTextStyles.extraSmallText.copyWith(fontSize: 10),
                   ),
                   const SizedBox(height: 4),
@@ -228,7 +228,7 @@ class BoostDetailsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Analytic Overview',
+                'analytics_overview'.tr,
                 style: AppTextStyles.extraSmallMediumText.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -245,7 +245,7 @@ class BoostDetailsScreen extends StatelessWidget {
             children: [
               _buildAnalyticCard(
                 controller.formatNumber(analytics.profileViews),
-                'Profile View',
+                'profile_view_label'.tr,
                 isLargeText: true,
               ),
               Container(
@@ -259,7 +259,7 @@ class BoostDetailsScreen extends StatelessWidget {
 
               _buildAnalyticCard(
                 '${analytics.responseRate}%',
-                'Response Rate',
+                'response_rate'.tr,
                 isLargeText: true,
               ),
               Container(
@@ -273,7 +273,7 @@ class BoostDetailsScreen extends StatelessWidget {
 
               _buildAnalyticCard(
                 analytics.newLeads.toString(),
-                'New Leads',
+                'new_leads'.tr,
                 isLargeText: true,
               ),
             ],
@@ -326,17 +326,17 @@ class BoostDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Boost Performance',
+          Text(
+            'boost_performance'.tr,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _buildLegend(Color(0xff5DA160), 'Profile View'),
+              _buildLegend(Color(0xff5DA160), 'profile_view_label'.tr),
               const SizedBox(width: 16),
-              _buildLegend(Color(0xFF816CED), 'Engagement'),
+              _buildLegend(Color(0xFF816CED), 'engagement'.tr),
             ],
           ),
           const SizedBox(height: 20),
@@ -490,10 +490,10 @@ class BoostDetailsScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Auto-Boost Monthly', style: AppTextStyles.normalTextMedium),
+              Text('auto_boost_monthly'.tr, style: AppTextStyles.normalTextMedium),
               SizedBox(height: 4),
               Text(
-                'Save 20% with auto renewal',
+                'auto_boost_discount'.tr,
                 style: AppTextStyles.extraSmallText,
               ),
             ],
@@ -512,5 +512,3 @@ class BoostDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-

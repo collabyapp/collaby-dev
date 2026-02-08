@@ -26,7 +26,7 @@ class ProfileSetupView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: Text(isEdit ? 'Edit Profile' : 'Profile Setup'),
+        title: Text(isEdit ? 'profile_edit_title'.tr : 'profile_setup_title'.tr),
       ),
       body: !isEdit
           ? GetBuilder<ProfileSetUpController>(
@@ -41,7 +41,7 @@ class ProfileSetupView extends StatelessWidget {
                       showProgressHeadDot: false,
                     ),
                     SizedBox(height: 16),
-                    Text('Personal Info', style: AppTextStyles.smallTextBold),
+                    Text('profile_personal_info'.tr, style: AppTextStyles.smallTextBold),
                     SizedBox(height: 24),
 
                     // Profile Image
@@ -108,49 +108,52 @@ class ProfileSetupView extends StatelessWidget {
 
                     // Form Fields
                     buildTextField(
-                      label: 'First Name*',
+                      label: 'profile_first_name'.tr,
                       controller: controller.firstNameController,
-                      placeholder: 'Enter your first name',
+                      placeholder: 'profile_first_name_hint'.tr,
                     ),
                     SizedBox(height: 20),
                     buildTextField(
-                      label: 'Last Name*',
+                      label: 'profile_last_name'.tr,
                       controller: controller.lastNameController,
-                      placeholder: 'Enter your Last name',
+                      placeholder: 'profile_last_name_hint'.tr,
                     ),
                     SizedBox(height: 20),
                     buildTextField(
-                      label: 'Display Name*',
+                      label: 'profile_display_name'.tr,
                       controller: controller.displayNameController,
-                      placeholder: 'Enter your display name',
+                      placeholder: 'profile_display_name_hint'.tr,
                     ),
                     SizedBox(height: 20),
                     // Description removed for account creation flow
                     // Age Group & Gender Section
-                    Text('Age Group & Gender', style: AppTextStyles.normalText),
+                    Text('profile_age_gender'.tr, style: AppTextStyles.normalText),
                     SizedBox(height: 12),
                     _buildSelectionTile(
                       title: controller.ageGroup.isEmpty
-                          ? 'Select Age Group'
-                          : controller.ageGroup,
+                          ? 'select_age_group'.tr
+                          : _ageGroupLabel(controller.ageGroup),
+                      isPlaceholder: controller.ageGroup.isEmpty,
                       onTap: controller.showAgeGroupSelector,
                     ),
                     SizedBox(height: 12),
                     _buildSelectionTile(
                       title: controller.gender.isEmpty
-                          ? 'Select Gender'
-                          : controller.gender,
+                          ? 'select_gender'.tr
+                          : _genderLabel(controller.gender),
+                      isPlaceholder: controller.gender.isEmpty,
                       onTap: controller.showGenderSelector,
                     ),
                     SizedBox(height: 20),
 
                     // Country Section
-                    Text('Country', style: AppTextStyles.normalText),
+                    Text('profile_country'.tr, style: AppTextStyles.normalText),
                     SizedBox(height: 12),
                     _buildSelectionTile(
                       title: controller.country.isEmpty
-                          ? 'Select Country'
+                          ? 'select_country'.tr
                           : controller.country,
+                      isPlaceholder: controller.country.isEmpty,
                       onTap: controller.showCountrySelector,
                     ),
                     SizedBox(height: 20),
@@ -184,7 +187,7 @@ class ProfileSetupView extends StatelessWidget {
                       isEdit
                           ? SizedBox.shrink()
                           : Text(
-                              'Personal Info',
+                              'profile_personal_info'.tr,
                               style: AppTextStyles.smallTextBold,
                             ),
                       isEdit ? SizedBox.shrink() : SizedBox(height: 24),
@@ -256,53 +259,56 @@ class ProfileSetupView extends StatelessWidget {
 
                       // Form Fields
                       buildTextField(
-                        label: 'First Name*',
+                        label: 'profile_first_name'.tr,
                         controller: controller.firstNameController,
-                        placeholder: 'Enter your first name',
+                        placeholder: 'profile_first_name_hint'.tr,
                       ),
                       SizedBox(height: 20),
                       buildTextField(
-                        label: 'Last Name*',
+                        label: 'profile_last_name'.tr,
                         controller: controller.lastNameController,
-                        placeholder: 'Enter your Last name',
+                        placeholder: 'profile_last_name_hint'.tr,
                       ),
                       SizedBox(height: 20),
                       buildTextField(
-                        label: 'Display Name*',
+                        label: 'profile_display_name'.tr,
                         controller: controller.displayNameController,
-                        placeholder: 'Enter your display name',
+                        placeholder: 'profile_display_name_hint'.tr,
                       ),
                       SizedBox(height: 20),
                       // Description removed for account creation flow
 
                       // Age Group & Gender Section
                       Text(
-                        'Age Group & Gender',
+                        'profile_age_gender'.tr,
                         style: AppTextStyles.normalText,
                       ),
                       SizedBox(height: 12),
                       _buildSelectionTile(
                         title: controller.ageGroup.isEmpty
-                            ? 'Select Age Group'
-                            : controller.ageGroup,
+                            ? 'select_age_group'.tr
+                            : _ageGroupLabel(controller.ageGroup),
+                        isPlaceholder: controller.ageGroup.isEmpty,
                         onTap: controller.showAgeGroupSelector,
                       ),
                       SizedBox(height: 12),
                       _buildSelectionTile(
                         title: controller.gender.isEmpty
-                            ? 'Select Gender'
-                            : controller.gender,
+                            ? 'select_gender'.tr
+                            : _genderLabel(controller.gender),
+                        isPlaceholder: controller.gender.isEmpty,
                         onTap: controller.showGenderSelector,
                       ),
                       SizedBox(height: 20),
 
                       // Country Section
-                      Text('Country', style: AppTextStyles.normalText),
+                      Text('profile_country'.tr, style: AppTextStyles.normalText),
                       SizedBox(height: 12),
                       _buildSelectionTile(
                         title: controller.country.isEmpty
-                            ? 'Select Country'
+                            ? 'select_country'.tr
                             : controller.country,
+                        isPlaceholder: controller.country.isEmpty,
                         onTap: controller.showCountrySelector,
                       ),
                       SizedBox(height: 20),
@@ -340,7 +346,7 @@ class ProfileSetupView extends StatelessWidget {
                     controller.isSubmittingProfile.value;
 
                 return CustomButton(
-                  title: isEdit ? 'Update Profile' : 'Next',
+                  title: isEdit ? 'update_profile'.tr : 'next'.tr,
                   isDisabled: isDisabled,
                   onPressed: () {
                     if (controller.isSubmittingProfile.value) return;
@@ -364,6 +370,7 @@ class ProfileSetupView extends StatelessWidget {
   Widget _buildSelectionTile({
     required String title,
     required VoidCallback onTap,
+    bool isPlaceholder = false,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -380,9 +387,7 @@ class ProfileSetupView extends StatelessWidget {
               child: Text(
                 title,
                 style: AppTextStyles.normalText.copyWith(
-                  color: title.startsWith('Select')
-                      ? Colors.grey[400]
-                      : Colors.black,
+                  color: isPlaceholder ? Colors.grey[400] : Colors.black,
                 ),
               ),
             ),
@@ -398,7 +403,7 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text('Language*', style: AppTextStyles.normalText),
+      Text('profile_language'.tr, style: AppTextStyles.normalText),
       SizedBox(height: 12),
       Obx(
         () => Column(
@@ -426,7 +431,7 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
                               onPressed: () =>
                                   controller.removeLanguage(language.name),
                               child: Text(
-                                'Remove',
+                                'remove'.tr,
                                 style: AppTextStyles.extraSmallMediumText
                                     .copyWith(color: Color(0xffFF2222)),
                               ),
@@ -434,7 +439,7 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
                         ],
                       ),
                       Text(
-                        'Select Level',
+                        'select_level'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.black,
@@ -464,7 +469,7 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    level,
+                                    _languageLevelLabel(level),
                                     style: TextStyle(
                                       color: isSelected
                                           ? Colors.white
@@ -500,8 +505,8 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
               Obx(
                 () => Text(
                   controller.selectedLanguages.isNotEmpty
-                      ? 'Add another Language'
-                      : 'Select Language',
+                      ? 'add_another_language'.tr
+                      : 'select_language'.tr,
                   style: AppTextStyles.normalText.copyWith(
                     color: Color(0XFFA0AEC0),
                   ),
@@ -515,4 +520,39 @@ Widget _buildLanguageSection(ProfileSetUpController controller) {
       ),
     ],
   );
+}
+
+String _languageLevelLabel(String level) {
+  switch (level.toLowerCase()) {
+    case 'beginner':
+    case 'basic':
+      return 'language_level_basic'.tr;
+    case 'intermediate':
+    case 'conversational':
+      return 'language_level_conversational'.tr;
+    case 'advanced':
+      return 'language_level_advanced'.tr;
+    case 'fluent':
+      return 'language_level_fluent'.tr;
+    case 'native':
+      return 'language_level_native'.tr;
+    default:
+      return level;
+  }
+}
+
+String _ageGroupLabel(String value) {
+  final v = value.toLowerCase();
+  if (v.contains('18') || v.contains('24')) return 'age_group_18_24'.tr;
+  if (v.contains('25') || v.contains('39')) return 'age_group_25_39'.tr;
+  if (v.contains('40')) return 'age_group_40_plus'.tr;
+  return value;
+}
+
+String _genderLabel(String value) {
+  final v = value.toLowerCase();
+  if (v.contains('male')) return 'gender_male'.tr;
+  if (v.contains('female')) return 'gender_female'.tr;
+  if (v.contains('non')) return 'gender_non_binary'.tr;
+  return value;
 }

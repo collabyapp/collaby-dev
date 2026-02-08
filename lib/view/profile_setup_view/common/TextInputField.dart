@@ -1,6 +1,7 @@
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 Widget buildTextField({
   required String label,
@@ -97,8 +98,14 @@ Widget buildTextField({
                   right: 16,
                   child: Text(
                     remaining > 0
-                        ? '$remaining characters remaining'
-                        : '${currentLength - minLength} characters over minimum',
+                        ? 'characters_remaining'.tr.replaceAll(
+                            '@count',
+                            remaining.toString(),
+                          )
+                        : 'characters_over_minimum'.tr.replaceAll(
+                            '@count',
+                            (currentLength - minLength).toString(),
+                          ),
                     style: AppTextStyles.extraSmallText.copyWith(
                       color: counterColor,
                       fontWeight: remaining > 0
