@@ -814,6 +814,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       pricingList.add({
         'pricingName': packageNames[i],
+        'title': packageNames[i],
         'currency': selectedCurrency.value,
         'price': pkg.price,
         'deliveryTimeDays': sharedDeliveryDays,
