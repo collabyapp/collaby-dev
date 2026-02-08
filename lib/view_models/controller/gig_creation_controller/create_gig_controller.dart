@@ -894,7 +894,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       final payload = _generateGigPayload();
       debugPrint('=== PAYLOAD ===');
       debugPrint(jsonEncode(payload));
-      _showDebugPayload(payload);
+      // Debug payload dialog removed for production builds.
       uploadProgress.value = 0.7;
 
       final response = isEditMode.value
@@ -949,68 +949,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     }
   }
 
-  void _showDebugPayload(Map<String, dynamic> payload) {
-    if (Get.isDialogOpen ?? false) Get.back();
-    Get.dialog(
-      Dialog(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Debug Payload',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: SelectableText(
-                    const JsonEncoder.withIndent('  ').convert(payload),
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(text: jsonEncode(payload)),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text(
-                        'Copy JSON',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Get.back(),
-                      child: const Text('Close'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      barrierDismissible: false,
-    );
-  }
+  // Debug payload dialog removed for production builds.
 
   void _showUploadProgressDialog() {
     Get.dialog(
