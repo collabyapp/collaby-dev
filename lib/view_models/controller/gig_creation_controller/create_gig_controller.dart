@@ -823,6 +823,27 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       });
     }
 
+    // harden: ensure additionalFeatures titles are always strings
+    final sanitizedPricingList = pricingList
+        .map((p) {
+          final rawExtras = p['additionalFeatures'];
+          if (rawExtras is List) {
+            final cleaned = rawExtras.map((e) {
+              if (e is Map<String, dynamic>) {
+                final title = e['title'];
+                return {
+                  ...e,
+                  'title': title == null ? 'Extra' : title.toString(),
+                };
+              }
+              return e;
+            }).toList();
+            return {...p, 'additionalFeatures': cleaned};
+          }
+          return p;
+        })
+        .toList();
+
     // gallery
     final galleryList = <Map<String, dynamic>>[];
     for (final video in galleryVideos) {
@@ -847,7 +868,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
       'videoStyle': <String>[],
-      'pricing': pricingList,
+      'pricing': sanitizedPricingList,
       'description': description,
       'gallery': galleryList,
     };
