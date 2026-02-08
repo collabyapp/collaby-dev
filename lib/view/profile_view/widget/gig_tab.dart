@@ -35,7 +35,7 @@ class GigsTab extends StatelessWidget {
                       return;
                     }
                     if (hasService) {
-                      controller.navigateToGigDetail(controller.myGigs.first, 0);
+                      await controller.editService(controller.myGigs.first);
                       return;
                     }
                     Get.toNamed(RouteName.createGigView);

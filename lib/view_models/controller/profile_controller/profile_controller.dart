@@ -152,6 +152,32 @@ class ProfileController extends GetxController
     );
   }
 
+  /// Edit service (open create gig flow prefilled)
+  Future<void> editService(MyGigModel gig) async {
+    if (gig.gigId == null || gig.gigId.toString().isEmpty) {
+      Utils.snackBar('Error', 'error_no_service'.tr);
+      return;
+    }
+    try {
+      final response = await _gigRepository.getGigDetailApi(gig.gigId.toString());
+      final data = response is Map<String, dynamic> ? response['data'] : null;
+      if (data == null) {
+        Utils.snackBar('Error', 'error_no_service'.tr);
+        return;
+      }
+      Get.toNamed(
+        RouteName.createGigView,
+        arguments: {
+          'isEditMode': true,
+          'gigId': gig.gigId.toString(),
+          'gigData': data,
+        },
+      );
+    } catch (e) {
+      Utils.snackBar('Error', e.toString());
+    }
+  }
+
   /// Refresh all data
   Future<void> refreshAll() async {
     await Future.wait([
