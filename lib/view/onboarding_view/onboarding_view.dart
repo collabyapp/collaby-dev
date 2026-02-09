@@ -86,14 +86,14 @@ class OnboardingView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Unleash Your\nPotential',
+                                      'onboarding_title'.tr,
                                       style: AppTextStyles.h2.copyWith(
                                         color: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Connect with brands, grow your audience, and turn creativity into income effortlessly',
+                                      'onboarding_subtitle'.tr,
                                       style: AppTextStyles.smallMediumText
                                           .copyWith(color: Colors.white),
                                     ),
@@ -144,7 +144,7 @@ class OnboardingView extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: CustomButton(
-                  title: 'Get Started',
+                  title: 'onboarding_get_started'.tr,
                   onPressed: () {
                     controller.onGetStarted();
                   },
@@ -158,7 +158,7 @@ class OnboardingView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      'onboarding_have_account'.tr,
                       style: AppTextStyles.extraSmallMediumText.copyWith(
                         color: AppColor.secondaryTextColor,
                         fontFamily: AppFonts.OpenSansSemiBold,
@@ -168,7 +168,7 @@ class OnboardingView extends StatelessWidget {
                     GestureDetector(
                       onTap: controller.onLogin,
                       child: Text(
-                        'Login',
+                        'onboarding_login'.tr,
                         style: AppTextStyles.smallText.copyWith(
                           color: AppColor.primaryColor,
                           fontFamily: AppFonts.OpenSansSemiBold,
