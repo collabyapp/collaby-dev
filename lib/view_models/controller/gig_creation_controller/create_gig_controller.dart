@@ -866,15 +866,24 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     // shared extras (paid)
     final sharedExtras = <Map<String, dynamic>>[];
 
-    String _safeTitle(dynamic value) {
-      final t = value == null ? '' : value.toString().trim();
-      return t.isEmpty ? 'Extra' : t;
+    const allowedFeatureTypes = <String>{
+      'scriptwriting',
+      'rawFiles',
+      'subtitles',
+      'additionalRevision',
+      'rushDelivery',
+      'addLogo',
+      'export4k',
+      'custom',
+    };
+
+    String _safeFeatureType(String value) {
+      return allowedFeatureTypes.contains(value) ? value : 'custom';
     }
 
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': 'scriptwriting',
-        'title': _safeTitle('Scriptwriting'),
+        'featureType': _safeFeatureType('scriptwriting'),
         'price': coreScriptExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -882,8 +891,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': 'rawFiles',
-        'title': _safeTitle('Raw Video Files'),
+        'featureType': _safeFeatureType('rawFiles'),
         'price': coreRawExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -891,16 +899,14 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': 'subtitles',
-        'title': _safeTitle('Subtitles'),
+        'featureType': _safeFeatureType('subtitles'),
         'price': coreSubtitlesExtraPrice,
         'deliveryTimesIndays': 0,
       });
     }
     if (!coreCommercialIncluded.value && coreCommercialExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': 'commercialUse',
-        'title': _safeTitle('Commercial Use License'),
+        'featureType': _safeFeatureType('custom'),
         'price': coreCommercialExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -908,8 +914,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     // custom extras
     for (final e in globalExtras) {
-      final type = _inferFeatureTypeFromName(e.name);
-      final title = _safeTitle(e.name);
+      final type = _safeFeatureType(_inferFeatureTypeFromName(e.name));
 
       // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
       if (type == 'additionalRevision' ||
@@ -919,7 +924,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           type == 'custom') {
         sharedExtras.add({
           'featureType': type,
-          'title': _safeTitle(title),
           'price': e.price,
           'deliveryTimesIndays': e.extraDays,
         });
@@ -942,17 +946,18 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       });
     }
 
-    // harden: ensure additionalFeatures titles are always strings
+    // harden: ensure additionalFeatures have only allowed keys
     final sanitizedPricingList = pricingList
         .map((p) {
           final rawExtras = p['additionalFeatures'];
           if (rawExtras is List) {
             final cleaned = rawExtras.map((e) {
               if (e is Map<String, dynamic>) {
-                final title = e['title'];
+                final featureType = _safeFeatureType((e['featureType'] ?? '').toString());
                 return {
-                  ...e,
-                  'title': title == null ? 'Extra' : title.toString(),
+                  'featureType': featureType,
+                  'price': e['price'] ?? 0,
+                  'deliveryTimesIndays': e['deliveryTimesIndays'] ?? 0,
                 };
               }
               return e;
