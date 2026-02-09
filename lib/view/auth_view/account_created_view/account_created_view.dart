@@ -1,4 +1,4 @@
-import 'package:collaby_app/res/assets/image_assets.dart';
+﻿import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
@@ -21,7 +21,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
   late Animation<Offset> _railSlide;
   late Animation<double> _railFade;
 
-  // Steps (top → bottom)
+  // Steps (top â†’ bottom)
   late Animation<Offset> _step1Slide;
   late Animation<double> _step1Fade;
 
@@ -142,7 +142,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
 
               // Username (big & bold)
               Text(
-                ctrl.username.isEmpty ? '—' : ctrl.username,
+                ctrl.username.isEmpty ? 'â€”' : ctrl.username,
                 textAlign: TextAlign.center,
                 style: (AppTextStyles.normalTextMedium),
               ),
@@ -150,7 +150,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
 
               // Sub-heading
               Text(
-                'Your account has been created',
+                'account_created_title'.tr,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.h4,
               ),
@@ -158,13 +158,13 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
 
               // Minor caption
               Text(
-                'Here’s what’s next:',
+                'account_created_next'.tr,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.smallMediumText,
               ),
               const SizedBox(height: 16),
 
-              // Animated Steps (staggered top → bottom)
+              // Animated Steps (staggered top â†’ bottom)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -192,7 +192,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
                             child: SlideTransition(
                               position: _step1Slide,
                               child: _StepText(
-                                'Complete your profile',
+                                'account_created_step_profile'.tr,
                                 isActive: step == 0,
                               ),
                             ),
@@ -204,7 +204,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
                             child: SlideTransition(
                               position: _step2Slide,
                               child: _StepText(
-                                'Create your first Gig',
+                                'account_created_step_service'.tr,
                                 isActive: step == 1,
                               ),
                             ),
@@ -216,7 +216,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
                             child: SlideTransition(
                               position: _step3Slide,
                               child: _StepText(
-                                'Publish it',
+                                'account_created_step_publish'.tr,
                                 isActive: step == 2,
                               ),
                             ),
@@ -232,7 +232,7 @@ class _AccountCreatedViewState extends State<AccountCreatedView>
 
               // Bottom CTA (big rounded)
               CustomButton(
-                title: 'Complete your seller profile',
+                title: 'account_created_cta'.tr,
                 onPressed: () {
                   Get.toNamed(RouteName.profileSetUpView);
                 },
@@ -350,3 +350,4 @@ class _StepText extends StatelessWidget {
     );
   }
 }
+
