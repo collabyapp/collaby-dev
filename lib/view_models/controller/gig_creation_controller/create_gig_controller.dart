@@ -1037,8 +1037,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           ? (Map<String, dynamic>.from(payload)
             ..remove('pricing')
             ..remove('videoStyles')
+            ..remove('videoStyle')
             ..addAll({
-              'videoStyle': payload['videoStyle'],
               'pricings': payload['pricing'],
             }))
           : payload;
