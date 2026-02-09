@@ -86,8 +86,8 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 15),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15),
                       child: Text(
                         'phone_number'.tr,
                         style: TextStyle(
