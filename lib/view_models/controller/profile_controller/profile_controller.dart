@@ -43,6 +43,8 @@ class ProfileController extends GetxController
 
     // Fetch profile data on init
     fetchProfileData();
+    // Preload gigs so the services CTA doesn't flicker
+    fetchMyGigs();
   }
 
   /// Fetch profile data from API

@@ -18,7 +18,7 @@ class BillingWithdrawalScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Billing & Withdrawal',
+          'settings_billing_withdrawal'.tr,
           style: AppTextStyles.normalTextBold.copyWith(
             fontSize: 18,
             color: Colors.black87,
@@ -39,7 +39,7 @@ class BillingWithdrawalScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Loading payment information...',
+                  'settings_loading_payment'.tr,
                   style: TextStyle(color: Colors.grey[600], fontSize: 14),
                 ),
               ],
@@ -59,8 +59,8 @@ class BillingWithdrawalScreen extends StatelessWidget {
                 // Bank Accounts Section
                 if (controller.bankAccounts.isNotEmpty) ...[
                   _SectionHeader(
-                    title: 'Bank Account',
-                    subtitle: 'For withdrawals',
+                    title: 'settings_bank_account'.tr,
+                    subtitle: 'settings_for_withdrawals'.tr,
                     icon: Icons.account_balance_outlined,
                   ),
                   SizedBox(height: 16),
@@ -75,10 +75,10 @@ class BillingWithdrawalScreen extends StatelessWidget {
 
                 // Payment Methods (Cards) Section
                 _SectionHeader(
-                  title: 'Payment Method',
+                  title: 'settings_payment_method'.tr,
                   subtitle: controller.hasAttachedCard
-                      ? 'Active payment card'
-                      : 'No card attached',
+                      ? 'settings_active_payment_card'.tr
+                      : 'settings_no_card_attached'.tr,
                   icon: Icons.credit_card_outlined,
                 ),
                 SizedBox(height: 16),
@@ -181,4 +181,3 @@ class _SectionHeader extends StatelessWidget {
     );
   }
 }
-

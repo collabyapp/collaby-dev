@@ -22,7 +22,7 @@ class SettingsView extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: Text('Settings'),
+        title: Text('settings_title'.tr),
         centerTitle: true,
       ),
       body: Obx(
@@ -36,7 +36,7 @@ class SettingsView extends StatelessWidget {
                     icon: ImageAssets.securityIcon,
                     iconColor: Color(0xFF6366F1),
                     iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
-                    title: 'Account Security',
+                    title: 'settings_account_security'.tr,
                     onTap: () {
                       Get.toNamed(
                         RouteName.accountSecurityView,
@@ -49,7 +49,7 @@ class SettingsView extends StatelessWidget {
                     icon: ImageAssets.walletIcon,
                     iconColor: Color(0xFF6366F1),
                     iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
-                    title: 'Billing & Withdrawal',
+                    title: 'settings_billing_withdrawal'.tr,
                     onTap: () {
                       Get.toNamed(RouteName.withdrawalView);
                     },
@@ -59,7 +59,7 @@ class SettingsView extends StatelessWidget {
                     icon: ImageAssets.shippingIcon,
                     iconColor: Color(0xFF6366F1),
                     iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
-                    title: 'Shipping Address',
+                    title: 'settings_shipping_address'.tr,
                     onTap: () {
                       Get.toNamed(
                         RouteName.shippingAddressView,
@@ -73,7 +73,7 @@ class SettingsView extends StatelessWidget {
                     icon: ImageAssets.deleteIcon,
                     iconColor: Color(0xFF6366F1),
                     iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
-                    title: 'Delete Account',
+                    title: 'settings_delete_account'.tr,
                     isIcon: false,
                     onTap: () {
                       _showDeleteConfirmationDialog(context);
@@ -83,7 +83,7 @@ class SettingsView extends StatelessWidget {
                   Spacer(),
 
                   CustomButton(
-                    title: 'Logout',
+                    title: 'settings_logout'.tr,
                     onPressed: () {
                       logoutController.showLogoutConfirmation();
                     },
@@ -105,8 +105,8 @@ class SettingsView extends StatelessWidget {
                       SizedBox(height: 16),
                       Text(
                         logoutController.isLoading
-                            ? 'Logging out...'
-                            : 'Deleting account...',
+                            ? 'settings_logging_out'.tr
+                            : 'settings_deleting_account'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -133,20 +133,20 @@ class SettingsView extends StatelessWidget {
             Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
             SizedBox(width: 10),
             Text(
-              'Delete Account',
+              'settings_delete_account'.tr,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to delete your account? This action cannot be undone.',
+          'settings_delete_confirm_body'.tr,
           style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'Cancel',
+              'cancel'.tr,
               style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
             ),
           ),
@@ -162,7 +162,7 @@ class SettingsView extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Delete',
+              'delete'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -175,4 +175,3 @@ class SettingsView extends StatelessWidget {
     );
   }
 }
-

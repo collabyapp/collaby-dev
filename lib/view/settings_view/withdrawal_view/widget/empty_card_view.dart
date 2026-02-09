@@ -1,6 +1,7 @@
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 class EnhancedEmptyCardPlaceholder extends StatelessWidget {
   final VoidCallback onAddCard;
 
@@ -55,8 +56,8 @@ class EnhancedEmptyCardPlaceholder extends StatelessWidget {
               ),
             ),
             SizedBox(height: 24),
-            Text(
-              'No Payment Card',
+              Text(
+                'settings_no_payment_card'.tr,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -64,8 +65,8 @@ class EnhancedEmptyCardPlaceholder extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8),
-            Text(
-              'Add a payment card to make purchases\nand manage subscriptions',
+              Text(
+                'settings_add_card_hint'.tr,
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.grey[600],
@@ -95,7 +96,7 @@ class EnhancedEmptyCardPlaceholder extends StatelessWidget {
                   Icon(Icons.add_circle_outline, color: Colors.white, size: 18),
                   SizedBox(width: 8),
                   Text(
-                    'Add Payment Card',
+                    'settings_add_payment_card'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,

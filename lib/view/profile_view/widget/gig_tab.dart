@@ -22,7 +22,12 @@ class GigsTab extends StatelessWidget {
             children: [
               Text('services'.tr, style: AppTextStyles.normalTextBold),
               Obx(() {
+                final isLoading =
+                    controller.isLoadingGigs.value && controller.myGigs.isEmpty;
                 final hasService = controller.myGigs.isNotEmpty;
+                final ctaKey = isLoading
+                    ? 'loading'
+                    : (hasService ? 'edit_service_cta' : 'create_new_service');
                 return GestureDetector(
                   onTap: () async {
                     if (controller.isLoadingGigs.value) return;
@@ -30,18 +35,17 @@ class GigsTab extends StatelessWidget {
                       await controller.fetchMyGigs(refresh: true);
                     }
                     if (controller.myGigs.isEmpty) {
-                      Utils.snackBar('no_services_title'.tr, 'no_services_hint'.tr);
+                      Utils.snackBar(
+                        'no_services_title'.tr,
+                        'no_services_hint'.tr,
+                      );
                       Get.toNamed(RouteName.createGigView);
                       return;
                     }
-                    if (hasService) {
-                      await controller.editService(controller.myGigs.first);
-                      return;
-                    }
-                    Get.toNamed(RouteName.createGigView);
+                    await controller.editService(controller.myGigs.first);
                   },
                   child: Text(
-                    hasService ? 'edit_service_cta'.tr : 'create_new_service'.tr,
+                    ctaKey.tr,
                     style: AppTextStyles.smallMediumText.copyWith(
                       color: AppColor.primaryColor,
                     ),
@@ -100,7 +104,7 @@ class GigsTab extends StatelessWidget {
                     final gig = controller.myGigs[index];
                     return GestureDetector(
                       onTap: () {
-                        controller.navigateToGigDetail(gig, index);
+                        controller.editService(gig);
                       },
                       child: Container(
                         decoration: BoxDecoration(

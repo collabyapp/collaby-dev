@@ -56,12 +56,15 @@ class SignUpView extends StatelessWidget {
                   children: [
                     const SizedBox(height: 8),
                     Center(
-                      child: Text('Create Account', style: AppTextStyles.h3),
+                      child: Text(
+                        'signup_title'.tr,
+                        style: AppTextStyles.h3,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Center(
                       child: Text(
-                        'Provide some info to get started!',
+                        'signup_subtitle'.tr,
                         style: AppTextStyles.smallText.copyWith(
                           color: Color(0xff4F4F4F),
                         ),
@@ -77,8 +80,8 @@ class SignUpView extends StatelessWidget {
                             ? const Color(0xff9CA3AF) // grey when empty
                             : AppColor.blackColor; // primary when not empty
                         return CustomTextField(
-                          label: 'Email',
-                          hint: 'Enter your email address',
+                          label: 'signup_email_label'.tr,
+                          hint: 'signup_email_hint'.tr,
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: SizedBox(
                             width: 13,
@@ -105,8 +108,8 @@ class SignUpView extends StatelessWidget {
                             ? const Color(0xff9CA3AF) // grey when empty
                             : AppColor.blackColor; // primary when not empty
                         return CustomTextField(
-                          label: 'Set Password',
-                          hint: 'Enter your password',
+                          label: 'signup_password_label'.tr,
+                          hint: 'signup_password_hint'.tr,
                           obscureText: c.obscure1.value,
                           prefixIcon: SizedBox(
                             width: 13,
@@ -145,8 +148,8 @@ class SignUpView extends StatelessWidget {
                             ? const Color(0xff9CA3AF) // grey when empty
                             : AppColor.blackColor; // primary when not empty
                         return CustomTextField(
-                          label: 'Confirm Password',
-                          hint: 'Enter confirm password',
+                          label: 'signup_confirm_label'.tr,
+                          hint: 'signup_confirm_hint'.tr,
                           obscureText: c.obscure2.value,
                           prefixIcon: SizedBox(
                             width: 13,
@@ -179,7 +182,7 @@ class SignUpView extends StatelessWidget {
                     // Login button
                     Obx(
                       () => CustomButton(
-                        title: 'SignUp',
+                        title: 'signup'.tr,
                         isDisabled: !c.isValid,
                         isLoading: c.isSubmitting.value,
                         onPressed: c.isValid && !c.isSubmitting.value
@@ -200,7 +203,7 @@ class SignUpView extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           child: Text(
-                            'OR',
+                            'or'.tr,
                             style: AppTextStyles.extraSmallText,
                           ),
                         ),
@@ -225,7 +228,7 @@ class SignUpView extends StatelessWidget {
                             // errorBuilder: (_, __, ___) =>
                             //     const Icon(Icons.g_mobiledata),
                           ),
-                          label: 'Google',
+                          label: 'signup_google'.tr,
                           onTap: c.tapGoogle,
                         ),
                         const SizedBox(width: 12),
@@ -237,7 +240,7 @@ class SignUpView extends StatelessWidget {
                             // errorBuilder: (_, __, ___) =>
                             //     const Icon(Icons.g_mobiledata),
                           ),
-                          label: 'Apple',
+                          label: 'signup_apple'.tr,
                           onTap: c.tapApple,
                         ),
                       ],
@@ -249,7 +252,7 @@ class SignUpView extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Text(
-                            "Already have an account?  ",
+                            'signup_have_account'.tr,
                             style: AppTextStyles.extraSmallMediumText.copyWith(
                               color: Color(0xff727172),
                             ),
@@ -257,7 +260,7 @@ class SignUpView extends StatelessWidget {
                           GestureDetector(
                             onTap: () => {Get.offAllNamed(RouteName.logInView)},
                             child: Text(
-                              'Login',
+                              'onboarding_login'.tr,
                               style: AppTextStyles.smallMediumText.copyWith(
                                 color: AppColor.primaryColor,
                               ),

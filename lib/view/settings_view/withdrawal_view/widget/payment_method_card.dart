@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:collaby_app/models/payment_models/payment_models.dart';
 
 class PaymentMethodCard extends StatelessWidget {
@@ -121,13 +122,13 @@ class PaymentMethodCard extends StatelessWidget {
                     children: [
                       _buildInfoChip(
                         icon: Icons.calendar_today_outlined,
-                        label: 'Expires',
+                        label: 'settings_expires'.tr,
                         value: paymentMethod.expirationDate,
                       ),
                       SizedBox(width: 12),
                       _buildInfoChip(
                         icon: Icons.account_balance_wallet_outlined,
-                        label: 'Type',
+                        label: 'settings_type'.tr,
                         value: paymentMethod.funding.toUpperCase(),
                       ),
                     ],

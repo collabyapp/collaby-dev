@@ -1,5 +1,6 @@
 import 'package:collaby_app/models/payment_models/payment_models.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class BankAccountCard extends StatelessWidget {
   final BankAccountModel account;
@@ -96,7 +97,7 @@ class BankAccountCard extends StatelessWidget {
                                   ),
                                   SizedBox(width: 4),
                                   Text(
-                                    'Verified',
+                                    'settings_verified'.tr,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 11,
@@ -124,7 +125,7 @@ class BankAccountCard extends StatelessWidget {
                   ),
                   SizedBox(height: 28),
                   Text(
-                    'ACCOUNT NUMBER',
+                    'settings_account_number'.tr,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.7),
                       fontSize: 11,
@@ -151,7 +152,7 @@ class BankAccountCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ROUTING NUMBER',
+                              'settings_routing_number'.tr,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.7),
                                 fontSize: 10,
@@ -177,7 +178,7 @@ class BankAccountCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'ACCOUNT HOLDER',
+                                'settings_account_holder'.tr,
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.7),
                                   fontSize: 10,
@@ -209,4 +210,3 @@ class BankAccountCard extends StatelessWidget {
     );
   }
 }
-

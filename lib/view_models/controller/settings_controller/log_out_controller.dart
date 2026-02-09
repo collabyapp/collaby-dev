@@ -25,20 +25,20 @@ class LogoutController extends GetxController {
             Icon(Icons.logout, color: Color(0xFF6366F1), size: 28),
             SizedBox(width: 10),
             Text(
-              'Logout',
+              'settings_logout'.tr,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         content: Text(
-          'Are you sure you want to logout?',
+          'settings_logout_confirm'.tr,
           style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'Cancel',
+              'cancel'.tr,
               style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600),
             ),
           ),
@@ -54,7 +54,7 @@ class LogoutController extends GetxController {
               ),
             ),
             child: Text(
-              'Logout',
+              'settings_logout'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -84,15 +84,18 @@ class LogoutController extends GetxController {
         await _userPref.clearUserData();
 
         // Show success message
-        Utils.snackBar('Success', 'Logged out successfully');
+        Utils.snackBar('success'.tr, 'settings_logout_success'.tr);
 
         // Navigate to login and clear all routes
         Get.offAllNamed(RouteName.logInView);
       } else {
-        Utils.snackBar('Logout Failed', 'Unexpected response from server');
+        Utils.snackBar(
+          'settings_logout_failed'.tr,
+          'settings_unexpected_response'.tr,
+        );
       }
     } catch (e) {
-      Utils.snackBar('Error', 'Logout failed. Please try again.');
+      Utils.snackBar('error'.tr, 'settings_logout_failed_retry'.tr);
       debugPrint('âŒ Logout Exception: $e');
     } finally {
       setLoading(false);

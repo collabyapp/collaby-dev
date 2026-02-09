@@ -106,9 +106,10 @@ class SignUpController extends GetxController {
 
       if (hasError) {
         // Example: 409 duplicate email
-        final msg = (resp['message'] ?? 'Sign up failed. Please try again.')
+        final msg =
+            (resp['message'] ?? 'signup_failed_generic'.tr)
             .toString();
-        Utils.snackBar('Sign Up Failed', msg);
+        Utils.snackBar('signup_failed'.tr, msg);
         return; // 🚫 do not navigate
       }
 
@@ -121,8 +122,8 @@ class SignUpController extends GetxController {
 
       if (!isSuccess) {
         Utils.snackBar(
-          'Sign Up Failed',
-          (resp['message'] ?? 'Unexpected server response.').toString(),
+          'signup_failed'.tr,
+          (resp['message'] ?? 'signup_unexpected_response'.tr).toString(),
         );
         return;
       }
@@ -134,7 +135,7 @@ class SignUpController extends GetxController {
       );
     } catch (e) {
       // 5) Exceptions
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     } finally {
       // 6) Loading OFF
       isSubmitting.value = false;
@@ -154,7 +155,8 @@ class SignUpController extends GetxController {
         await GoogleSignServices.signOutFromGoogle();
         CustomSnackBar.show(
           context: Get.context!,
-          message: googleSignInResult.errorMessage ?? 'Something went wrong',
+          message:
+              googleSignInResult.errorMessage ?? 'error_generic'.tr,
         );
         return;
       }
@@ -163,7 +165,7 @@ class SignUpController extends GetxController {
       final emailFromGoogle = (userData['email'] ?? '') as String;
 
       if (idToken.isEmpty) {
-        throw 'Google ID token is missing.';
+        throw 'google_token_missing'.tr;
       }
 
       final decision = await _auth.loginWithGoogleFlow(
@@ -174,7 +176,7 @@ class SignUpController extends GetxController {
       if (decision.otpSent) {
         CustomSnackBar.show(
           context: Get.context!,
-          message: 'We sent you an OTP. Please verify your email.',
+          message: 'otp_sent'.tr,
         );
       }
 
@@ -189,25 +191,26 @@ class SignUpController extends GetxController {
     }
   }
 
-  void tapApple() => Utils.snackBar('Apple', 'Continue with Apple (demo).');
+  void tapApple() =>
+      Utils.snackBar('apple'.tr, 'apple_demo'.tr);
 
   // --- validators ---
   String? _validateEmail(String v) {
-    if (v.isEmpty) return 'Enter your email';
+    if (v.isEmpty) return 'signup_email_required'.tr;
     final rgx = RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[a-zA-Z]{2,}$');
-    if (!rgx.hasMatch(v)) return 'Please enter a valid email address.';
+    if (!rgx.hasMatch(v)) return 'signup_email_invalid'.tr;
     return null;
   }
 
   String? _validatePassword(String v) {
-    if (v.isEmpty) return 'Enter your password';
-    if (v.length < 8) return 'Min 8 characters';
+    if (v.isEmpty) return 'signup_password_required'.tr;
+    if (v.length < 8) return 'signup_password_min'.tr;
     return null;
   }
 
   String? _validateConfirm(String v) {
-    if (v.isEmpty) return 'Confirm your password';
-    if (v != password.value) return 'Password do not match';
+    if (v.isEmpty) return 'signup_confirm_required'.tr;
+    if (v != password.value) return 'signup_password_mismatch'.tr;
     return null;
   }
 }

@@ -28,7 +28,8 @@ class DeleteAccountController extends GetxController {
       // Check if response contains error
       if (response != null && response['error'] == true) {
         // Error case - show error dialog with details
-        String errorMessage = response['message'] ?? 'Failed to delete account';
+        String errorMessage =
+            response['message'] ?? 'settings_delete_failed'.tr;
         List<String> reasons = [];
 
         // Extract reasons from details if available
@@ -50,19 +51,19 @@ class DeleteAccountController extends GetxController {
         // Success case
         await _userPref.clearUserData();
 
-        Utils.snackBar('Success', 'Account deleted successfully');
+        Utils.snackBar('success'.tr, 'settings_delete_success'.tr);
 
         Get.offAllNamed(RouteName.logInView);
       } else {
         // Unexpected response
-        _showErrorDialog('Failed to delete account. Please try again.', []);
+        _showErrorDialog('settings_delete_failed_retry'.tr, []);
       }
     } catch (error) {
       setLoading(false);
       debugPrint('âŒ Delete Account Exception: $error');
 
       // Handle exception
-      String errorMessage = 'An error occurred. Please try again.';
+      String errorMessage = 'settings_generic_error'.tr;
 
       _showErrorDialog(errorMessage, []);
     }
@@ -78,7 +79,10 @@ class DeleteAccountController extends GetxController {
             Icon(Icons.error_outline, color: Colors.red, size: 28),
             SizedBox(width: 10),
             Expanded(
-              child: Text('Cannot Delete Account', style: AppTextStyles.h6),
+              child: Text(
+                'settings_cannot_delete'.tr,
+                style: AppTextStyles.h6,
+              ),
             ),
           ],
         ),
@@ -89,7 +93,7 @@ class DeleteAccountController extends GetxController {
             children: [
               if (reasons.isNotEmpty) ...[
                 Text(
-                  'Please resolve the following:',
+                  'settings_resolve_following'.tr,
                   style: AppTextStyles.normalTextMedium,
                 ),
                 SizedBox(height: 12),
@@ -127,7 +131,7 @@ class DeleteAccountController extends GetxController {
             style: TextButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
-            child: Text('OK', style: AppTextStyles.normalTextMedium),
+            child: Text('ok'.tr, style: AppTextStyles.normalTextMedium),
           ),
         ],
       ),

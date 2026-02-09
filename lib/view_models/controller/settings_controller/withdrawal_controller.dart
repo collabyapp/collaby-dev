@@ -42,7 +42,7 @@ class BillingController extends GetxController {
       // Load both in parallel
       await Future.wait([_loadBankAccounts(), _loadPaymentMethods()]);
     } catch (e) {
-      _showErrorSnackbar('Failed to load payment data', e.toString());
+      _showErrorSnackbar('settings_load_payment_failed'.tr, e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -74,8 +74,8 @@ class BillingController extends GetxController {
   Future<void> showAddCardBottomSheet() async {
     if (hasAttachedCard) {
       Utils.snackBar(
-        'Card Already Attached',
-        'Please remove the existing card before adding a new one.',
+        'settings_card_already_attached'.tr,
+        'settings_remove_existing_card'.tr,
         // snackPosition: SnackPosition.BOTTOM,
         // backgroundColor: Colors.orange[50],
         // colorText: Colors.orange[900],
@@ -111,8 +111,8 @@ class BillingController extends GetxController {
         Get.back(); // Close bottom sheet
 
         Utils.snackBar(
-          'Success',
-          'Card added successfully!',
+          'success'.tr,
+          'settings_card_added'.tr,
           // snackPosition: SnackPosition.BOTTOM,
           // backgroundColor: Colors.green[50],
           // colorText: Colors.green[900],
@@ -124,7 +124,7 @@ class BillingController extends GetxController {
         throw Exception('Failed to attach card');
       }
     } catch (e) {
-      _showErrorSnackbar('Failed to add card', e.toString());
+      _showErrorSnackbar('settings_add_card_failed'.tr, e.toString());
     } finally {
       isSaving.value = false;
     }
@@ -144,16 +144,16 @@ class BillingController extends GetxController {
             children: [
               Icon(Icons.warning_amber_rounded, color: Colors.orange),
               SizedBox(width: 12),
-              Text('Remove Card'),
+              Text('settings_remove_card'.tr),
             ],
           ),
           content: Text(
-            'Are you sure you want to remove this payment card? This action cannot be undone.',
+            'settings_remove_card_confirm'.tr,
           ),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey[700])),
+              child: Text('cancel'.tr, style: TextStyle(color: Colors.grey[700])),
             ),
             ElevatedButton(
               onPressed: () => Get.back(result: true),
@@ -164,7 +164,7 @@ class BillingController extends GetxController {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: Text('Remove'),
+              child: Text('settings_remove'.tr),
             ),
           ],
         ),
@@ -183,8 +183,8 @@ class BillingController extends GetxController {
         paymentMethods.removeWhere((pm) => pm.id == paymentMethodId);
 
         Utils.snackBar(
-          'Success',
-          'Card removed successfully',
+          'success'.tr,
+          'settings_card_removed'.tr,
 
           // backgroundColor: Colors.green[50],
           // colorText: Colors.green[900],
@@ -196,7 +196,7 @@ class BillingController extends GetxController {
         throw Exception('Failed to delete payment method');
       }
     } catch (e) {
-      _showErrorSnackbar('Failed to remove card', e.toString());
+      _showErrorSnackbar('settings_remove_card_failed'.tr, e.toString());
     } finally {
       isDeleting.value = false;
     }
@@ -294,15 +294,15 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
       await widget.onCardAdded(tokenData.id);
     } on StripeException catch (e) {
       Utils.snackBar(
-        'Card Error',
-        e.error.localizedMessage ?? 'Invalid card details',
+        'settings_card_error'.tr,
+        e.error.localizedMessage ?? 'settings_invalid_card'.tr,
 
         
       );
     } catch (e) {
       Utils.snackBar(
-        'Error',
-        'Failed to process card: ${e.toString()}',
+        'error'.tr,
+        'settings_card_process_failed'.trParams({'error': e.toString()}),
 
     
       );
@@ -378,7 +378,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Add Payment Card',
+                            'settings_add_payment_card'.tr,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -386,7 +386,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'Securely add your card details',
+                            'settings_secure_add_card'.tr,
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 13,
@@ -461,7 +461,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Secure Payment',
+                              'settings_secure_payment'.tr,
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -470,7 +470,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                             ),
                             SizedBox(height: 2),
                             Text(
-                              'Your card data is encrypted with bank-level security',
+                              'settings_card_encrypted'.tr,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey[700],
@@ -516,7 +516,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                               ),
                               SizedBox(width: 12),
                               Text(
-                                'Processing...',
+                                'settings_processing'.tr,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -530,7 +530,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                               Icon(Icons.add_circle_outline, size: 20),
                               SizedBox(width: 8),
                               Text(
-                                'Add Card',
+                                'settings_add_card'.tr,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -548,7 +548,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Secured by',
+                        'settings_secured_by'.tr,
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       SizedBox(width: 6),

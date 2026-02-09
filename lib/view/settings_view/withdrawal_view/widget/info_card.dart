@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class InfoCard extends StatelessWidget {
   @override
@@ -32,7 +33,7 @@ class InfoCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Payment Card Limit',
+                  'settings_payment_card_limit'.tr,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -41,7 +42,7 @@ class InfoCard extends StatelessWidget {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'You can only have one card attached at a time. To add a new card, please remove your current card first.',
+                  'settings_payment_card_limit_body'.tr,
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey[700],
