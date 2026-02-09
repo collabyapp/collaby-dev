@@ -27,7 +27,7 @@ class ReviewsTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Reviews', style: AppTextStyles.normalTextBold),
+                  Text('reviews_title'.tr, style: AppTextStyles.normalTextBold),
                   if (reviewStats != null)
                     Row(
                       children: [
@@ -59,7 +59,7 @@ class ReviewsTab extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('No reviews yet', style: AppTextStyles.normalText),
+                        Text('no_reviews_yet'.tr, style: AppTextStyles.normalText),
                       ],
                     ),
                   ),

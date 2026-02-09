@@ -261,7 +261,7 @@ class ProfileSetUpController extends GetxController {
         _validateForm();
       }
     } catch (e) {
-      Utils.snackBar('Error', 'Failed to load profile: $e');
+      Utils.snackBar('error'.tr, '${'profile_load_failed'.tr}: $e');
     } finally {
       isLoadingProfile.value = false;
     }
@@ -344,7 +344,7 @@ class ProfileSetUpController extends GetxController {
 
       filteredLanguages = List.from(languagesData);
     } catch (e) {
-      Utils.snackBar('Error', 'Failed to load data: $e');
+      Utils.snackBar('error'.tr, '${'profile_data_load_failed'.tr}: $e');
     } finally {
       isLoadingData.value = false;
     }
@@ -442,7 +442,7 @@ class ProfileSetUpController extends GetxController {
       selectedLanguages.removeWhere((lang) => lang.name == languageCode);
       _validateForm();
     } else {
-      Utils.snackBar('Cannot Remove', 'At least one language is required');
+      Utils.snackBar('cannot_remove'.tr, 'language_required'.tr);
     }
   }
 
@@ -458,7 +458,7 @@ class ProfileSetUpController extends GetxController {
       _profile.profileImagePath = uploadedUrl;
       _onFormChange();
     } catch (_) {
-      Utils.snackBar('Error', 'Failed to upload image');
+      Utils.snackBar('error'.tr, 'upload_image_failed'.tr);
     }
   }
 
@@ -514,19 +514,19 @@ class ProfileSetUpController extends GetxController {
 
   bool validateProfile() {
     if (firstNameController.text.trim().isEmpty) {
-      Utils.snackBar('Error', 'First name is required');
+      Utils.snackBar('error'.tr, 'first_name_required'.tr);
       return false;
     }
     if (lastNameController.text.trim().isEmpty) {
-      Utils.snackBar('Error', 'Last name is required');
+      Utils.snackBar('error'.tr, 'last_name_required'.tr);
       return false;
     }
     if (displayNameController.text.trim().isEmpty) {
-      Utils.snackBar('Error', 'Display name is required');
+      Utils.snackBar('error'.tr, 'display_name_required'.tr);
       return false;
     }
     if (selectedLanguages.isEmpty) {
-      Utils.snackBar('Error', 'At least one language is required');
+      Utils.snackBar('error'.tr, 'language_required'.tr);
       return false;
     }
     return true;
@@ -645,13 +645,13 @@ class ProfileSetUpController extends GetxController {
     if (!validateProfile()) return;
 
     if (!hasChanges.value) {
-      Utils.snackBar('Info', 'No changes to save');
+      Utils.snackBar('info'.tr, 'no_changes_to_save'.tr);
       return;
     }
 
     final payload = generateUpdatePayload();
     if (payload.isEmpty) {
-      Utils.snackBar('Info', 'No changes to save');
+      Utils.snackBar('info'.tr, 'no_changes_to_save'.tr);
       return;
     }
 
@@ -661,7 +661,7 @@ class ProfileSetUpController extends GetxController {
       final res = await profileRepository.updateCreatorProfileApi(payload);
 
       if (res == null) {
-        Utils.snackBar('Error', 'No response from server');
+        Utils.snackBar('error'.tr, 'error_no_response'.tr);
         return;
       }
 
@@ -687,15 +687,21 @@ class ProfileSetUpController extends GetxController {
         };
 
         hasChanges.value = false;
-        Utils.snackBar('Success', message ?? 'Profile updated successfully');
+        Utils.snackBar(
+          'success'.tr,
+          message ?? 'profile_updated_success'.tr,
+        );
 
         Get.offAllNamed(RouteName.bottomNavigationView, arguments: {'index': 3});
       } else {
-        Utils.snackBar('Error', message ?? 'Failed to update profile');
+        Utils.snackBar(
+          'error'.tr,
+          message ?? 'profile_update_failed'.tr,
+        );
       }
     } catch (e) {
       debugPrint('updateProfile error: $e');
-      Utils.snackBar('Error', 'Failed to update profile');
+      Utils.snackBar('error'.tr, 'profile_update_failed'.tr);
     } finally {
       isSubmittingProfile.value = false;
     }
@@ -705,7 +711,7 @@ class ProfileSetUpController extends GetxController {
     if (!validateProfile()) return;
 
     if (!isShippingValid.value) {
-      Utils.snackBar('Error', 'Please complete shipping address');
+      Utils.snackBar('error'.tr, 'shipping_address_required'.tr);
       return;
     }
 
@@ -719,7 +725,7 @@ class ProfileSetUpController extends GetxController {
       final res = await profileSetUpRepo.profileSetupApi(payload);
 
       if (res == null) {
-        Utils.snackBar('Error', 'No response from server. Please try again.');
+        Utils.snackBar('error'.tr, 'error_no_response'.tr);
         return;
       }
 
@@ -728,7 +734,10 @@ class ProfileSetUpController extends GetxController {
       final data = res['data'] as Map<String, dynamic>?;
 
       if (statusCode == 201) {
-        Utils.snackBar('Success', message ?? 'Creator profile setup completed');
+        Utils.snackBar(
+          'success'.tr,
+          message ?? 'profile_setup_completed'.tr,
+        );
 
         // âœ… aquÃ­ es donde tÃº enlazas â€œseguiditoâ€ al Servicio:
         // Cambia esta ruta a la que uses para CreateGigView renombrada como Servicio.
@@ -737,19 +746,25 @@ class ProfileSetUpController extends GetxController {
           'profileData': data,
         });
       } else {
-        Utils.snackBar('Error', 'Failed to submit profile: ${message ?? 'Unknown error'}');
+        Utils.snackBar(
+          'error'.tr,
+          'profile_submit_failed'.tr.replaceAll(
+            '@reason',
+            message ?? 'unknown_error'.tr,
+          ),
+        );
       }
     } catch (e, st) {
       debugPrint('submitToApi error: $e');
       debugPrintStack(stackTrace: st);
 
-      String errorMessage = 'Failed to submit profile. Please try again.';
+      String errorMessage = 'profile_submit_failed_generic'.tr;
       if (e.toString().contains('SocketException')) {
-        errorMessage = 'No internet connection. Please check your network.';
+        errorMessage = 'error_no_internet'.tr;
       } else if (e.toString().contains('TimeoutException')) {
-        errorMessage = 'Request timeout. Please try again.';
+        errorMessage = 'error_timeout'.tr;
       }
-      Utils.snackBar('Error', errorMessage);
+      Utils.snackBar('error'.tr, errorMessage);
     } finally {
       isSubmittingProfile.value = false;
     }

@@ -28,7 +28,7 @@ class AvailableBalanceCard extends GetView<EarningsController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Available Balance', style: AppTextStyles.smallText),
+                Text('available_balance'.tr, style: AppTextStyles.smallText),
                 const SizedBox(height: 4),
                 Obx(
                   () => Text(

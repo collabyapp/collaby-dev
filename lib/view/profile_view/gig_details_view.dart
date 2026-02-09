@@ -18,7 +18,7 @@ class GigDetailView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gig Detail'),
+        title: Text('service_detail_title'.tr),
         actions: [
           Obx(
             () => GestureDetector(
@@ -77,7 +77,7 @@ class GigDetailView extends StatelessWidget {
               children: [
                 Icon(Icons.error_outline, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
-                Text('Failed to load gig details'),
+                Text('service_detail_load_failed'.tr),
               ],
             ),
           );
@@ -119,7 +119,7 @@ class GigDetailView extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Description
-              _sectionTitle('Description'),
+              _sectionTitle('service_detail_description'.tr),
               const SizedBox(height: 8),
               Text(c.description.value, style: AppTextStyles.extraSmallText),
 
@@ -127,7 +127,7 @@ class GigDetailView extends StatelessWidget {
 
               // Video Style
               if (c.videoStyles.isNotEmpty) ...[
-                _sectionTitle('Video Style'),
+                _sectionTitle('service_detail_video_style'.tr),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
@@ -139,7 +139,7 @@ class GigDetailView extends StatelessWidget {
 
               // Requirements
               if (c.requirements.isNotEmpty) ...[
-                _sectionTitle('Requirements'),
+                _sectionTitle('service_detail_requirements'.tr),
                 const SizedBox(height: 8),
                 ...c.requirements.asMap().entries.map((e) {
                   final idx = e.key + 1;
@@ -156,7 +156,7 @@ class GigDetailView extends StatelessWidget {
 
               // Gallery
               if (c.gallery.isNotEmpty) ...[
-                _sectionTitle('Gallery'),
+                _sectionTitle('service_detail_gallery'.tr),
                 const SizedBox(height: 10),
                 GridView.builder(
                   shrinkWrap: true,
@@ -190,7 +190,7 @@ class GigDetailView extends StatelessWidget {
                   width: double.infinity,
                   height: 52,
                   child: CustomButton(
-                    title: 'Edit Gig',
+                    title: 'edit_service'.tr,
                     onPressed: () {
                       Get.toNamed(
                         RouteName.createGigView,
@@ -357,7 +357,15 @@ class GigDetailView extends StatelessWidget {
                   Image.asset(ImageAssets.revisionIcon, width: 14),
                   const SizedBox(width: 6),
                   Text(
-                    '${c.numberOfRevisions.value} Revision',
+                    c.numberOfRevisions.value == 1
+                        ? 'revision_single'.tr.replaceAll(
+                          '@count',
+                          c.numberOfRevisions.value.toString(),
+                        )
+                        : 'revision_plural'.tr.replaceAll(
+                          '@count',
+                          c.numberOfRevisions.value.toString(),
+                        ),
                     style: AppTextStyles.extraSmallMediumText,
                   ),
                 ],

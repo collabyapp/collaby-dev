@@ -34,7 +34,7 @@ class EarningsView extends StatelessWidget {
             },
             icon: const Icon(Icons.arrow_back),
           ),
-          title: const Text('Earnings'),
+          title: Text('earnings_title'.tr),
           actions: [
             IconButton(
               icon: Icon(Icons.refresh),

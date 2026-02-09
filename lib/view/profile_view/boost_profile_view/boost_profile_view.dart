@@ -13,7 +13,7 @@ class BoostProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Boost Profile'), centerTitle: false),
+      appBar: AppBar(title: Text('boost_profile_title'.tr), centerTitle: false),
       body: Obx(() {
         if (controller.rxRequestStatus.value == Status.loading) {
           return const Center(
@@ -28,7 +28,7 @@ class BoostProfileScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline, size: 60, color: Colors.red),
                 const SizedBox(height: 16),
-                const Text('Failed to load boost plans'),
+                Text('boost_plans_load_failed'.tr),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: controller.fetchBoostPlans,
@@ -36,7 +36,7 @@ class BoostProfileScreen extends StatelessWidget {
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Retry'),
+                  child: Text('retry'.tr),
                 ),
               ],
             ),
@@ -157,7 +157,7 @@ class BoostProfileScreen extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Boost Now',
+                    'boost_now'.tr,
                     style: AppTextStyles.extraSmallText.copyWith(
                       color: Colors.white,
                     ),
@@ -192,12 +192,12 @@ class BoostProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Auto-Boost Monthly',
+                  'auto_boost_monthly'.tr,
                   style: AppTextStyles.normalTextMedium,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Save 20% with auto renewal',
+                  'auto_boost_discount'.tr,
                   style: AppTextStyles.extraSmallText,
                 ),
               ],
@@ -220,8 +220,8 @@ class BoostProfileScreen extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'Confirm Purchase',
+        title: Text(
+          'confirm_purchase'.tr,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         content: Column(
@@ -229,15 +229,15 @@ class BoostProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You are about to purchase ${plan.name}',
+              'confirm_purchase_desc'.tr.replaceAll('@plan', plan.name),
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Amount:',
+                Text(
+                  'amount_label'.tr,
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 Text(
@@ -251,8 +251,8 @@ class BoostProfileScreen extends StatelessWidget {
             ),
             if (controller.autoRenewal.value) ...[
               const SizedBox(height: 8),
-              const Text(
-                'Auto-renewal: Enabled',
+              Text(
+                'auto_renew_enabled'.tr,
                 style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
               ),
             ],
@@ -261,7 +261,7 @@ class BoostProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            child: Text('cancel'.tr, style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -275,7 +275,7 @@ class BoostProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text('Confirm'),
+            child: Text('confirm'.tr),
           ),
         ],
       ),

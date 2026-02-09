@@ -22,7 +22,7 @@ class GenderSelectorBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Select Gender',
+            'select_gender'.tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 20),
@@ -42,7 +42,7 @@ class GenderSelectorBottomSheet extends StatelessWidget {
                     ),
                     child: ListTile(
                       splashColor: Colors.transparent,
-                      title: Text(gender),
+                      title: Text(_genderLabel(gender)),
                       trailing: isSelected
                           ? Icon(
                               Icons.radio_button_checked,
@@ -74,11 +74,19 @@ class GenderSelectorBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: Text('Done', style: TextStyle(color: Colors.white)),
+              child: Text('done'.tr, style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+String _genderLabel(String value) {
+  final v = value.toLowerCase();
+  if (v.contains('male')) return 'gender_male'.tr;
+  if (v.contains('female')) return 'gender_female'.tr;
+  if (v.contains('non')) return 'gender_non_binary'.tr;
+  return value;
 }

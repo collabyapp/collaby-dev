@@ -30,8 +30,8 @@ class CountrySelectorBottomSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Select Country',
+          Text(
+            'select_country'.tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 20),
@@ -44,7 +44,7 @@ class CountrySelectorBottomSheet extends StatelessWidget {
               FocusManager.instance.primaryFocus?.unfocus();
             },
             decoration: InputDecoration(
-              hintText: 'Search...',
+              hintText: 'search'.tr,
 
               hintStyle: AppTextStyles.extraSmallText.copyWith(
                 color: Color(0xff000000).withOpacity(0.41),
@@ -129,7 +129,7 @@ class CountrySelectorBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: const Text('Done', style: TextStyle(color: Colors.white)),
+              child: Text('done'.tr, style: TextStyle(color: Colors.white)),
             ),
           ),
         ],

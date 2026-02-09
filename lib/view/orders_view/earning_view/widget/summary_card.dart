@@ -1,6 +1,7 @@
 import 'package:collaby_app/models/orders_model/earnings_models.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dart:math' as math;
 
 class SummaryCard extends StatelessWidget {
@@ -33,7 +34,7 @@ class SummaryCard extends StatelessWidget {
         children: [
           const SizedBox(height: 4),
           Center(
-            child: Text('Withdraw Amount', style: AppTextStyles.smallText),
+            child: Text('withdraw_amount'.tr, style: AppTextStyles.smallText),
           ),
           const SizedBox(height: 6),
           Center(
@@ -48,7 +49,7 @@ class SummaryCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Transaction fees', style: AppTextStyles.smallText),
+              Text('transaction_fees'.tr, style: AppTextStyles.smallText),
               Text(
                 '${fee.toStringAsFixed(1)} USD',
                 style: AppTextStyles.normalTextMedium,
@@ -61,7 +62,7 @@ class SummaryCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Deposit to', style: AppTextStyles.smallText),
+              Text('deposit_to'.tr, style: AppTextStyles.smallText),
               Text(
                 account != null
                     ? '${account!.bankName} (${account!.accountNumber.substring(0, math.min(10, account!.accountNumber.length))}…)'

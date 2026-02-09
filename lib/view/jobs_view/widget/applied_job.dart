@@ -24,10 +24,9 @@ class AppliedJobsTab extends StatelessWidget {
 
         final applied = controller.appliedJobsList;
         if (applied.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             image: ImageAssets.noAppliedImage,
-            message:
-                'There are currently no applied jobs. Please check again later.',
+            message: 'jobs_empty_applied'.tr,
           );
         }
 
@@ -125,12 +124,12 @@ class AppliedJobsTab extends StatelessWidget {
                               // spacing: 24,
                               children: [
                                 _metaRow1(
-                                  'Budget',
+                                  'job_budget'.tr,
                                   '\$${a.budget.toStringAsFixed(0)}',
                                 ),
 
                                 _meta(
-                                  'Video Quantity',
+                                  'job_video_quantity'.tr,
                                   '${a.videoQuantity.toString()}',
                                 ),
                                 // _meta('Video Quantity', job.videoQuantity.toString()),
@@ -144,13 +143,13 @@ class AppliedJobsTab extends StatelessWidget {
                                 // _meta('Budget', job.budget.toStringAsFixed(0)),
                                 // _meta('Video Timeline', job.videoTimeline),
                                 _metaRow1(
-                                  'Video Duration',
-                                  '${a.videoTimeline} sec',
+                                  'job_video_duration'.tr,
+                                  '${a.videoTimeline} ${'job_unit_seconds'.tr}',
                                 ),
 
                                 _meta(
-                                  'Delivery Timeline',
-                                  '${a.deliveryTimeline} days',
+                                  'job_delivery_timeline'.tr,
+                                  '${a.deliveryTimeline} ${'job_unit_days'.tr}',
                                 ),
                               ],
                             ),
@@ -168,7 +167,9 @@ class AppliedJobsTab extends StatelessWidget {
                     //   ),
                     const SizedBox(height: 12),
                     Text(
-                      'Submitted: ${formatDate(a.submittedAt)}',
+                      'job_submitted_on'.trParams(
+                        {'date': formatDate(a.submittedAt)},
+                      ),
 
                       style: AppTextStyles.extraSmallText.copyWith(
                         fontSize: 10,

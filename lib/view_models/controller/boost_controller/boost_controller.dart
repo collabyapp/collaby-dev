@@ -53,11 +53,11 @@ class BoostController extends GetxController {
         setRxRequestStatus(Status.completed);
       } else {
         setRxRequestStatus(Status.error);
-        Utils.snackBar('Error', 'Failed to fetch boost plans');
+        Utils.snackBar('error'.tr, 'boost_fetch_failed'.tr);
       }
     } catch (e) {
       setRxRequestStatus(Status.error);
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     }
   }
 
@@ -79,7 +79,7 @@ class BoostController extends GetxController {
       currentlyPurchasing.value = null;
 
       if (response != null && response['statusCode'] == 201 ||response['statusCode'] == 200) {
-        Utils.snackBar('Success', 'Boost purchased successfully!');
+        Utils.snackBar('success'.tr, 'boost_purchase_success'.tr);
         // Navigate back
         Get.offAllNamed(
           RouteName.bottomNavigationView,
@@ -87,14 +87,14 @@ class BoostController extends GetxController {
         );
       } else {
         Utils.snackBar(
-          'Error',
-          response?['message'] ?? 'Failed to purchase boost',
+          'error'.tr,
+          response?['message'] ?? 'boost_purchase_failed'.tr,
         );
       }
     } catch (e) {
       LoadingIndicator.onStop(context: context);
       currentlyPurchasing.value = null;
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     }
   }
 

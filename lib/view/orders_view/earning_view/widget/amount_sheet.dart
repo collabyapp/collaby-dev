@@ -36,7 +36,7 @@ class EnterAmountSheet extends GetView<EarningsController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Available Balance', style: AppTextStyles.smallText),
+                      Text('available_balance'.tr, style: AppTextStyles.smallText),
 
                       const SizedBox(height: 4),
                       Obx(

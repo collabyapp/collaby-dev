@@ -25,7 +25,7 @@ class ChatsListView extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Chats'),
+          title: Text('chats_title'.tr),
           automaticallyImplyLeading: false,
           centerTitle: false,
           // actions: [
@@ -85,9 +85,9 @@ class ChatsListView extends StatelessWidget {
                     () => Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildFilterChip('All', ChatFilter.all),
-                        _buildFilterChip('Read', ChatFilter.read),
-                        _buildFilterChip('Unread', ChatFilter.unread),
+                        _buildFilterChip('chat_filter_all'.tr, ChatFilter.all),
+                        _buildFilterChip('chat_filter_read'.tr, ChatFilter.read),
+                        _buildFilterChip('chat_filter_unread'.tr, ChatFilter.unread),
                       ],
                     ),
                   ),
@@ -113,10 +113,10 @@ class ChatsListView extends StatelessWidget {
                     final String emptyMsg = () {
                       switch (selectedFilter.value) {
                         case ChatFilter.unread:
-                          return "No unread messages.";
+                          return 'chat_empty_unread'.tr;
                         case ChatFilter.read:
                         case ChatFilter.all:
-                          return "You haven't received any messages from\nclients yet.";
+                          return 'chat_empty_all'.tr;
                       }
                     }();
 
@@ -303,7 +303,7 @@ class UserSearchDialog extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Start New Chat', style: AppTextStyles.h6),
+                Text('chat_start_new'.tr, style: AppTextStyles.h6),
                 IconButton(
                   icon: Icon(Icons.close),
                   onPressed: () => Get.back(),
@@ -316,7 +316,7 @@ class UserSearchDialog extends StatelessWidget {
             TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText: 'Search brands...',
+                hintText: 'chat_search_brands'.tr,
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -336,7 +336,7 @@ class UserSearchDialog extends StatelessWidget {
                 if (searchResults.isEmpty) {
                   return Center(
                     child: Text(
-                      'Type at least 2 characters to search',
+                      'chat_search_min_chars'.tr,
                       style: AppTextStyles.smallText,
                     ),
                   );
@@ -372,7 +372,7 @@ class UserSearchDialog extends StatelessWidget {
       subtitle: Text(user['email'], style: AppTextStyles.extraSmallText),
       trailing: Chip(
         label: Text(
-          role == 'brand' ? 'Brand' : 'Creator',
+          role == 'brand' ? 'chat_role_brand'.tr : 'chat_role_creator'.tr,
           style: AppTextStyles.extraSmallText,
         ),
         backgroundColor: role == 'brand'

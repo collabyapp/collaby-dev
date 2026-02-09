@@ -60,7 +60,7 @@ class AccountSecurityController extends GetxController {
           phoneNumber.value = user['phoneNumber'].toString();
         }
       } else {
-        email.value = 'No email found'; // Fallback
+        email.value = 'email_not_found'.tr; // Fallback
       }
 
       // Load phone if exists
@@ -70,7 +70,7 @@ class AccountSecurityController extends GetxController {
       }
     } catch (e) {
       log('Error loading user: $e');
-      email.value = 'Error loading email';
+      email.value = 'email_load_failed'.tr;
     } finally {
       isLoading.value = false;
     }
@@ -97,7 +97,7 @@ class AccountSecurityController extends GetxController {
       final raw = await phoneVerificationRepo.sendOTPApi(payload);
 
       if (raw == null || raw is! Map) {
-        Utils.snackBar('Error', 'No response from server. Please try again.');
+        Utils.snackBar('error'.tr, 'error_no_response'.tr);
         return;
       }
       final Map<String, dynamic> resp = Map<String, dynamic>.from(raw);
@@ -112,8 +112,8 @@ class AccountSecurityController extends GetxController {
 
       if (isError) {
         Utils.snackBar(
-          'Failed to send code',
-          serverMsg.isNotEmpty ? serverMsg : 'Please try again.',
+          'otp_send_failed'.tr,
+          serverMsg.isNotEmpty ? serverMsg : 'please_try_again'.tr,
         );
         return;
       }
@@ -127,7 +127,7 @@ class AccountSecurityController extends GetxController {
     } catch (e, st) {
       debugPrint('Send OTP error: $e');
       debugPrintStack(stackTrace: st);
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     } finally {
       isSendingOtp.value = false;
     }
@@ -166,7 +166,7 @@ class AccountSecurityController extends GetxController {
 
       // 2) Null/shape guard
       if (raw == null || raw is! Map) {
-        Utils.snackBar('Error', 'No response from server. Please try again.');
+        Utils.snackBar('error'.tr, 'error_no_response'.tr);
         return;
       }
       final Map<String, dynamic> resp = Map<String, dynamic>.from(raw);
@@ -181,10 +181,10 @@ class AccountSecurityController extends GetxController {
 
       if (isError) {
         Utils.snackBar(
-          'Invalid OTP',
+          'otp_invalid'.tr,
           serverMsg.isNotEmpty
               ? serverMsg
-              : 'Please check the code and try again.',
+              : 'otp_invalid_hint'.tr,
         );
         return;
       }
@@ -199,7 +199,7 @@ class AccountSecurityController extends GetxController {
     } catch (e, st) {
       debugPrint("OTP verification error: $e");
       debugPrintStack(stackTrace: st);
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     }
   }
 

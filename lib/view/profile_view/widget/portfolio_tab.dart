@@ -23,7 +23,7 @@ class PortfolioTab extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('No portfolio items yet', style: AppTextStyles.normalText),
+              Text('no_portfolio_items'.tr, style: AppTextStyles.normalText),
             ],
           ),
         );
@@ -38,7 +38,7 @@ class PortfolioTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('UGC Portfolio', style: AppTextStyles.normalTextBold),
+                Text('ugc_portfolio'.tr, style: AppTextStyles.normalTextBold),
                 const SizedBox(height: 16),
                 GridView.builder(
                   shrinkWrap: true,

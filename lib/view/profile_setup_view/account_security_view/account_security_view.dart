@@ -20,7 +20,7 @@ class AccountSecurityView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: Text('Profile Setup'),
+        title: Text('profile_setup_title'.tr),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -51,7 +51,7 @@ class AccountSecurityView extends StatelessWidget {
               (authController.isEdit == true)
                   ? SizedBox.shrink()
                   : SizedBox(height: 20),
-              Text('Account Security', style: AppTextStyles.smallTextBold),
+              Text('account_security_title'.tr, style: AppTextStyles.smallTextBold),
               SizedBox(height: 20),
               _buildEmailSection(),
               SizedBox(height: 20),
@@ -81,8 +81,8 @@ class AccountSecurityView extends StatelessWidget {
               height: 52,
               child: CustomButton(
                 title: (authController.isEdit == true)
-                    ? 'Save Changes'
-                    : 'Finish',
+                    ? 'save_changes'.tr
+                    : 'finish'.tr,
                 onPressed: () {
                   (authController.isEdit == true)
                       ? Get.toNamed(
@@ -101,12 +101,12 @@ class AccountSecurityView extends StatelessWidget {
 
   Widget _buildEmailSection() {
     return Obx(() {
-      final emailText = authController.email.value ?? 'Loading...';
+      final emailText = authController.email.value ?? 'loading'.tr;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Email', style: AppTextStyles.smallText),
+          Text('email'.tr, style: AppTextStyles.smallText),
           SizedBox(height: 10),
           Container(
             padding: EdgeInsets.all(11),
@@ -132,7 +132,7 @@ class AccountSecurityView extends StatelessWidget {
                     border: Border.all(color: Color(0xff27AE60)),
                   ),
                   child: Text(
-                    'Approved',
+                    'approved'.tr,
                     style: AppTextStyles.extraSmallText.copyWith(
                       color: Colors.white,
                     ),
@@ -154,7 +154,7 @@ class AccountSecurityView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Phone Number', style: AppTextStyles.smallText),
+              Text('phone_number'.tr, style: AppTextStyles.smallText),
               SizedBox(width: 10),
               if (authController.isPhoneVerified.value)
                 GestureDetector(
@@ -163,7 +163,7 @@ class AccountSecurityView extends StatelessWidget {
                     Get.toNamed(RouteName.phoneNumberView);
                   },
                   child: Text(
-                    'Change Phone',
+                    'change_phone'.tr,
                     style: AppTextStyles.smallText.copyWith(
                       color: AppColor.primaryColor,
                     ),
@@ -197,7 +197,7 @@ class AccountSecurityView extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Text('Add Phone Number', style: AppTextStyles.normalText),
+                    Text('add_phone_number'.tr, style: AppTextStyles.normalText),
                   ],
                 ),
               ),
@@ -215,7 +215,7 @@ class AccountSecurityView extends StatelessWidget {
                     child: Text(
                       authController.phoneNumber.value.isNotEmpty
                           ? authController.fullPhone
-                          : 'No phone number',
+                          : 'no_phone_number'.tr,
                       style: AppTextStyles.normalText,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -229,7 +229,7 @@ class AccountSecurityView extends StatelessWidget {
                       border: Border.all(color: Color(0xff27AE60)),
                     ),
                     child: Text(
-                      'Approved',
+                      'approved'.tr,
                       style: AppTextStyles.extraSmallText.copyWith(
                         color: Colors.white,
                       ),

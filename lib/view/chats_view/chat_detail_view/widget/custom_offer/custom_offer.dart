@@ -78,7 +78,7 @@ class _OfferScreenState extends State<OfferScreen> {
           icon: Icon(Icons.close, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: Text('Create an Offer', style: AppTextStyles.normalTextBold),
+        title: Text('offer_create_title'.tr, style: AppTextStyles.normalTextBold),
         centerTitle: true,
       ),
       body: Obx(() {
@@ -89,7 +89,7 @@ class _OfferScreenState extends State<OfferScreen> {
               children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
-                Text('Loading your gigs...', style: AppTextStyles.smallText),
+                Text('offer_loading_gigs'.tr, style: AppTextStyles.smallText),
               ],
             ),
           );
@@ -102,7 +102,7 @@ class _OfferScreenState extends State<OfferScreen> {
               children: [
                 Icon(Icons.work_off_outlined, size: 64, color: Colors.grey),
                 SizedBox(height: 16),
-                Text('No Gigs Available', style: AppTextStyles.normalTextBold),
+                Text('offer_no_gigs'.tr, style: AppTextStyles.normalTextBold),
                 SizedBox(height: 8),
                 Text(
                   'Create a gig to send custom offers',
@@ -227,7 +227,7 @@ class _OfferScreenState extends State<OfferScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Offer Detail', style: AppTextStyles.normalTextBold),
+        Text('offer_detail_title'.tr, style: AppTextStyles.normalTextBold),
         SizedBox(height: 10),
 
         // Video Timeline
@@ -470,7 +470,7 @@ class _OfferScreenState extends State<OfferScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Describe Your Offer', style: AppTextStyles.normalTextBold),
+        Text('offer_describe_title'.tr, style: AppTextStyles.normalTextBold),
         SizedBox(height: 8),
         TextFormField(
           controller: descriptionController,
@@ -549,7 +549,7 @@ class _OfferScreenState extends State<OfferScreen> {
               ),
             ),
             SizedBox(height: 16),
-            Text('Select Gig', style: AppTextStyles.h6),
+            Text('offer_select_gig'.tr, style: AppTextStyles.h6),
             SizedBox(height: 16),
             Expanded(
               child: Obx(
@@ -685,7 +685,7 @@ class _OfferScreenState extends State<OfferScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Text('Select Delivery Time', style: AppTextStyles.h6),
+                  Text('offer_select_delivery'.tr, style: AppTextStyles.h6),
                 ],
               ),
             ),

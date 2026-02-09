@@ -29,7 +29,7 @@ class LanguageLevelSelectorBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Select Level',
+            'select_level'.tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 8),
@@ -49,7 +49,7 @@ class LanguageLevelSelectorBottomSheet extends StatelessWidget {
                     level;
                 return ListTile(
                   splashColor: Colors.transparent,
-                  title: Text(level),
+                  title: Text(_languageLevelLabel(level)),
                   trailing: isSelected
                       ? Icon(
                           Icons.radio_button_checked,
@@ -79,11 +79,28 @@ class LanguageLevelSelectorBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: Text('Done', style: TextStyle(color: Colors.white)),
+              child: Text('done'.tr, style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+String _languageLevelLabel(String level) {
+  switch (level.toLowerCase()) {
+    case 'beginner':
+      return 'language_level_basic'.tr;
+    case 'intermediate':
+      return 'language_level_conversational'.tr;
+    case 'advanced':
+      return 'language_level_advanced'.tr;
+    case 'fluent':
+      return 'language_level_fluent'.tr;
+    case 'native':
+      return 'language_level_native'.tr;
+    default:
+      return level;
   }
 }

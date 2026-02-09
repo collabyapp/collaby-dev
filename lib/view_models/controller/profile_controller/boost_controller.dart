@@ -3,6 +3,7 @@ import 'package:collaby_app/repository/boost_repository/boost_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class BoostProfileController extends GetxController {
   final _boostRepository = BoostRepository();
@@ -31,8 +32,8 @@ class BoostProfileController extends GetxController {
         boostData.value = boostResponse.data;
       }
     } catch (e) {
-      errorMessage.value = 'Failed to load boost profile: $e';
-      Utils.snackBar('Error', 'Failed to load boost profile');
+      errorMessage.value = '${'boost_profile_load_failed'.tr}: $e';
+      Utils.snackBar('error'.tr, 'boost_profile_load_failed'.tr);
     } finally {
       isLoading.value = false;
     }
@@ -50,7 +51,7 @@ class BoostProfileController extends GetxController {
       if (currentAutoRenewal) {
         // Cancel auto-renewal
         await _boostRepository.cancelAutoRenewal();
-        Utils.snackBar('Success', 'Auto-renewal has been cancelled');
+        Utils.snackBar('success'.tr, 'auto_renew_cancelled'.tr);
         // Navigate back
         Get.offAllNamed(
           RouteName.bottomNavigationView,
@@ -77,7 +78,7 @@ class BoostProfileController extends GetxController {
         performanceGraph: boostData.value!.performanceGraph,
       );
     } catch (e) {
-      Utils.snackBar('Error', 'Failed to update auto-renewal: $e');
+      Utils.snackBar('error'.tr, '${'auto_renew_update_failed'.tr}: $e');
     } finally {
       isAutoRenewalUpdating.value = false;
     }
@@ -95,7 +96,8 @@ class BoostProfileController extends GetxController {
       final date = DateTime.parse(
         boostData.value!.subscription.subscriptionStartDate,
       );
-      return '${_getMonthName(date.month)} ${date.day}, ${date.year}';
+      final locale = Get.locale?.toString();
+      return DateFormat.yMMMd(locale).format(date);
     } catch (e) {
       return '';
     }
@@ -105,34 +107,22 @@ class BoostProfileController extends GetxController {
     if (boostData.value == null) return '';
     try {
       final date = DateTime.parse(boostData.value!.subscription.expiresAt);
-      return '${_getMonthName(date.month)} ${date.day}, ${date.year}';
+      final locale = Get.locale?.toString();
+      return DateFormat.yMMMd(locale).format(date);
     } catch (e) {
       return '';
     }
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
-
   /// Get formatted analytics period
   String getAnalyticsPeriod() {
     if (boostData.value == null) return '';
-    return 'Last ${boostData.value!.analytics.period.days} Days';
+    return 'analytics_period_days'
+        .tr
+        .replaceAll(
+          '@days',
+          boostData.value!.analytics.period.days.toString(),
+        );
   }
 
   /// Format large numbers (e.g., 2400 -> 2.4k)

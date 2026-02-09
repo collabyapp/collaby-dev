@@ -9,7 +9,7 @@ class TransactionsHistoryView extends GetView<EarningsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Transactions')),
+      appBar: AppBar(title: Text('transactions_title'.tr)),
       body: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: controller.payouts.length,

@@ -10,7 +10,12 @@ class CustomBottomNav extends StatelessWidget {
 
   CustomBottomNav({super.key});
 
-  final List<String> labels = ['Jobs', 'Orders', 'Chats', 'Profile'];
+  final List<String> labels = [
+    'nav_jobs',
+    'nav_orders',
+    'nav_chats',
+    'nav_profile',
+  ];
 
   final List<String> icons = [
     ImageAssets.jobIcon,

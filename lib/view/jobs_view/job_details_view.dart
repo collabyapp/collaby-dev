@@ -31,7 +31,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Job Details'),
+        title: Text('job_details_title'.tr),
         actions: [
           Obx(() {
             final job = controller.currentJobDetails.value;
@@ -58,7 +58,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
 
         final job = controller.currentJobDetails.value;
         if (job == null) {
-          return Center(child: Text('Job not found'));
+          return Center(child: Text('job_not_found'.tr));
         }
 
         return SingleChildScrollView(
@@ -101,7 +101,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                               ),
                               if (job.status == JobStatus.closed)
                                 Text(
-                                  'Job is closed',
+                                  'job_closed_label'.tr,
                                   style: TextStyle(
                                     color: Colors.red,
                                     fontFamily: AppFonts.OpenSansBold,
@@ -145,12 +145,12 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                             Row(
                               children: [
                                 _buildDetailItem(
-                                  'Budget',
+                                  'job_budget'.tr,
                                   '\$ ${job.budget.toInt()}',
                                 ),
                                 _buildDetailItem(
-                                  'Video Quantity',
-                                  'QTY ${job.videoQuantity}',
+                                  'job_video_quantity'.tr,
+                                  '${'job_qty'.tr} ${job.videoQuantity}',
                                 ),
                               ],
                             ),
@@ -158,12 +158,12 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                             Row(
                               children: [
                                 _buildDetailItem(
-                                  'Video Duration',
-                                  '${job.videoTimeline} sec',
+                                  'job_video_duration'.tr,
+                                  '${job.videoTimeline} ${'job_unit_seconds'.tr}',
                                 ),
                                 _buildDetailItem(
-                                  'Delivery Timeline',
-                                  '${job.deliveryTimeline} days',
+                                  'job_delivery_timeline'.tr,
+                                  '${job.deliveryTimeline} ${'job_unit_days'.tr}',
                                 ),
                               ],
                             ),
@@ -174,7 +174,9 @@ class _JobDetailsViewState extends State<JobDetailsView> {
 
                     SizedBox(height: 16),
                     Text(
-                      'Updated: ${_formatDate(job.updatedAt)}',
+                      'job_updated_on'.trParams(
+                        {'date': _formatDate(job.updatedAt)},
+                      ),
                       style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
@@ -200,7 +202,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Job Objective Section
-                    Text('Job Objective', style: AppTextStyles.smallMediumText),
+                    Text('job_objective'.tr, style: AppTextStyles.smallMediumText),
                     SizedBox(height: 12),
                     Text(job.description, style: AppTextStyles.extraSmallText),
                   ],
@@ -227,7 +229,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                   children: [
                     // About the Brand Section
                     Text(
-                      'About the Brand',
+                      'job_about_brand'.tr,
                       style: AppTextStyles.smallMediumText,
                     ),
                     SizedBox(height: 12),
@@ -245,7 +247,9 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                         Spacer(),
                         if (job.brandProfile?.createdAt != null)
                           Text(
-                            'Member since ${_formatDate(job.brandProfile!.createdAt)}',
+                            'job_member_since'.trParams(
+                              {'date': _formatDate(job.brandProfile!.createdAt)},
+                            ),
                             style: AppTextStyles.extraSmallText,
                           ),
                       ],
@@ -275,7 +279,7 @@ class _JobDetailsViewState extends State<JobDetailsView> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          'Interest submitted. Waiting for the client\'s response to decide if they\'d like to hire you.',
+          'job_interest_submitted'.tr,
           style: TextStyle(color: Color(0xFF6C5CE7), fontSize: 14),
         ),
       );
@@ -373,24 +377,24 @@ class _JobDetailsViewState extends State<JobDetailsView> {
         VoidCallback? onPressed;
 
         if (isClosed) {
-          buttonTitle = 'Job Closed';
+          buttonTitle = 'job_closed_label'.tr;
           buttonColor = Colors.grey[300] ?? Colors.grey;
           textColor = Colors.grey[600] ?? Colors.grey;
           onPressed = null;
         } else if (isHired) {
-          buttonTitle = 'Hired';
+          buttonTitle = 'job_hired'.tr;
           buttonColor = Colors.green[50] ?? Colors.green.shade50;
           textColor = Colors.green[700] ?? Colors.green;
           onPressed = null;
         } else if (isApplied) {
-          buttonTitle = 'Withdraw Interest';
+          buttonTitle = 'job_withdraw_interest'.tr;
           buttonColor = Colors.red[50] ?? Colors.red.shade50;
           textColor = Colors.red[700] ?? Colors.red;
           onPressed = () {
             controller.withdrawInterest(job.id);
           };
         } else {
-          buttonTitle = 'I\'m Interested';
+          buttonTitle = 'job_interested'.tr;
           buttonColor = Colors.black;
           textColor = Colors.white;
           onPressed = () {

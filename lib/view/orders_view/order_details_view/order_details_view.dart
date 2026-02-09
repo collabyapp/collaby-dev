@@ -22,7 +22,7 @@ class OrderDetailView extends StatelessWidget {
         //   icon: Icon(Icons.arrow_back, color: Colors.black),
         //   onPressed: () => Get.back(),
         // ),
-        title: Text('Order Detail'),
+        title: Text('order_detail_title'.tr),
         // actions: [
         //   Container(
         //     margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),

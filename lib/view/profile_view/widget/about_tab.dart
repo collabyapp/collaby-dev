@@ -20,11 +20,11 @@ class AboutTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSection('Bio', _buildBioContent(profile.description)),
-              _buildSection('Age Group', _buildChip(profile.ageGroup)),
-              _buildSection('Gender', _buildChip(profile.gender)),
+              _buildSection('profile_bio'.tr, _buildBioContent(profile.description)),
+              _buildSection('profile_age_group'.tr, _buildChip(profile.ageGroup)),
+              _buildSection('profile_gender'.tr, _buildChip(profile.gender)),
               _buildSection(
-                'Skills',
+                'profile_skills'.tr,
                 _buildChipsList(
                   profile.niches
                       .map((e) => StringExtension(e).capitalize)
@@ -32,7 +32,7 @@ class AboutTab extends StatelessWidget {
                 ),
               ),
               _buildSection(
-                'Languages',
+                'profile_languages'.tr,
                 _buildChipsList(
                   profile.languages
                       .map((e) => '${e.language} (${e.level})')
@@ -88,4 +88,3 @@ class AboutTab extends StatelessWidget {
 extension StringExtension on String {
   String get capitalize => '${this[0].toUpperCase()}${substring(1)}';
 }
-

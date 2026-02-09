@@ -18,7 +18,9 @@ class ShippingAddressView extends StatelessWidget {
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         title: Text(
-          controller.isEdit.value ? "Edit Shipping Address" : "Profile Setup",
+          controller.isEdit.value
+              ? 'shipping_address_edit_title'.tr
+              : 'profile_setup_title'.tr,
         ),
       ),
       body: Obx(() {
@@ -41,30 +43,30 @@ class ShippingAddressView extends StatelessWidget {
                       )
                     : SizedBox.shrink(),
                 SizedBox(height: 16),
-                Text('Shipping Address', style: AppTextStyles.smallTextBold),
+                Text('shipping_address_title'.tr, style: AppTextStyles.smallTextBold),
                 SizedBox(height: 24),
                 buildTextField(
-                  label: 'Street',
+                  label: 'shipping_street'.tr,
                   controller: controller.streetController.value,
-                  placeholder: 'Street',
+                  placeholder: 'shipping_street'.tr,
                 ),
                 SizedBox(height: 20),
                 buildTextField(
-                  label: 'City',
+                  label: 'shipping_city'.tr,
                   controller: controller.cityController.value,
-                  placeholder: 'City',
+                  placeholder: 'shipping_city'.tr,
                 ),
                 SizedBox(height: 20),
                 buildTextField(
-                  label: 'ZIP Code',
+                  label: 'shipping_zip'.tr,
                   controller: controller.zipCodeController.value,
-                  placeholder: 'ZIP Code',
+                  placeholder: 'shipping_zip'.tr,
                 ),
                 SizedBox(height: 20),
                 buildTextField(
-                  label: 'Country',
+                  label: 'shipping_country'.tr,
                   controller: controller.countryController.value,
-                  placeholder: 'Country',
+                  placeholder: 'shipping_country'.tr,
                 ),
               ],
             ),
@@ -98,7 +100,7 @@ class ShippingAddressView extends StatelessWidget {
                     (controller.isEdit.value && !controller.hasChanges.value);
 
                 return CustomButton(
-                  title: controller.isEdit.value ? 'Update' : 'Next',
+                  title: controller.isEdit.value ? 'update'.tr : 'next'.tr,
                   isDisabled: isDisabled,
                   onPressed: () {
                     if (controller.isSubmittingProfile.value) return;

@@ -4,6 +4,7 @@ import 'package:collaby_app/view/jobs_view/helper/helper_function.dart';
 import 'package:flutter/material.dart';
 import 'package:collaby_app/models/jobs_model/job_model.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class JobCard extends StatelessWidget {
   const JobCard({
@@ -107,11 +108,14 @@ class JobCard extends StatelessWidget {
                       // spacing: 24,
                       children: [
                         _metaRow1(
-                          'Budget',
+                          'job_budget'.tr,
                           '\$ ${job.budget.toStringAsFixed(0)}',
                         ),
 
-                        _meta('Video Quantity', job.videoQuantity.toString()),
+                        _meta(
+                          'job_video_quantity'.tr,
+                          job.videoQuantity.toString(),
+                        ),
                         // _meta('Video Timeline', job.videoTimeline),
                         // _meta('Video Quantity', job.videoQuantity.toString()),
                         // _meta('Delivery Timeline', job.deliveryTimeline),
@@ -123,11 +127,14 @@ class JobCard extends StatelessWidget {
                       children: [
                         // _meta('Budget', job.budget.toStringAsFixed(0)),
                         // _meta('Video Timeline', job.videoTimeline),
-                        _metaRow1('Video Duration', '${job.videoTimeline} sec'),
+                        _metaRow1(
+                          'job_video_duration'.tr,
+                          '${job.videoTimeline} ${'job_unit_seconds'.tr}',
+                        ),
 
                         _meta(
-                          'Delivery Timeline',
-                          '${job.deliveryTimeline} days',
+                          'job_delivery_timeline'.tr,
+                          '${job.deliveryTimeline} ${'job_unit_days'.tr}',
                         ),
                       ],
                     ),
@@ -145,7 +152,9 @@ class JobCard extends StatelessWidget {
             //   ),
             const SizedBox(height: 12),
             Text(
-              'Updated: ${formatDate(job.updatedAt)}',
+              'job_updated_on'.trParams(
+                {'date': formatDate(job.updatedAt)},
+              ),
               style: AppTextStyles.extraSmallText.copyWith(
                 fontSize: 10,
                 color: Color(0xff848194),

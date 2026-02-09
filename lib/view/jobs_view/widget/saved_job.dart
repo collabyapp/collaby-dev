@@ -20,10 +20,9 @@ class SavedJobsTab extends StatelessWidget {
 
         final saved = controller.savedJobsList;
         if (saved.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             image: ImageAssets.noSavedJobImage,
-            message:
-                'There are currently no saved jobs. Please check again later.',
+            message: 'jobs_empty_saved'.tr,
           );
         }
 

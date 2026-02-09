@@ -499,6 +499,23 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       // video styles / niches
       final styles = readField(gig, 'videoStyles') ?? readField(gig, 'videoStyle');
       if (styles is List) {
+        final extracted = <String>[];
+        for (final s in styles) {
+          if (s is Map) {
+            final name = s['name']?.toString().trim();
+            if (name != null && name.isNotEmpty) extracted.add(name);
+          } else {
+            final name = s?.toString().trim();
+            if (name != null && name.isNotEmpty) extracted.add(name);
+          }
+        }
+        if (extracted.isNotEmpty) {
+          selectedServiceNiches
+            ..clear()
+            ..addAll(extracted.map(_payloadToNicheKey));
+        }
+      }
+      if (styles is List) {
         selectedServiceNiches.value =
             styles.map((e) => _payloadToNicheKey(e.toString())).toList();
       }
@@ -955,9 +972,16 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     }
     final title = _deriveTitle(description);
 
+    final videoStylesPayload = selectedServiceNiches
+        .map(_nicheKeyToPayload)
+        .map((name) => name.toString().trim())
+        .where((name) => name.isNotEmpty)
+        .map((name) => {'name': name})
+        .toList();
+
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
-      'videoStyle': selectedServiceNiches.map(_nicheKeyToPayload).toList(),
+      'videoStyles': videoStylesPayload,
       'pricing': sanitizedPricingList,
       'title': title,
       'description': description,
@@ -989,10 +1013,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       final updatePayload = isEditMode.value
           ? (Map<String, dynamic>.from(payload)
-            ..remove('videoStyle')
+            ..remove('videoStyles')
             ..remove('pricing')
             ..addAll({
-              'videoStyles': payload['videoStyle'],
+              'videoStyles': payload['videoStyles'],
               'pricings': payload['pricing'],
             }))
           : payload;

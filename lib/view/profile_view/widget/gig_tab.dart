@@ -30,7 +30,7 @@ class GigsTab extends StatelessWidget {
                       await controller.fetchMyGigs(refresh: true);
                     }
                     if (controller.myGigs.isEmpty) {
-                      Utils.snackBar('No services yet', 'Create your first service to get started.');
+                      Utils.snackBar('no_services_title'.tr, 'no_services_hint'.tr);
                       Get.toNamed(RouteName.createGigView);
                       return;
                     }

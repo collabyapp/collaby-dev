@@ -1,4 +1,4 @@
-import 'package:collaby_app/res/assets/image_assets.dart';
+﻿import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
@@ -40,7 +40,7 @@ class ProfileSetupCreatedView extends StatelessWidget {
 
               // Sub-heading
               Text(
-                'Great 👍🏻   you’re almost done there ',
+                'profile_setup_done_title'.tr,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.h4,
               ),
@@ -48,7 +48,7 @@ class ProfileSetupCreatedView extends StatelessWidget {
 
               // Minor caption
               Text(
-                'Here’s what’s next:',
+                'profile_setup_next_steps'.tr,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.smallMediumText,
               ),
@@ -71,16 +71,19 @@ class ProfileSetupCreatedView extends StatelessWidget {
                         children: [
                           const SizedBox(height: 18),
                           _StepText(
-                            'Complete your profile',
+                            'profile_setup_step_profile'.tr,
                             isActive: step == 0,
                           ),
                           const SizedBox(height: 62),
                           _StepText(
-                            'Create your first Gig',
+                            'profile_setup_step_service'.tr,
                             isActive: step == 1,
                           ),
                           const SizedBox(height: 60),
-                          _StepText('Publish it', isActive: step == 2),
+                          _StepText(
+                            'profile_setup_step_publish'.tr,
+                            isActive: step == 2,
+                          ),
                         ],
                       );
                     }),
@@ -92,7 +95,7 @@ class ProfileSetupCreatedView extends StatelessWidget {
 
               // Bottom CTA (big rounded)
               CustomButton(
-                title: 'Create your first Gig',
+                title: 'profile_setup_cta'.tr,
                 onPressed: () {
                   Get.toNamed(RouteName.createGigView);
                 },
@@ -232,3 +235,4 @@ class _RailDot extends StatelessWidget {
     );
   }
 }
+

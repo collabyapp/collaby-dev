@@ -21,9 +21,9 @@ class NewJobsTab extends StatelessWidget {
 
         final jobs = controller.newJobs;
         if (jobs.isEmpty && !controller.isLoading.value) {
-          return const EmptyState(
+          return EmptyState(
             image: ImageAssets.noNewJobImage,
-            message: 'There are currently no jobs. Please check again later.',
+            message: 'jobs_empty_new'.tr,
           );
         }
 

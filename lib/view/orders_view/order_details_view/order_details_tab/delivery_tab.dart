@@ -80,7 +80,7 @@ Widget _buildSubmissionCard(Delivery delivery, BuildContext context) {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Submission', style: AppTextStyles.smallMediumText),
+            Text('order_delivery_submission'.tr, style: AppTextStyles.smallMediumText),
             _buildStatusBadge(delivery),
           ],
         ),

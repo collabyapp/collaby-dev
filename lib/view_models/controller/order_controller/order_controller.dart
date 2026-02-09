@@ -110,13 +110,16 @@ class OrdersController extends GetxController {
             0.0;
       } else {
         Utils.snackBar(
-          'Error',
-          response?['message'] ?? 'Failed to fetch orders',
+          'error'.tr,
+          response?['message'] ?? 'orders_fetch_failed'.tr,
         );
       }
     } catch (e) {
       log('Error fetching orders: $e');
-      Utils.snackBar('Error', 'Failed to fetch orders: ${e.toString()}');
+      Utils.snackBar(
+        'error'.tr,
+        'orders_fetch_failed_detail'.trParams({'error': e.toString()}),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -177,14 +180,17 @@ class OrdersController extends GetxController {
         return OrderModel.fromJson(response['data']);
       } else {
         Utils.snackBar(
-          'Error',
-          response?['message'] ?? 'Failed to fetch order details',
+          'error'.tr,
+          response?['message'] ?? 'orders_details_failed'.tr,
         );
         return null;
       }
     } catch (e) {
       log('Error fetching order details: $e');
-      Utils.snackBar('Error', 'Failed to fetch order details: ${e.toString()}');
+      Utils.snackBar(
+        'error'.tr,
+        'orders_details_failed_detail'.trParams({'error': e.toString()}),
+      );
       return null;
     } finally {
       isLoading.value = false;
@@ -218,8 +224,8 @@ class OrdersController extends GetxController {
   /// Boost profile
   void boostProfile() {
     Utils.snackBar(
-      'Boost Profile',
-      'Profile boost feature will be implemented',
+      'boost_profile_title'.tr,
+      'boost_profile_coming_soon'.tr,
     );
   }
 
@@ -227,21 +233,21 @@ class OrdersController extends GetxController {
   String getStatusText(OrderStatus status) {
     switch (status) {
       case OrderStatus.active:
-        return 'Active';
+        return 'orders_status_active'.tr;
       case OrderStatus.newOrder:
-        return 'New';
+        return 'orders_status_new'.tr;
       case OrderStatus.completed:
-        return 'Completed';
+        return 'orders_status_completed'.tr;
       case OrderStatus.declined:
-        return 'Declined';
+        return 'orders_status_declined'.tr;
       case OrderStatus.inProgress:
-        return 'In Progress';
+        return 'orders_status_in_progress'.tr;
       case OrderStatus.inRevision:
-        return 'In Revision';
+        return 'orders_status_in_revision'.tr;
       case OrderStatus.delivered:
-        return 'Delivered';
+        return 'orders_status_delivered'.tr;
       case OrderStatus.draft:
-        return 'Draft';
+        return 'orders_status_draft'.tr;
     }
   }
 

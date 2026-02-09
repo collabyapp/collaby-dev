@@ -29,15 +29,14 @@ class PhoneVerificationView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 8),
-              Text('Verification Code', style: AppTextStyles.h3),
+              Text('verification_code'.tr, style: AppTextStyles.h3),
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   style: AppTextStyles.smallText,
                   children: [
-                    const TextSpan(
-                      text:
-                          'Enter the verification code that we have sent to your phone number ',
+                    TextSpan(
+                      text: 'verification_code_prompt'.tr,
                     ),
                     TextSpan(
                       text: '${c.phoneNumber}',
@@ -94,7 +93,7 @@ class PhoneVerificationView extends StatelessWidget {
                 () => GestureDetector(
                   onTap: c.isResendEnabled.value ? c.resendCode : null,
                   child: Text(
-                    'Resend Code',
+                    'resend_code'.tr,
                     style: AppTextStyles.smallMediumText.copyWith(
                       color:
                           // c.isResendEnabled.value

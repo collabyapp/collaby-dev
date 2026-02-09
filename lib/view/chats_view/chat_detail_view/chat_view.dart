@@ -847,7 +847,7 @@ class MessageBubble extends StatelessWidget {
                         foregroundColor: Colors.red,
                         side: BorderSide(color: Colors.red),
                       ),
-                      child: Text('Decline'),
+                      child: Text('decline'.tr),
                     ),
                   ),
                   SizedBox(width: 8),
@@ -859,7 +859,7 @@ class MessageBubble extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff917DE5),
                       ),
-                      child: Text('Accept'),
+                      child: Text('accept'.tr),
                     ),
                   ),
                 ],
@@ -871,7 +871,7 @@ class MessageBubble extends StatelessWidget {
                   onPressed: () {
                     chatController.withdrawCustomOffer(offer.offerId ?? '');
                   },
-                  child: Text('Withdraw Offer'),
+                  child: Text('withdraw_offer'.tr),
                 ),
               ),
             ],

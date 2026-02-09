@@ -23,7 +23,7 @@ class OrdersView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text('Orders'),
+          title: Text('orders_title'.tr),
           centerTitle: false,
           actions: [
             GestureDetector(
@@ -68,7 +68,7 @@ class OrdersView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Earning Available:',
+                          'orders_earning_available'.tr,
                           style: AppTextStyles.extraSmallText,
                         ),
                         Row(
@@ -100,9 +100,9 @@ class OrdersView extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Obx(() => _buildTab('Active', 0))),
-                    Expanded(child: Obx(() => _buildTab('New', 1))),
-                    Expanded(child: Obx(() => _buildTab('Completed', 2))),
+                    Expanded(child: Obx(() => _buildTab('orders_tab_active'.tr, 0))),
+                    Expanded(child: Obx(() => _buildTab('orders_tab_new'.tr, 1))),
+                    Expanded(child: Obx(() => _buildTab('orders_tab_completed'.tr, 2))),
                   ],
                 ),
               ),
@@ -192,7 +192,7 @@ class OrdersView extends StatelessWidget {
             Image.asset(ImageAssets.noOrderImage, width: 58),
             SizedBox(height: 16),
             Text(
-              'You have no active orders',
+              'orders_empty_active'.tr,
               style: AppTextStyles.extraSmallText,
             ),
           ],
@@ -350,13 +350,13 @@ class OrdersView extends StatelessWidget {
                 Text(
                   order.status == OrderStatus.completed ||
                           order.status == OrderStatus.declined
-                      ? 'Order by'
+                      ? 'orders_order_by'.tr
                       : order.status == OrderStatus.inProgress ||
                             order.status == OrderStatus.active ||
                             order.status == OrderStatus.inRevision ||
                             order.status == OrderStatus.delivered
-                      ? 'Hired by'
-                      : 'Order by',
+                      ? 'orders_hired_by'.tr
+                      : 'orders_order_by'.tr,
                   style: AppTextStyles.extraSmallText.copyWith(fontSize: 11),
                 ),
               ],
@@ -405,10 +405,16 @@ class OrdersView extends StatelessWidget {
                 Text(
                   order.status == OrderStatus.completed ||
                           order.status == OrderStatus.declined
-                      ? 'Ended on: ${_formatDate(order.endDate)}'
+                      ? 'orders_ended_on'.trParams(
+                        {'date': _formatDate(order.endDate)},
+                      )
                       : order.daysRemaining != null
-                      ? '${order.daysRemaining!.ceil()} days left'
-                      : 'Deliver on: ${_formatDate(order.endDate)}',
+                      ? 'orders_days_left'.trParams(
+                        {'days': order.daysRemaining!.ceil().toString()},
+                      )
+                      : 'orders_deliver_on'.trParams(
+                        {'date': _formatDate(order.endDate)},
+                      ),
                   style: AppTextStyles.extraSmallText.copyWith(fontSize: 11),
                 ),
               ],
@@ -427,7 +433,7 @@ class OrdersView extends StatelessWidget {
           Image.asset(ImageAssets.noOrderImage, width: 58),
           SizedBox(height: 24),
           Text(
-            'You have no completed and declined orders.',
+            'orders_empty_completed'.tr,
             style: AppTextStyles.extraSmallText,
           ),
         ],
@@ -453,4 +459,3 @@ class OrdersView extends StatelessWidget {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }
-

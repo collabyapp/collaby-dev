@@ -38,7 +38,7 @@ class NotificationBottomSheet extends StatelessWidget {
 
   Widget _buildHeader() => Padding(
     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-    child: Text('Notifications', style: AppTextStyles.h6Bold),
+    child: Text('notifications_title'.tr, style: AppTextStyles.h6Bold),
   );
 
   Widget _buildNotificationsList() {
@@ -49,7 +49,7 @@ class NotificationBottomSheet extends StatelessWidget {
 
       if (controller.notifications.isEmpty) {
         return Center(
-          child: Text('No notifications yet', style: AppTextStyles.smallText),
+          child: Text('notifications_empty'.tr, style: AppTextStyles.smallText),
         );
       }
 

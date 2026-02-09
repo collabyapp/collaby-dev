@@ -64,9 +64,9 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Phone Number', style: AppTextStyles.h3),
+              Text('phone_number'.tr, style: AppTextStyles.h3),
               Text(
-                'Please add your phone number',
+                'phone_add_prompt'.tr,
                 style: AppTextStyles.smallText,
               ),
               const SizedBox(height: 20),
@@ -89,7 +89,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                     const Padding(
                       padding: EdgeInsets.only(left: 15),
                       child: Text(
-                        'Phone Number',
+                        'phone_number'.tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xff606A79),
@@ -151,7 +151,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                             onTapOutside: (_) =>
                                 FocusManager.instance.primaryFocus?.unfocus(),
                             decoration: InputDecoration(
-                              hintText: 'Phone number',
+                              hintText: 'phone_number_hint'.tr,
                               hintStyle: AppTextStyles.smallText.copyWith(
                                 color: const Color(0xff606A79),
                               ),
@@ -190,7 +190,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
 
               // Verify button uses the combined number
               CustomButton(
-                title: 'Verify',
+                title: 'verify'.tr,
                 isLoading: authController.isSendingOtp.value,
                 isDisabled: authController.phoneNumber.value.isEmpty,
                 onPressed: () async {

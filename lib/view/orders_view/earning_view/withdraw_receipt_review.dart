@@ -20,7 +20,7 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
         return true; // prevent default behavior (app close)
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Withdraw to bank')),
+        appBar: AppBar(title: Text('withdraw_to_bank'.tr)),
         body: Obx(() {
           if (controller.isLoadingWithdrawal.value) {
             return Center(child: CircularProgressIndicator());

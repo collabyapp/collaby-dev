@@ -22,7 +22,7 @@ class AgeGroupSelectorBottomSheet extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            'Select Age Group',
+            'select_age_group'.tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           SizedBox(height: 20),
@@ -43,7 +43,7 @@ class AgeGroupSelectorBottomSheet extends StatelessWidget {
                     child: ListTile(
                       splashColor: Colors.transparent,
 
-                      title: Text(ageGroup),
+                      title: Text(_ageGroupLabel(ageGroup)),
                       trailing: isSelected
                           ? Icon(
                               Icons.radio_button_checked,
@@ -75,11 +75,19 @@ class AgeGroupSelectorBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
               ),
-              child: Text('Done', style: TextStyle(color: Colors.white)),
+              child: Text('done'.tr, style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+String _ageGroupLabel(String value) {
+  final v = value.toLowerCase();
+  if (v.contains('18') || v.contains('24')) return 'age_group_18_24'.tr;
+  if (v.contains('25') || v.contains('39')) return 'age_group_25_39'.tr;
+  if (v.contains('40')) return 'age_group_40_plus'.tr;
+  return value;
 }

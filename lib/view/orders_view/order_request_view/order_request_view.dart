@@ -17,7 +17,7 @@ class OrderRequestView extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: Text('Order Request'),
+        title: Text('order_request_title'.tr),
         actions: [
           Container(
             margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -27,7 +27,7 @@ class OrderRequestView extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'New',
+              'order_request_new_badge'.tr,
               style: TextStyle(
                 fontFamily: AppFonts.OpenSansBold,
                 fontSize: 10,
@@ -52,7 +52,7 @@ class OrderRequestView extends StatelessWidget {
                 Icon(Icons.error_outline, size: 48, color: Colors.red),
                 SizedBox(height: 16),
                 Text(
-                  'Error Loading Order',
+                  'order_request_error_title'.tr,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: 8),
@@ -64,7 +64,7 @@ class OrderRequestView extends StatelessWidget {
                 SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () => controller.onInit(),
-                  child: Text('Retry'),
+                  child: Text('retry'.tr),
                 ),
               ],
             ),
@@ -74,7 +74,7 @@ class OrderRequestView extends StatelessWidget {
         // Show empty state if no order
         final order = controller.currentOrder.value;
         if (order == null) {
-          return Center(child: Text('No order data available'));
+          return Center(child: Text('order_request_empty'.tr));
         }
 
         // Main content
@@ -125,12 +125,12 @@ class OrderRequestView extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Order: ${order.orderNumber}',
+                        '${'order_request_order_label'.tr} ${order.orderNumber}',
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'Requested: ${_formatDate(order.createdAt)}',
+                        '${'order_request_requested_label'.tr} ${_formatDate(order.createdAt)}',
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
@@ -212,7 +212,7 @@ class OrderRequestView extends StatelessWidget {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  '${order.deliveryTimeDays} Days',
+                                  '${order.deliveryTimeDays} ${'order_request_days'.tr}',
                                   style: AppTextStyles.extraSmallMediumText,
                                 ),
                               ],
@@ -236,7 +236,7 @@ class OrderRequestView extends StatelessWidget {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  '${order.numberOfRevisions} Revisions',
+                                  '${order.numberOfRevisions} ${'order_request_revisions'.tr}',
                                   style: AppTextStyles.extraSmallMediumText,
                                 ),
                               ],
@@ -262,7 +262,7 @@ class OrderRequestView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Work Description',
+                          'order_request_work_description'.tr,
                           style: AppTextStyles.smallMediumText,
                         ),
                         SizedBox(height: 8),
@@ -292,7 +292,7 @@ class OrderRequestView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Work Attachments',
+                          'order_request_work_attachments'.tr,
                           style: AppTextStyles.extraSmallText.copyWith(
                             fontSize: 10,
                             color: Color(0XFF848194),
@@ -327,7 +327,7 @@ class OrderRequestView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Script',
+                          'order_request_script'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -352,7 +352,7 @@ class OrderRequestView extends StatelessWidget {
                             children: [
                               SizedBox(height: 12),
                               Text(
-                                'Script Attachments',
+                                'order_request_script_attachments'.tr,
                                 style: AppTextStyles.extraSmallText.copyWith(
                                   fontSize: 10,
                                   color: Color(0xff848194),
@@ -389,7 +389,7 @@ class OrderRequestView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Order Specific Questions',
+                          'order_request_specific_questions'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -419,7 +419,7 @@ class OrderRequestView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'About the client',
+                            'order_request_about_client'.tr,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -615,7 +615,7 @@ class OrderRequestView extends StatelessWidget {
               children: [
                 Text(filename, style: AppTextStyles.extraSmallText),
                 Text(
-                  '${size} MB',
+                  '${size} ${'order_request_mb'.tr}',
                   style: AppTextStyles.extraSmallText.copyWith(
                     color: Color(0xff8B8B8B),
                   ),
@@ -680,7 +680,7 @@ class OrderRequestView extends StatelessWidget {
                           (att) => Padding(
                             padding: EdgeInsets.only(top: 4),
                             child: Text(
-                              '📎 ${att.name}',
+                              '${'order_request_attachment'.tr} ${att.name}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.blue,
@@ -717,7 +717,7 @@ class OrderRequestView extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Please note: After 24 hours, the order will be automatically approved.',
+            'order_request_auto_approve_note'.tr,
             style: AppTextStyles.extraSmallText,
             textAlign: TextAlign.center,
           ),
@@ -727,7 +727,7 @@ class OrderRequestView extends StatelessWidget {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => _showDeclineDialog(order, context),
-                  child: Text('Decline'),
+                  child: Text('decline'.tr),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black,
                     side: BorderSide(color: Colors.grey),
@@ -760,7 +760,7 @@ class OrderRequestView extends StatelessWidget {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text('Accept Order'),
+                        : Text('order_request_accept'.tr),
                   ),
                 ),
               ),
@@ -789,7 +789,7 @@ class OrderRequestView extends StatelessWidget {
               children: [
                 Center(
                   child: Text(
-                    'Decline Order',
+                    'order_request_decline_title'.tr,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -803,14 +803,14 @@ class OrderRequestView extends StatelessWidget {
                         ),
                         Obx(() {
                           if (controller.selectedDeclineReason.value ==
-                              'Other') {
+                              'decline_reason_other') {
                             return Column(
                               children: [
                                 SizedBox(height: 16),
                                 TextField(
                                   maxLines: 3,
                                   decoration: InputDecoration(
-                                    hintText: 'Enter a reason',
+                                    hintText: 'order_request_reason_hint'.tr,
                                     border: OutlineInputBorder(),
                                   ),
                                   onChanged: (v) =>
@@ -834,7 +834,7 @@ class OrderRequestView extends StatelessWidget {
                         style: OutlinedButton.styleFrom(
                           minimumSize: Size.fromHeight(48),
                         ),
-                        child: Text('Cancel'),
+                        child: Text('cancel'.tr),
                       ),
                     ),
                     SizedBox(width: 12),
@@ -862,7 +862,7 @@ class OrderRequestView extends StatelessWidget {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : Text('Decline Order'),
+                              : Text('order_request_decline'.tr),
                         ),
                       ),
                     ),
@@ -888,7 +888,7 @@ class OrderRequestView extends StatelessWidget {
             color: Color(0xffF4F7FF),
           ),
           child: RadioListTile<String>(
-            title: Text(reason),
+            title: Text(reason.tr),
             value: reason,
             controlAffinity: ListTileControlAffinity.trailing,
             groupValue: controller.selectedDeclineReason.value,

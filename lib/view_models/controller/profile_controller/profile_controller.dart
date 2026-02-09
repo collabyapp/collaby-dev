@@ -16,7 +16,7 @@ class ProfileController extends GetxController
 
   late TabController tabController;
   final currentIndex = 0.obs;
-  final tabs = ['Portfolio', 'Services', 'About', 'Reviews'];
+  final tabs = ['tab_portfolio', 'tab_services', 'tab_about', 'tab_reviews'];
 
   // Profile data
   final isLoadingProfile = false.obs;
@@ -63,7 +63,7 @@ class ProfileController extends GetxController
         }
       }
     } catch (e) {
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     } finally {
       isLoadingProfile.value = false;
     }
@@ -127,7 +127,7 @@ class ProfileController extends GetxController
         currentPage.value++;
       }
     } catch (e) {
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     } finally {
       isLoadingGigs.value = false;
     }
@@ -143,7 +143,7 @@ class ProfileController extends GetxController
   /// Navigate to gig detail
   void navigateToGigDetail(MyGigModel gig, int index) {
     if (gig.gigId == null || gig.gigId.toString().isEmpty) {
-      Utils.snackBar('Error', 'error_no_service'.tr);
+      Utils.snackBar('error'.tr, 'error_no_service'.tr);
       return;
     }
     Get.toNamed(
@@ -155,14 +155,14 @@ class ProfileController extends GetxController
   /// Edit service (open create gig flow prefilled)
   Future<void> editService(MyGigModel gig) async {
     if (gig.gigId == null || gig.gigId.toString().isEmpty) {
-      Utils.snackBar('Error', 'error_no_service'.tr);
+      Utils.snackBar('error'.tr, 'error_no_service'.tr);
       return;
     }
     try {
       final response = await _gigRepository.getGigDetailApi(gig.gigId.toString());
       final data = response is Map<String, dynamic> ? response['data'] : null;
       if (data == null) {
-        Utils.snackBar('Error', 'error_no_service'.tr);
+        Utils.snackBar('error'.tr, 'error_no_service'.tr);
         return;
       }
       Get.toNamed(
@@ -174,7 +174,7 @@ class ProfileController extends GetxController
         },
       );
     } catch (e) {
-      Utils.snackBar('Error', e.toString());
+      Utils.snackBar('error'.tr, e.toString());
     }
   }
 

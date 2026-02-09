@@ -28,7 +28,7 @@ class JobsView extends StatelessWidget {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text('Jobs', style: AppTextStyles.normalTextBold),
+              title: Text('jobs_title'.tr, style: AppTextStyles.normalTextBold),
               centerTitle: false,
               automaticallyImplyLeading: false,
             ),
@@ -51,9 +51,9 @@ class JobsView extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Expanded(child: Obx(() => _buildTab('New Jobs', 0))),
-                        Expanded(child: Obx(() => _buildTab('Saved Jobs', 1))),
-                        Expanded(child: Obx(() => _buildTab('Applied', 2))),
+                        Expanded(child: Obx(() => _buildTab('jobs_tab_new'.tr, 0))),
+                        Expanded(child: Obx(() => _buildTab('jobs_tab_saved'.tr, 1))),
+                        Expanded(child: Obx(() => _buildTab('jobs_tab_applied'.tr, 2))),
                       ],
                     ),
                   ),
@@ -120,7 +120,6 @@ class JobsView extends StatelessWidget {
     );
   }
 }
-
 
 
 

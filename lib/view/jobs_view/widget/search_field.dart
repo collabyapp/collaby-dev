@@ -2,6 +2,7 @@ import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SearchField extends StatelessWidget {
   const SearchField({required this.onChanged});
@@ -16,7 +17,7 @@ class SearchField extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       decoration: InputDecoration(
-        hintText: 'Search Jobs...',
+        hintText: 'jobs_search_hint'.tr,
         hintStyle: AppTextStyles.extraSmallText.copyWith(
           color: Color(0xff000000).withOpacity(0.41),
         ),
@@ -49,4 +50,3 @@ class SearchField extends StatelessWidget {
     );
   }
 }
-

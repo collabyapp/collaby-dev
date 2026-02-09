@@ -45,7 +45,7 @@ class _StripeOnboardingWebViewState extends State<StripeOnboardingWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Complete Account Setup'),
+        title: Text('complete_account_setup'.tr),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () => Get.back(),

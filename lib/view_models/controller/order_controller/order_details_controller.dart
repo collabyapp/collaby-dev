@@ -63,12 +63,29 @@ class OrderDetailController extends GetxController {
   var showCreatorActions = false.obs;
 
   final List<String> declineReasons = [
-    'Out of Scope',
-    'Availability Conflict',
-    'Tight Deadline',
-    'Client Requested Cancellation',
-    'Other',
+    'decline_reason_out_of_scope',
+    'decline_reason_availability_conflict',
+    'decline_reason_tight_deadline',
+    'decline_reason_client_requested',
+    'decline_reason_other',
   ];
+
+  String _declineReasonToValue(String key) {
+    switch (key) {
+      case 'decline_reason_out_of_scope':
+        return 'Out of Scope';
+      case 'decline_reason_availability_conflict':
+        return 'Availability Conflict';
+      case 'decline_reason_tight_deadline':
+        return 'Tight Deadline';
+      case 'decline_reason_client_requested':
+        return 'Client Requested Cancellation';
+      case 'decline_reason_other':
+        return 'Other';
+      default:
+        return key;
+    }
+  }
 
   OrderModel? passedOrder;
   @override
@@ -377,9 +394,10 @@ class OrderDetailController extends GetxController {
     try {
       isSubmitting.value = true;
 
-      String reason = selectedDeclineReason.value == 'Other'
+      final reasonKey = selectedDeclineReason.value;
+      String reason = reasonKey == 'decline_reason_other'
           ? customDeclineReason.value
-          : selectedDeclineReason.value;
+          : _declineReasonToValue(reasonKey);
 
       if (reason.isEmpty) {
         Utils.snackBar('Error', 'Please select or enter a reason');

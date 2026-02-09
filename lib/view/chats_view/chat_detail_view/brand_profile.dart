@@ -19,7 +19,10 @@ class UserProfileScreen extends StatelessWidget {
         //   icon: Icon(Icons.arrow_back, color: Colors.black),
         //   onPressed: () => Get.back(),
         // ),
-        title: Text('${user.name} Profile', style: AppTextStyles.h6),
+        title: Text(
+          'brand_profile_title'.trParams({'name': user.name}),
+          style: AppTextStyles.h6,
+        ),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
@@ -46,7 +49,7 @@ class UserProfileScreen extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        'Los Angeles, USA',
+                        'brand_profile_location'.tr,
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                     ],
@@ -65,10 +68,10 @@ class UserProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('About', style: AppTextStyles.normalTextBold),
+                  Text('about_title'.tr, style: AppTextStyles.normalTextBold),
                   SizedBox(height: 12),
                   Text(
-                    'We are a premium beauty brand committed to creating high-quality, organic skincare and cosmetic products. Our formulations combine the power of natural ingredients with cutting-edge beauty science to deliver exceptional results. We believe in sustainable beauty practices and cruelty-free testing, ensuring our products are as kind to the environment as they are to your skin.',
+                    'brand_profile_about'.tr,
                     style: AppTextStyles.extraSmallText,
                   ),
                   SizedBox(height: 20),
@@ -77,12 +80,12 @@ class UserProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Timezone',
+                        'brand_profile_timezone'.tr,
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'PST (UTC-8)',
+                        'brand_profile_timezone_value'.tr,
                         style: AppTextStyles.smallMediumText.copyWith(
                           color: AppColor.primaryColor,
                         ),
@@ -94,12 +97,12 @@ class UserProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Last Conversation',
+                        'brand_profile_last_conversation'.tr,
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                       SizedBox(height: 4),
                       Text(
-                        '2 days ago',
+                        'brand_profile_last_conversation_value'.tr,
                         style: AppTextStyles.smallMediumText.copyWith(
                           color: AppColor.primaryColor,
                         ),
@@ -117,7 +120,7 @@ class UserProfileScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Active Gig',
+                    'brand_profile_active_gig'.tr,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -153,11 +156,11 @@ class UserProfileScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Beauty Brand UGC',
+                                    'brand_profile_active_gig_title'.tr,
                                     style: AppTextStyles.smallMediumText,
                                   ),
                                   Text(
-                                    'Public',
+                                    'brand_profile_visibility_public'.tr,
                                     style: TextStyle(
                                       color: Color(0xff5DA160),
                                       fontSize: 10,
@@ -169,7 +172,7 @@ class UserProfileScreen extends StatelessWidget {
 
                               SizedBox(height: 4),
                               Text(
-                                'Creating Authentic product reviews and demonstrations for skincare brand',
+                                'brand_profile_active_gig_desc'.tr,
                                 style: AppTextStyles.extraSmallText,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -184,7 +187,7 @@ class UserProfileScreen extends StatelessWidget {
                                   ),
                                   SizedBox(width: 4),
                                   Text(
-                                    'Posted 2 Days ago',
+                                    'brand_profile_posted_2_days_ago'.tr,
                                     style: AppTextStyles.extraSmallText
                                         .copyWith(color: Color(0xff676767)),
                                   ),
@@ -202,7 +205,7 @@ class UserProfileScreen extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text('Package Preview', style: AppTextStyles.h6),
+              child: Text('package_preview'.tr, style: AppTextStyles.h6),
             ),
             // Package Preview Section
             Padding(
@@ -224,10 +227,10 @@ class UserProfileScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 16),
-                    _buildPackageFeature('Raw Video Files'),
-                    _buildPackageFeature('Commercial Use License'),
-                    _buildPackageFeature('Background Music'),
-                    _buildPackageFeature('Voice Over'),
+                    _buildPackageFeature('package_feature_raw_files'.tr),
+                    _buildPackageFeature('package_feature_commercial_use'.tr),
+                    _buildPackageFeature('package_feature_background_music'.tr),
+                    _buildPackageFeature('package_feature_voice_over'.tr),
                     SizedBox(height: 16),
                     Row(
                       children: [
@@ -249,7 +252,9 @@ class UserProfileScreen extends StatelessWidget {
                               ),
                               SizedBox(width: 4),
                               Text(
-                                '3 Days Delivery',
+                                'brand_profile_delivery_days'.trParams(
+                                  {'days': '3'},
+                                ),
                                 style: AppTextStyles.extraSmallMediumText,
                               ),
                             ],
@@ -271,7 +276,7 @@ class UserProfileScreen extends StatelessWidget {
 
                               SizedBox(width: 4),
                               Text(
-                                '2 Reviews',
+                                'reviews_count'.trParams({'count': '2'}),
                                 style: AppTextStyles.extraSmallMediumText,
                               ),
                             ],
@@ -286,7 +291,7 @@ class UserProfileScreen extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text('Additional Revision', style: AppTextStyles.h6),
+              child: Text('additional_revision'.tr, style: AppTextStyles.h6),
             ),
 
             // Additional Revision Section
@@ -332,7 +337,9 @@ class UserProfileScreen extends StatelessWidget {
                               ),
                               SizedBox(width: 4),
                               Text(
-                                '1 Day Delivery',
+                                'brand_profile_delivery_days'.trParams(
+                                  {'days': '1'},
+                                ),
                                 style: AppTextStyles.extraSmallMediumText,
                               ),
                             ],
@@ -342,7 +349,7 @@ class UserProfileScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 12),
                     Text(
-                      'Demonstrate for skincare',
+                      'brand_profile_revision_desc'.tr,
                       style: AppTextStyles.extraSmallText,
                     ),
                   ],
@@ -366,7 +373,7 @@ class UserProfileScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: CustomButton(
-            title: 'View Files',
+            title: 'brand_profile_view_files'.tr,
             onPressed: () => Get.to(() => MediaFilesScreen()),
           ),
 
@@ -409,9 +416,9 @@ class UserProfileScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildAnalyticsItem('95%', 'Response Rate', 20),
-              _buildAnalyticsItem('4.9', 'Rating', 30),
-              _buildAnalyticsItem('2024', 'Member Since', 20),
+              _buildAnalyticsItem('95%', 'brand_profile_response_rate'.tr, 20),
+              _buildAnalyticsItem('4.9', 'brand_profile_rating'.tr, 30),
+              _buildAnalyticsItem('2024', 'brand_profile_member_since'.tr, 20),
             ],
           ),
         ],
@@ -492,13 +499,13 @@ class _MediaFilesScreenState extends State<MediaFilesScreen>
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text('Media Files'),
+        title: Text('media_files'.tr),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: 'Videos'),
-            Tab(text: 'Photos'),
-            Tab(text: 'Files'),
+            Tab(text: 'media_tab_videos'.tr),
+            Tab(text: 'media_tab_photos'.tr),
+            Tab(text: 'media_tab_files'.tr),
           ],
           indicatorColor: Colors.black,
           indicatorWeight: 3,
@@ -674,7 +681,9 @@ class _MediaFilesScreenState extends State<MediaFilesScreen>
                 : MainAxisAlignment.start,
             children: [
               Text(
-                isSent ? 'Sent  $time' : '$time  Received',
+                isSent
+                    ? 'media_sent'.trParams({'time': time})
+                    : 'media_received'.trParams({'time': time}),
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             ],
@@ -727,7 +736,9 @@ class _MediaFilesScreenState extends State<MediaFilesScreen>
                 : MainAxisAlignment.start,
             children: [
               Text(
-                isSent ? 'Sent  $time' : '$time  Received',
+                isSent
+                    ? 'media_sent'.trParams({'time': time})
+                    : 'media_received'.trParams({'time': time}),
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
             ],
@@ -825,7 +836,9 @@ class _MediaFilesScreenState extends State<MediaFilesScreen>
                 : MainAxisAlignment.start,
             children: [
               Text(
-                isSent ? 'Sent  $time' : '$time  Received',
+                isSent
+                    ? 'media_sent'.trParams({'time': time})
+                    : 'media_received'.trParams({'time': time}),
                 style: TextStyle(
                   color: isSent ? Colors.grey[600] : Colors.grey[600],
                   fontSize: 12,
