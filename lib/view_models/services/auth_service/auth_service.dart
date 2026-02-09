@@ -203,6 +203,24 @@ class AuthService {
         .toLowerCase();
     final role = (user['role'] ?? '').toString().toLowerCase();
     final isGigCreated = user['isGigCreated'] == true;
+    bool isMissingString(dynamic v) =>
+        v == null || (v is String && v.trim().isEmpty);
+    bool isEmptyList(dynamic v) => v is List && v.isEmpty;
+    final shipping = user['shippingAddress'] as Map<String, dynamic>?;
+    final bool profileIncomplete =
+        profileStatus == 'pending' ||
+        isMissingString(user['firstName']) ||
+        isMissingString(user['lastName']) ||
+        isMissingString(user['displayName']) ||
+        isMissingString(user['ageGroup']) ||
+        isMissingString(user['gender']) ||
+        isMissingString(user['country']) ||
+        isEmptyList(user['languages']) ||
+        shipping == null ||
+        isMissingString(shipping['street']) ||
+        isMissingString(shipping['city']) ||
+        isMissingString(shipping['zipCode']) ||
+        isMissingString(shipping['country']);
 
     // 1) Email not verified -> send OTP then navigate to OTP screen
     if (!isEmailVerified) {
@@ -215,7 +233,7 @@ class AuthService {
     }
 
     // 2) Incomplete profile
-    if (profileStatus == 'pending') {
+    if (profileIncomplete) {
       return const AuthRouteDecision(route: RouteName.profileSetUpView);
     }
 
