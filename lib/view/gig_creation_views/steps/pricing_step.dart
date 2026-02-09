@@ -388,6 +388,13 @@ class PricingStep extends GetView<CreateGigController> {
     return Column(
       children: [
         _coreRow(
+          title: 'extra_commercial'.tr,
+          includedObs: controller.coreCommercialIncluded,
+          onToggle: controller.setCoreCommercialIncluded,
+          priceController: controller.coreCommercialPriceController,
+        ),
+        const SizedBox(height: 10),
+        _coreRow(
           title: 'extra_script'.tr,
           includedObs: controller.coreScriptIncluded,
           onToggle: controller.setCoreScriptIncluded,
@@ -796,7 +803,13 @@ class PricingStep extends GetView<CreateGigController> {
     final hasAnyPrice = prices.any((p) => p > 0);
 
     final lines = <String>[
-      'feature_commercial_use'.tr,
+      if (controller.coreCommercialIncluded.value) 'feature_commercial_included'.tr,
+      if (!controller.coreCommercialIncluded.value &&
+          (controller.coreCommercialPriceController.text.trim().isNotEmpty))
+        'feature_commercial_extra'.trParams({
+          'currency': currency,
+          'price': controller.coreCommercialExtraPrice.toStringAsFixed(0),
+        }),
       if (controller.coreRawIncluded.value) 'feature_raw_included'.tr,
       if (!controller.coreRawIncluded.value &&
           (controller.coreRawPriceController.text.trim().isNotEmpty))

@@ -158,10 +158,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   final coreScriptIncluded = false.obs;
   final coreRawIncluded = false.obs;
   final coreSubtitlesIncluded = false.obs;
+  final coreCommercialIncluded = true.obs;
 
   late final TextEditingController coreScriptPriceController;
   late final TextEditingController coreRawPriceController;
   late final TextEditingController coreSubtitlesPriceController;
+  late final TextEditingController coreCommercialPriceController;
   late final TextEditingController revisionsController;
 
   double get coreScriptExtraPrice =>
@@ -170,6 +172,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       double.tryParse(coreRawPriceController.text.trim().replaceAll(',', '.')) ?? 0;
   double get coreSubtitlesExtraPrice =>
       double.tryParse(coreSubtitlesPriceController.text.trim().replaceAll(',', '.')) ?? 0;
+  double get coreCommercialExtraPrice =>
+      double.tryParse(coreCommercialPriceController.text.trim().replaceAll(',', '.')) ?? 0;
 
   void setCoreScriptIncluded(bool v) {
     coreScriptIncluded.value = v;
@@ -184,6 +188,11 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   void setCoreSubtitlesIncluded(bool v) {
     coreSubtitlesIncluded.value = v;
     if (v) coreSubtitlesPriceController.text = '';
+  }
+
+  void setCoreCommercialIncluded(bool v) {
+    coreCommercialIncluded.value = v;
+    if (v) coreCommercialPriceController.text = '';
   }
 
   /// Pricing Ready:
@@ -258,6 +267,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     coreScriptPriceController = TextEditingController();
     coreRawPriceController = TextEditingController();
     coreSubtitlesPriceController = TextEditingController();
+    coreCommercialPriceController = TextEditingController();
     revisionsController = TextEditingController();
 
     tabController = TabController(length: tabs.length, vsync: this);
@@ -515,10 +525,6 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
             ..addAll(extracted.map(_payloadToNicheKey));
         }
       }
-      if (styles is List) {
-        selectedServiceNiches.value =
-            styles.map((e) => _payloadToNicheKey(e.toString())).toList();
-      }
 
       // description
       final desc = (readField(gig, 'description') ?? '').toString();
@@ -730,6 +736,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       Utils.snackBar('invalid'.tr, 'subtitles_included_priced'.tr);
       return false;
     }
+    if (coreCommercialIncluded.value && coreCommercialExtraPrice > 0) {
+      Utils.snackBar('invalid'.tr, 'commercial_included_priced'.tr);
+      return false;
+    }
 
     return true;
   }
@@ -846,7 +856,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     // shared features (incluidos)
     final sharedFeatures = <String>[
-      'Commercial Use License',
+      if (coreCommercialIncluded.value) 'Commercial Use License',
       if (coreRawIncluded.value) 'Raw Video Files',
       if (coreSubtitlesIncluded.value) 'Subtitles Included',
       // OJO: "Custom Scriptwriting" NO va en features si lo tratas con boolean separado,
@@ -884,6 +894,14 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         'featureType': 'subtitles',
         'title': _safeTitle('Subtitles'),
         'price': coreSubtitlesExtraPrice,
+        'deliveryTimesIndays': 0,
+      });
+    }
+    if (!coreCommercialIncluded.value && coreCommercialExtraPrice > 0) {
+      sharedExtras.add({
+        'featureType': 'commercialUse',
+        'title': _safeTitle('Commercial Use License'),
+        'price': coreCommercialExtraPrice,
         'deliveryTimesIndays': 0,
       });
     }
@@ -972,16 +990,15 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     }
     final title = _deriveTitle(description);
 
-    final videoStylesPayload = selectedServiceNiches
+    final videoStylePayload = selectedServiceNiches
         .map(_nicheKeyToPayload)
         .map((name) => name.toString().trim())
         .where((name) => name.isNotEmpty)
-        .map((name) => {'name': name})
         .toList();
 
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
-      'videoStyles': videoStylesPayload,
+      'videoStyle': videoStylePayload,
       'pricing': sanitizedPricingList,
       'title': title,
       'description': description,
@@ -1013,10 +1030,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       final updatePayload = isEditMode.value
           ? (Map<String, dynamic>.from(payload)
-            ..remove('videoStyles')
             ..remove('pricing')
+            ..remove('videoStyles')
             ..addAll({
-              'videoStyles': payload['videoStyles'],
+              'videoStyle': payload['videoStyle'],
               'pricings': payload['pricing'],
             }))
           : payload;
@@ -1245,6 +1262,7 @@ void removeTag(String tag) => tags.remove(tag);
     coreScriptPriceController.dispose();
     coreRawPriceController.dispose();
     coreSubtitlesPriceController.dispose();
+    coreCommercialPriceController.dispose();
     revisionsController.dispose();
 
     cleanupGalleryVideos();
@@ -1263,6 +1281,3 @@ void removeTag(String tag) => tags.remove(tag);
     return cleaned.length;
   }
 }
-
-
-
