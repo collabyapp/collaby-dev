@@ -418,6 +418,13 @@ class ProfileSetUpController extends GetxController {
     update();
   }
 
+  void updateShippingCountry(String value) {
+    countryController.value.text = value;
+    _validateShipping();
+    _onFormChange();
+    update();
+  }
+
   void updateLanguageLevel(String languageName, String newLevel) {
     final index = selectedLanguages.indexWhere((lang) => lang.name == languageName);
     if (index != -1) {
@@ -473,8 +480,25 @@ class ProfileSetUpController extends GetxController {
   }
 
   void showCountrySelector() {
+    filteredCountries = List.from(countries);
+    update();
     Get.bottomSheet(
       CountrySelectorBottomSheet(),
+      backgroundColor: const Color(0xFFFFFFFF),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    );
+  }
+
+  void showShippingCountrySelector() {
+    filteredCountries = List.from(countries);
+    update();
+    Get.bottomSheet(
+      CountrySelectorBottomSheet(
+        selectedCountry: countryController.value.text.trim(),
+        onSelect: updateShippingCountry,
+      ),
       backgroundColor: const Color(0xFFFFFFFF),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

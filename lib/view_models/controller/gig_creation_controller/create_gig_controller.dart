@@ -1034,13 +1034,13 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       uploadProgress.value = 0.7;
 
       final updatePayload = isEditMode.value
-          ? (Map<String, dynamic>.from(payload)
-            ..remove('pricing')
-            ..remove('videoStyles')
-            ..remove('videoStyle')
-            ..addAll({
-              'pricings': payload['pricing'],
-            }))
+          ? <String, dynamic>{
+            'gigThumbnail': payload['gigThumbnail'],
+            'title': payload['title'],
+            'description': payload['description'],
+            'gallery': payload['gallery'],
+            'pricings': payload['pricing'],
+          }
           : payload;
 
       final response = isEditMode.value

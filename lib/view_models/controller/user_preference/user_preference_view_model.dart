@@ -1,6 +1,9 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreference {
+  static const String _appLanguageCodeKey = 'app_language_code';
+  static const String _appCountryCodeKey = 'app_country_code';
+
   Future<void> saveUser({
     String? token,
     String? email,
@@ -60,6 +63,30 @@ class UserPreference {
   Future<String?> getFMCToken() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     return sp.getString('fcmToken');
+  }
+
+  Future<void> saveAppLocale({
+    required String languageCode,
+    required String countryCode,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_appLanguageCodeKey, languageCode);
+    await prefs.setString(_appCountryCodeKey, countryCode);
+  }
+
+  Future<Map<String, String>?> getAppLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString(_appLanguageCodeKey);
+    final countryCode = prefs.getString(_appCountryCodeKey);
+
+    if (languageCode == null || countryCode == null) {
+      return null;
+    }
+
+    return {
+      'languageCode': languageCode,
+      'countryCode': countryCode,
+    };
   }
 
   // Method to clear all user data (for logout)

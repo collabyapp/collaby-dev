@@ -15,10 +15,14 @@ class GigCreationRepository {
 
     try {
       debugPrint('Updating gig with ID: $gigId');
+      final sanitizedData = Map<String, dynamic>.from(data)
+        ..remove('videoStyle')
+        ..remove('videoStyles')
+        ..remove('pricing');
 
       final response = await _apiService.putApi(
         AppUrl.updateGig(gigId),
-        data: data,
+        data: sanitizedData,
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',

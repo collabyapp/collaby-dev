@@ -1,4 +1,4 @@
-import 'package:collaby_app/models/orders_model/earnings_models.dart';
+﻿import 'package:collaby_app/models/orders_model/earnings_models.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/orders_view/earning_view/widget/method_tile.dart';
 import 'package:collaby_app/view/orders_view/earning_view/widget/summary_card.dart';
@@ -23,7 +23,7 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
         appBar: AppBar(title: Text('withdraw_to_bank'.tr)),
         body: Obx(() {
           if (controller.isLoadingWithdrawal.value) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           return SingleChildScrollView(
@@ -42,12 +42,15 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
                 const SizedBox(height: 16),
                 Obx(
                   () => MethodTile(
-                    title: 'Standard Withdrawal',
+                    title: 'withdraw_method_standard'.tr,
                     subtitle: controller.infoTexts.isNotEmpty
                         ? controller.infoTexts[0]
                         : (controller.standardProcessingDays.value > 0
-                              ? 'Standard withdrawal time: ${controller.standardProcessingDays.value} business days'
-                              : 'Standard withdrawal time: 4–5 business days.'),
+                              ? 'withdraw_method_standard_dynamic'.trParams({
+                                  'days': controller.standardProcessingDays.value
+                                      .toString(),
+                                })
+                              : 'withdraw_method_standard_default'.tr),
                     selected:
                         controller.method.value == WithdrawalMethod.standard,
                     onTap: () =>
@@ -58,12 +61,13 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
                 const SizedBox(height: 10),
                 Obx(
                   () => MethodTile(
-                    title: 'Instant Withdrawal',
+                    title: 'withdraw_method_instant'.tr,
                     subtitle: controller.infoTexts.length > 1
                         ? controller.infoTexts[1]
-                        : 'Funds from instant withdrawals arrive within 24 hours.',
+                        : 'withdraw_method_instant_default'.tr,
                     selected:
                         controller.method.value == WithdrawalMethod.instant,
+                    enabled: controller.instantWithdrawalEnabled.value,
                     onTap: () =>
                         controller.method.value = WithdrawalMethod.instant,
                   ),
@@ -91,7 +95,6 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
                               RouteName.bottomNavigationView,
                               arguments: {'index': 1},
                             );
-                            // Get.offAll(EarningsView());
                           }
                         },
                   style: ElevatedButton.styleFrom(
@@ -102,9 +105,9 @@ class WithdrawReceiptReviewView extends GetView<EarningsController> {
                     ),
                     disabledBackgroundColor: Colors.grey,
                   ),
-                  child: const Text(
-                    'Withdraw',
-                    style: TextStyle(
+                  child: Text(
+                    'withdraw_action'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
