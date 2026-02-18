@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -21,7 +21,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-class CreateGigController extends GetxController with GetTickerProviderStateMixin {
+class CreateGigController extends GetxController
+    with GetTickerProviderStateMixin {
   // ===================== EDIT MODE =====================
   final isEditMode = false.obs;
   String? editingGigId;
@@ -33,7 +34,12 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   // ===================== TABS =====================
   late TabController tabController;
-  final tabs = const ['tab_niches', 'tab_pricing', 'tab_description', 'tab_gallery'];
+  final tabs = const [
+    'tab_niches',
+    'tab_pricing',
+    'tab_description',
+    'tab_gallery',
+  ];
   final currentIndex = 0.obs;
   final RxInt highestCompletedStep = 0.obs;
 
@@ -167,13 +173,25 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   late final TextEditingController revisionsController;
 
   double get coreScriptExtraPrice =>
-      double.tryParse(coreScriptPriceController.text.trim().replaceAll(',', '.')) ?? 0;
+      double.tryParse(
+        coreScriptPriceController.text.trim().replaceAll(',', '.'),
+      ) ??
+      0;
   double get coreRawExtraPrice =>
-      double.tryParse(coreRawPriceController.text.trim().replaceAll(',', '.')) ?? 0;
+      double.tryParse(
+        coreRawPriceController.text.trim().replaceAll(',', '.'),
+      ) ??
+      0;
   double get coreSubtitlesExtraPrice =>
-      double.tryParse(coreSubtitlesPriceController.text.trim().replaceAll(',', '.')) ?? 0;
+      double.tryParse(
+        coreSubtitlesPriceController.text.trim().replaceAll(',', '.'),
+      ) ??
+      0;
   double get coreCommercialExtraPrice =>
-      double.tryParse(coreCommercialPriceController.text.trim().replaceAll(',', '.')) ?? 0;
+      double.tryParse(
+        coreCommercialPriceController.text.trim().replaceAll(',', '.'),
+      ) ??
+      0;
 
   void setCoreScriptIncluded(bool v) {
     coreScriptIncluded.value = v;
@@ -214,13 +232,15 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   final int descriptionMinChars = 200;
   final RxInt descriptionCharCount = 0.obs;
 
-  bool get isDescriptionReady => descriptionCharCount.value >= descriptionMinChars;
+  bool get isDescriptionReady =>
+      descriptionCharCount.value >= descriptionMinChars;
 
   // ===================== GALLERY =====================
   final ImagePicker _picker = ImagePicker();
   final RxList<VideoItem> galleryVideos = <VideoItem>[].obs;
 
-  VideoItem? get introVideo => galleryVideos.isEmpty ? null : galleryVideos.first;
+  VideoItem? get introVideo =>
+      galleryVideos.isEmpty ? null : galleryVideos.first;
 
   final RxBool isDeclarationAccepted = false.obs;
 
@@ -342,7 +362,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
             packages[0].update((pkg) {
               if (pkg == null) return;
               // Si tu PackageModel usa strings tipo "3 Days", setÃ©alo asÃ­:
-              pkg.deliveryTime = deliveryDays > 0 ? '$deliveryDays Days' : pkg.deliveryTime;
+              pkg.deliveryTime = deliveryDays > 0
+                  ? '$deliveryDays Days'
+                  : pkg.deliveryTime;
               pkg.revisions = revisions;
             });
             final revText = revisions == 0 ? '' : revisions.toString();
@@ -361,8 +383,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           final feats = getP('features');
           if (feats is List) {
             final list = feats.map((e) => e.toString()).toList();
-            if (list.any((x) => x.toLowerCase().contains('raw'))) coreRawIncluded.value = true;
-            if (list.any((x) => x.toLowerCase().contains('subtitle'))) coreSubtitlesIncluded.value = true;
+            if (list.any((x) => x.toLowerCase().contains('raw')))
+              coreRawIncluded.value = true;
+            if (list.any((x) => x.toLowerCase().contains('subtitle')))
+              coreSubtitlesIncluded.value = true;
           }
 
           // additionalFeatures: solo leemos del primer pricing (shared)
@@ -371,7 +395,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
             if (add is List) {
               for (final x in add) {
                 if (x is! Map) continue;
-                final t = (x['featureType'] ?? '').toString().toLowerCase().trim();
+                final t = (x['featureType'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .trim();
                 final priceStr = (x['price'] ?? 0).toString();
                 final daysStr = (x['deliveryTimesIndays'] ?? 0).toString();
 
@@ -380,125 +407,215 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
                 // core paid
                 if (t == 'scriptwriting' || t == 'script') {
-                  if (!coreScriptIncluded.value) coreScriptPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreScriptIncluded.value)
+                    coreScriptPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'raw_files' || t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawfiles' ||
+                    t == 'rawFiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'raw_files' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawFiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'subtitles') {
-                  if (!coreSubtitlesIncluded.value) coreSubtitlesPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'raw_files' || t == 'rawfiles' || t == 'rawfiles' || t == 'rawFiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'raw_files' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles' || t == 'raw_files' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'raw_files' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreSubtitlesIncluded.value)
+                    coreSubtitlesPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'rawFiles' ||
+                    t == 'rawfiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawFiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawFiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
+                } else if (t == 'rawfiles' ||
+                    t == 'raw_files' ||
+                    t == 'rawFiles') {
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'raw_files') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value) coreRawPriceController.text = pr.toString();
+                  if (!coreRawIncluded.value)
+                    coreRawPriceController.text = pr.toString();
                 } else {
                   // custom global extra
-                  globalExtras.add(AdditionalFeature(
-                    id: DateTime.now().microsecondsSinceEpoch.toString(),
-                    name: (x['featureType'] ?? 'custom').toString(),
-                    price: pr,
-                    extraDays: days,
-                  ));
+                  globalExtras.add(
+                    AdditionalFeature(
+                      id: DateTime.now().microsecondsSinceEpoch.toString(),
+                      name: (x['featureType'] ?? 'custom').toString(),
+                      price: pr,
+                      extraDays: days,
+                    ),
+                  );
                 }
               }
             }
@@ -507,7 +624,8 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       }
 
       // video styles / niches
-      final styles = readField(gig, 'videoStyles') ?? readField(gig, 'videoStyle');
+      final styles =
+          readField(gig, 'videoStyles') ?? readField(gig, 'videoStyle');
       if (styles is List) {
         final extracted = <String>[];
         for (final s in styles) {
@@ -578,8 +696,11 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
     final idx = globalExtras.indexWhere((e) => e.id == id);
     if (idx == -1) return;
-    globalExtras[idx] =
-        globalExtras[idx].copyWith(name: name, price: price, extraDays: extraDays);
+    globalExtras[idx] = globalExtras[idx].copyWith(
+      name: name,
+      price: price,
+      extraDays: extraDays,
+    );
   }
 
   void removeGlobalExtra(String id) {
@@ -715,10 +836,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   // ===================== VALIDATION =====================
   bool _validatePricing() {
     if (!isPricingReady) {
-      Utils.snackBar(
-        'incomplete_pricing'.tr,
-        'incomplete_pricing_msg'.tr,
-      );
+      Utils.snackBar('incomplete_pricing'.tr, 'incomplete_pricing_msg'.tr);
       return false;
     }
 
@@ -772,7 +890,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       Utils.snackBar('accept_declaration'.tr, 'accept_declaration_msg'.tr);
       return false;
     }
-    final uploadingVideos = galleryVideos.where((v) => v.isUploading.value).toList();
+    final uploadingVideos = galleryVideos
+        .where((v) => v.isUploading.value)
+        .toList();
     if (uploadingVideos.isNotEmpty) {
       Utils.snackBar('upload_in_progress'.tr, 'upload_in_progress_msg'.tr);
       return false;
@@ -796,14 +916,18 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
   }
 
   // ===================== NAVIGATION =====================
-  bool canNavigateToTab(int targetIndex) => targetIndex <= highestCompletedStep.value;
+  bool canNavigateToTab(int targetIndex) =>
+      targetIndex <= highestCompletedStep.value;
 
   void onTabTapped(int index) {
     if (canNavigateToTab(index)) {
       tabController.animateTo(index);
       currentIndex.value = index;
     } else {
-      Utils.snackBar('complete_current_step'.tr, 'complete_current_step_msg'.tr);
+      Utils.snackBar(
+        'complete_current_step'.tr,
+        'complete_current_step_msg'.tr,
+      );
     }
   }
 
@@ -851,7 +975,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     final packageNames = ['15 Sec', '30 Sec', '60 Sec'];
 
     // shared delivery/revisions desde tier0
-    final sharedDeliveryDays = _parseDeliveryTime(packages[0].value.deliveryTime);
+    final sharedDeliveryDays = _parseDeliveryTime(
+      packages[0].value.deliveryTime,
+    );
     final sharedRevisions = packages[0].value.revisions;
 
     // shared features (incluidos)
@@ -867,23 +993,23 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     final sharedExtras = <Map<String, dynamic>>[];
 
     const allowedFeatureTypes = <String>{
-      'scriptwriting',
-      'rawFiles',
-      'subtitles',
+      'script',
       'additionalRevision',
-      'rushDelivery',
-      'addLogo',
-      'export4k',
       'custom',
     };
 
     String _safeFeatureType(String value) {
-      return allowedFeatureTypes.contains(value) ? value : 'custom';
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'scriptwriting' || normalized == 'script')
+        return 'script';
+      if (normalized == 'additionalrevision') return 'additionalRevision';
+      if (allowedFeatureTypes.contains(value)) return value;
+      return 'custom';
     }
 
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': _safeFeatureType('scriptwriting'),
+        'featureType': _safeFeatureType('script'),
         'price': coreScriptExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -947,26 +1073,26 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
     }
 
     // harden: ensure additionalFeatures have only allowed keys
-    final sanitizedPricingList = pricingList
-        .map((p) {
-          final rawExtras = p['additionalFeatures'];
-          if (rawExtras is List) {
-            final cleaned = rawExtras.map((e) {
-              if (e is Map<String, dynamic>) {
-                final featureType = _safeFeatureType((e['featureType'] ?? '').toString());
-                return {
-                  'featureType': featureType,
-                  'price': e['price'] ?? 0,
-                  'deliveryTimesIndays': e['deliveryTimesIndays'] ?? 0,
-                };
-              }
-              return e;
-            }).toList();
-            return {...p, 'additionalFeatures': cleaned};
+    final sanitizedPricingList = pricingList.map((p) {
+      final rawExtras = p['additionalFeatures'];
+      if (rawExtras is List) {
+        final cleaned = rawExtras.map((e) {
+          if (e is Map<String, dynamic>) {
+            final featureType = _safeFeatureType(
+              (e['featureType'] ?? '').toString(),
+            );
+            return {
+              'featureType': featureType,
+              'price': e['price'] ?? 0,
+              'deliveryTimesIndays': e['deliveryTimesIndays'] ?? 0,
+            };
           }
-          return p;
-        })
-        .toList();
+          return e;
+        }).toList();
+        return {...p, 'additionalFeatures': cleaned};
+      }
+      return p;
+    }).toList();
 
     // gallery
     final galleryList = <Map<String, dynamic>>[];
@@ -993,6 +1119,7 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
       if (cleaned.isEmpty) return 'UGC Video';
       return cleaned.length > 60 ? cleaned.substring(0, 60).trim() : cleaned;
     }
+
     final title = _deriveTitle(description);
 
     final videoStylePayload = selectedServiceNiches
@@ -1035,12 +1162,10 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
       final updatePayload = isEditMode.value
           ? (Map<String, dynamic>.from(payload)
-            ..remove('pricing')
-            ..remove('videoStyles')
-            ..remove('videoStyle')
-            ..addAll({
-              'pricings': payload['pricing'],
-            }))
+              ..remove('pricing')
+              ..remove('videoStyles')
+              ..remove('videoStyle')
+              ..addAll({'pricings': payload['pricing']}))
           : payload;
 
       final response = isEditMode.value
@@ -1067,7 +1192,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
           _navigateToSuccessScreen();
         }
       } else {
-        throw Exception(message ?? 'error_failed_status'.trParams({'code': '$statusCode'}));
+        throw Exception(
+          message ?? 'error_failed_status'.trParams({'code': '$statusCode'}),
+        );
       }
     } catch (e, stackTrace) {
       debugPrint('Submission error: $e');
@@ -1104,7 +1231,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
         child: Dialog(
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -1125,16 +1254,24 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  isEditMode.value ? 'uploading_title_update'.tr : 'uploading_title_create'.tr,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  isEditMode.value
+                      ? 'uploading_title_update'.tr
+                      : 'uploading_title_create'.tr,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Obx(() {
                   final progress = uploadProgress.value;
                   String message = 'upload_preparing'.tr;
-                  if (progress < 0.5) message = 'upload_uploading_videos'.tr;
-                  else if (progress < 1.0) message = 'upload_finalizing'.tr;
-                  else message = 'upload_complete'.tr;
+                  if (progress < 0.5)
+                    message = 'upload_uploading_videos'.tr;
+                  else if (progress < 1.0)
+                    message = 'upload_finalizing'.tr;
+                  else
+                    message = 'upload_complete'.tr;
                   return Text(
                     message,
                     style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
@@ -1152,7 +1289,9 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
                           value: progress,
                           minHeight: 8,
                           backgroundColor: Colors.grey.shade200,
-                          valueColor: AlwaysStoppedAnimation<Color>(AppColor.primaryColor),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColor.primaryColor,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -1191,68 +1330,69 @@ class CreateGigController extends GetxController with GetTickerProviderStateMixi
 
   void exploreJobs() => Get.offAllNamed(RouteName.bottomNavigationView);
 
-// ================= COMPATIBILITY LAYER =================
+  // ================= COMPATIBILITY LAYER =================
 
-RxList<AdditionalFeature> get additionalFeatures => globalExtras;
+  RxList<AdditionalFeature> get additionalFeatures => globalExtras;
 
-void addAdditionalFeature(AdditionalFeature feature) {
-  globalExtras.add(feature);
-}
-
-void removeAdditionalFeature(String id) {
-  globalExtras.removeWhere((e) => e.id == id);
-}
-
-List<String> get featureOptions => extraPresets;
-
-final RxnString selectedFeature = RxnString();
-
-void selectFeature(String? value) => selectedFeature.value = value;
-void resetFeaturePicker() => selectedFeature.value = null;
-
-List<VideoItem> get portfolioVideos {
-  if (galleryVideos.length <= 1) return <VideoItem>[];
-  return galleryVideos.sublist(1);
-}
-
-String formatDuration(Duration d) {
-  final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-  final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-  return '$mm:$ss';
-}
-
-final RxInt currentTierIndex = 0.obs;
-
-void setCurrentTier(int index) => currentTierIndex.value = index;
-
-void updatePackageRevisions(int revisions) {
-  packages[0].update((p) {
-    if (p == null) return;
-    p.revisions = revisions;
-  });
-  final nextText = revisions == 0 ? '' : revisions.toString();
-  if (revisionsController.text != nextText) {
-    revisionsController.text = nextText;
+  void addAdditionalFeature(AdditionalFeature feature) {
+    globalExtras.add(feature);
   }
-}
 
-void updatePackageDeliveryTime(String deliveryTime) {
-  packages[0].update((p) {
-    if (p == null) return;
-    p.deliveryTime = deliveryTime;
-  });
-}
+  void removeAdditionalFeature(String id) {
+    globalExtras.removeWhere((e) => e.id == id);
+  }
 
-List<String> get videoStyles => <String>[];
-RxList<String> get selectedStyles => <String>[].obs;
-void toggleStyle(String style) {}
+  List<String> get featureOptions => extraPresets;
 
-final RxList<String> tags = <String>[].obs;
-void addTag(String tag) {
-  final t = tag.trim();
-  if (t.isNotEmpty && !tags.contains(t)) tags.add(t);
-}
-void removeTag(String tag) => tags.remove(tag);
+  final RxnString selectedFeature = RxnString();
+
+  void selectFeature(String? value) => selectedFeature.value = value;
+  void resetFeaturePicker() => selectedFeature.value = null;
+
+  List<VideoItem> get portfolioVideos {
+    if (galleryVideos.length <= 1) return <VideoItem>[];
+    return galleryVideos.sublist(1);
+  }
+
+  String formatDuration(Duration d) {
+    final mm = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final ss = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$mm:$ss';
+  }
+
+  final RxInt currentTierIndex = 0.obs;
+
+  void setCurrentTier(int index) => currentTierIndex.value = index;
+
+  void updatePackageRevisions(int revisions) {
+    packages[0].update((p) {
+      if (p == null) return;
+      p.revisions = revisions;
+    });
+    final nextText = revisions == 0 ? '' : revisions.toString();
+    if (revisionsController.text != nextText) {
+      revisionsController.text = nextText;
+    }
+  }
+
+  void updatePackageDeliveryTime(String deliveryTime) {
+    packages[0].update((p) {
+      if (p == null) return;
+      p.deliveryTime = deliveryTime;
+    });
+  }
+
+  List<String> get videoStyles => <String>[];
+  RxList<String> get selectedStyles => <String>[].obs;
+  void toggleStyle(String style) {}
+
+  final RxList<String> tags = <String>[].obs;
+  void addTag(String tag) {
+    final t = tag.trim();
+    if (t.isNotEmpty && !tags.contains(t)) tags.add(t);
+  }
+
+  void removeTag(String tag) => tags.remove(tag);
 
   @override
   void onClose() {
