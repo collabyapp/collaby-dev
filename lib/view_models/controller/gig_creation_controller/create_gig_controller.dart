@@ -7,6 +7,7 @@ import 'package:collaby_app/models/create_gig_model/additional_feature.dart';
 import 'package:collaby_app/models/create_gig_model/packages_model.dart';
 import 'package:collaby_app/models/create_gig_model/video_model.dart';
 import 'package:collaby_app/repository/gig_creation_repository/gig_creation_repository.dart';
+import 'package:collaby_app/repository/profile_repository/profile_repository.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -31,6 +32,7 @@ class CreateGigController extends GetxController
   // ===================== REPOS =====================
   final NetworkApiServices _networkService = NetworkApiServices();
   final GigCreationRepository gigCreationRepo = GigCreationRepository();
+  final ProfileRepository _profileRepo = ProfileRepository();
 
   // ===================== TABS =====================
   late TabController tabController;
@@ -158,6 +160,7 @@ class CreateGigController extends GetxController
 
   /// Extras personalizados globales
   final RxList<AdditionalFeature> globalExtras = <AdditionalFeature>[].obs;
+  final RxString creatorBadge = 'none'.obs;
 
   /// Core minimal shared:
   /// Included toggle + price if not included
@@ -310,8 +313,27 @@ class CreateGigController extends GetxController
       _prefillGigData();
     }
 
+    _loadCreatorBadge();
+
     quillController.addListener(_updateDescriptionStats);
     _updateDescriptionStats();
+  }
+
+  Future<void> _loadCreatorBadge() async {
+    try {
+      final response = await _profileRepo.getCreatorProfileApi();
+      if (response is Map<String, dynamic>) {
+        final data = response['data'];
+        if (data is Map<String, dynamic>) {
+          final raw = (data['badge'] ?? '').toString().trim().toLowerCase();
+          if (raw.isNotEmpty) {
+            creatorBadge.value = raw;
+          }
+        }
+      }
+    } catch (_) {
+      // Non-blocking: pricing UI falls back to "new" level if profile call fails.
+    }
   }
 
   // ===================== PREFILL (EDIT) =====================

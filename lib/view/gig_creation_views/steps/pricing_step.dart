@@ -1,4 +1,4 @@
-﻿import 'package:collaby_app/models/create_gig_model/additional_feature.dart';
+import 'package:collaby_app/models/create_gig_model/additional_feature.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/components/Button.dart';
@@ -47,58 +47,190 @@ class PricingStep extends GetView<CreateGigController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text('pricing_title'.tr, style: AppTextStyles.h6Bold),
-          const SizedBox(height: 6),
-          Text(
-            'pricing_subtitle'.tr,
-            style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
-          ),
-          const SizedBox(height: 12),
-          _buildAllTierPrices(),
-
-          const SizedBox(height: 24),
-
-          // Extras
-          Text('extras_title'.tr, style: AppTextStyles.h6Bold),
-          const SizedBox(height: 10),
-          _coreMinimalExtras(),
-
-          const SizedBox(height: 24),
-
-          // Custom extras
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('custom_extras_title'.tr, style: AppTextStyles.h6Bold),
-              GestureDetector(
-                onTap: () => _openAddGlobalExtraSheet(existing: null),
-                child: const Icon(Icons.add_circle_outline, size: 22),
+            Text('pricing_title'.tr, style: AppTextStyles.h6Bold),
+            const SizedBox(height: 6),
+            Text(
+              'pricing_subtitle'.tr,
+              style: AppTextStyles.extraSmallText.copyWith(
+                color: const Color(0xff77787A),
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
+            ),
+            const SizedBox(height: 12),
+            _buildAllTierPrices(),
+            const SizedBox(height: 16),
+            _creatorLevelCard(),
+            const SizedBox(height: 24),
 
-          Obx(() {
-            final extras = controller.globalExtras;
-            if (extras.isEmpty) {
-              return Text(
-                'no_custom_extras'.tr,
-                style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
+            // Extras
+            Text('extras_title'.tr, style: AppTextStyles.h6Bold),
+            const SizedBox(height: 10),
+            _coreMinimalExtras(),
+
+            const SizedBox(height: 24),
+
+            // Custom extras
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('custom_extras_title'.tr, style: AppTextStyles.h6Bold),
+                GestureDetector(
+                  onTap: () => _openAddGlobalExtraSheet(existing: null),
+                  child: const Icon(Icons.add_circle_outline, size: 22),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            Obx(() {
+              final extras = controller.globalExtras;
+              if (extras.isEmpty) {
+                return Text(
+                  'no_custom_extras'.tr,
+                  style: AppTextStyles.extraSmallText.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+                );
+              }
+              return Column(
+                children: extras.map((e) => _globalExtraTile(e)).toList(),
               );
-            }
-            return Column(
-              children: extras.map((e) => _globalExtraTile(e)).toList(),
-            );
-          }),
+            }),
 
-          const SizedBox(height: 32),
+            const SizedBox(height: 32),
 
-          // Preview
-          Obx(() => _buildPackagePreview()),
+            // Preview
+            Obx(() => _buildPackagePreview()),
           ],
         ),
       ),
     );
+  }
+
+  String _normalizedBadge(String raw) {
+    final v = raw.trim().toLowerCase();
+    if (v == 'level_two' || v == 'level2' || v == 'pro') return 'level_two';
+    if (v == 'level_one' || v == 'level1') return 'level_one';
+    return 'none';
+  }
+
+  String _currentLevelLabelKey(String badge) {
+    switch (badge) {
+      case 'level_two':
+        return 'creator_level_two';
+      case 'level_one':
+        return 'creator_level_one';
+      default:
+        return 'creator_level_new';
+    }
+  }
+
+  String? _nextLevelLabelKey(String badge) {
+    switch (badge) {
+      case 'none':
+        return 'creator_level_one';
+      case 'level_one':
+        return 'creator_level_two';
+      default:
+        return null;
+    }
+  }
+
+  List<String> _currentBenefitKeys(String badge) {
+    switch (badge) {
+      case 'level_two':
+        return const [
+          'level_feature_publish_gigs',
+          'level_feature_priority_discovery',
+          'level_feature_instant_withdrawal',
+        ];
+      case 'level_one':
+        return const [
+          'level_feature_publish_gigs',
+          'level_feature_priority_discovery',
+          'level_feature_standard_withdrawal',
+        ];
+      default:
+        return const [
+          'level_feature_publish_gigs',
+          'level_feature_standard_withdrawal',
+        ];
+    }
+  }
+
+  List<String> _nextBenefitKeys(String badge) {
+    switch (badge) {
+      case 'none':
+        return const [
+          'level_up_requirement_first_gig',
+          'level_feature_priority_discovery',
+        ];
+      case 'level_one':
+        return const [
+          'level_up_requirement_reviews',
+          'level_up_requirement_completed_orders',
+          'level_up_requirement_rating',
+          'level_up_requirement_days_active',
+          'level_feature_instant_withdrawal',
+        ];
+      default:
+        return const [];
+    }
+  }
+
+  Widget _creatorLevelCard() {
+    return Obx(() {
+      final badge = _normalizedBadge(controller.creatorBadge.value);
+      final currentKey = _currentLevelLabelKey(badge);
+      final nextKey = _nextLevelLabelKey(badge);
+      final currentBenefits = _currentBenefitKeys(badge);
+      final nextBenefits = _nextBenefitKeys(badge);
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xffF7F5FF),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xffE2DBFF)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
+            const SizedBox(height: 6),
+            Text(
+              'creator_level_current'.trParams({'level': currentKey.tr}),
+              style: AppTextStyles.extraSmallText.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            ...currentBenefits.map(
+              (k) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text('• ${k.tr}', style: AppTextStyles.extraSmallText),
+              ),
+            ),
+            if (nextKey != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                'creator_level_next'.trParams({'level': nextKey.tr}),
+                style: AppTextStyles.extraSmallText.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ...nextBenefits.map(
+                (k) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text('• ${k.tr}', style: AppTextStyles.extraSmallText),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    });
   }
 
   // ===================== Prices for all tiers =====================
@@ -118,9 +250,18 @@ class PricingStep extends GetView<CreateGigController> {
             ),
             child: Row(
               children: [
-                Obx(() => Text(controller.selectedCurrency.value, style: AppTextStyles.smallText)),
+                Obx(
+                  () => Text(
+                    controller.selectedCurrency.value,
+                    style: AppTextStyles.smallText,
+                  ),
+                ),
                 const SizedBox(width: 22),
-                const Icon(Icons.arrow_forward_ios, size: 20, color: Color(0xff3F4146)),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                  color: Color(0xff3F4146),
+                ),
               ],
             ),
           ),
@@ -188,7 +329,9 @@ class PricingStep extends GetView<CreateGigController> {
       ],
       decoration: InputDecoration(
         hintText: 'price_hint'.tr,
-        hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+        hintStyle: AppTextStyles.smallText.copyWith(
+          color: Colors.grey.shade500,
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -198,7 +341,10 @@ class PricingStep extends GetView<CreateGigController> {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: AppColor.primaryColor),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 12,
+        ),
       ),
       onChanged: (value) {
         final price = double.tryParse(value) ?? 0;
@@ -227,7 +373,11 @@ class PricingStep extends GetView<CreateGigController> {
                   color: delivery.isEmpty ? Colors.grey.shade500 : Colors.black,
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios_sharp, size: 18, color: Color(0xff3F4146)),
+              const Icon(
+                Icons.arrow_forward_ios_sharp,
+                size: 18,
+                color: Color(0xff3F4146),
+              ),
             ],
           ),
         ),
@@ -244,7 +394,9 @@ class PricingStep extends GetView<CreateGigController> {
       onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
         hintText: 'type_number'.tr,
-        hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+        hintStyle: AppTextStyles.smallText.copyWith(
+          color: Colors.grey.shade500,
+        ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -276,16 +428,28 @@ class PricingStep extends GetView<CreateGigController> {
             GestureDetector(
               onTap: _showCurrencySelector,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 23,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Obx(() => Text(controller.selectedCurrency.value, style: AppTextStyles.smallText)),
+                    Obx(
+                      () => Text(
+                        controller.selectedCurrency.value,
+                        style: AppTextStyles.smallText,
+                      ),
+                    ),
                     const SizedBox(width: 22),
-                    const Icon(Icons.arrow_forward_ios, size: 20, color: Color(0xff3F4146)),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      size: 20,
+                      color: Color(0xff3F4146),
+                    ),
                   ],
                 ),
               ),
@@ -294,13 +458,22 @@ class PricingStep extends GetView<CreateGigController> {
             Expanded(
               child: TextField(
                 controller: controller.priceControllers[tierIndex],
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                onTapOutside: (_) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
+                ],
                 decoration: InputDecoration(
                   hintText: 'type_price_hint'.tr,
-                  hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  hintStyle: AppTextStyles.smallText.copyWith(
+                    color: Colors.grey.shade500,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: Colors.grey[300]!),
@@ -309,7 +482,10 @@ class PricingStep extends GetView<CreateGigController> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(color: AppColor.primaryColor),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 13,
+                  ),
                 ),
                 onChanged: (value) {
                   final price = double.tryParse(value) ?? 0;
@@ -342,10 +518,16 @@ class PricingStep extends GetView<CreateGigController> {
                       ? 'select_delivery_time'.tr
                       : controller.packages[0].value.deliveryTime,
                   style: AppTextStyles.smallText.copyWith(
-                    color: controller.packages[0].value.deliveryTime.isEmpty ? Colors.grey.shade500 : Colors.black,
+                    color: controller.packages[0].value.deliveryTime.isEmpty
+                        ? Colors.grey.shade500
+                        : Colors.black,
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_sharp, size: 18, color: Color(0xff3F4146)),
+                const Icon(
+                  Icons.arrow_forward_ios_sharp,
+                  size: 18,
+                  color: Color(0xff3F4146),
+                ),
               ],
             ),
           ),
@@ -361,13 +543,25 @@ class PricingStep extends GetView<CreateGigController> {
           onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
           decoration: InputDecoration(
             hintText: 'type_number'.tr,
-            hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
+            hintStyle: AppTextStyles.smallText.copyWith(
+              color: Colors.grey.shade500,
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Colors.grey[300]!)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColor.primaryColor)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColor.primaryColor),
+            ),
             contentPadding: const EdgeInsets.all(16),
           ),
-          controller: TextEditingController(text: controller.packages[0].value.revisions == 0 ? '' : controller.packages[0].value.revisions.toString()),
+          controller: TextEditingController(
+            text: controller.packages[0].value.revisions == 0
+                ? ''
+                : controller.packages[0].value.revisions.toString(),
+          ),
           onChanged: (value) {
             final revisions = int.tryParse(value) ?? 0;
             controller.updatePackageRevisions(revisions);
@@ -377,7 +571,9 @@ class PricingStep extends GetView<CreateGigController> {
         const SizedBox(height: 6),
         Text(
           'applies_all_durations'.tr,
-          style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
+          style: AppTextStyles.extraSmallText.copyWith(
+            color: Colors.grey.shade600,
+          ),
         ),
       ],
     );
@@ -437,12 +633,14 @@ class PricingStep extends GetView<CreateGigController> {
             Row(
               children: [
                 Expanded(
-                  child: Text(title, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w600)),
+                  child: Text(
+                    title,
+                    style: AppTextStyles.smallText.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-                Switch(
-                  value: included,
-                  onChanged: onToggle,
-                ),
+                Switch(value: included, onChanged: onToggle),
               ],
             ),
             if (!included) ...[
@@ -452,18 +650,39 @@ class PricingStep extends GetView<CreateGigController> {
                   Expanded(
                     child: TextField(
                       controller: priceController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       textInputAction: TextInputAction.done,
-                      onSubmitted: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-                      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
+                      onSubmitted: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      onTapOutside: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d{0,2}$'),
+                        ),
+                      ],
                       decoration: InputDecoration(
                         hintText: 'extra_price_hint'.tr,
-                        hintStyle: AppTextStyles.smallText.copyWith(color: Colors.grey.shade500),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: AppColor.primaryColor)),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        hintStyle: AppTextStyles.smallText.copyWith(
+                          color: Colors.grey.shade500,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: AppColor.primaryColor),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),
@@ -474,7 +693,9 @@ class PricingStep extends GetView<CreateGigController> {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   'extra_price_note'.tr,
-                  style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade600),
+                  style: AppTextStyles.extraSmallText.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
                 ),
               ),
             ],
@@ -499,16 +720,25 @@ class PricingStep extends GetView<CreateGigController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(e.name, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  e.name,
+                  style: AppTextStyles.smallText.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Obx(() => Text(
-                      'custom_extra_summary'.trParams({
-                        'currency': controller.selectedCurrency.value,
-                        'price': e.price.toStringAsFixed(2),
-                        'days': '${e.extraDays}',
-                      }),
-                      style: AppTextStyles.extraSmallText.copyWith(color: Colors.grey.shade700),
-                    )),
+                Obx(
+                  () => Text(
+                    'custom_extra_summary'.trParams({
+                      'currency': controller.selectedCurrency.value,
+                      'price': e.price.toStringAsFixed(2),
+                      'days': '${e.extraDays}',
+                    }),
+                    style: AppTextStyles.extraSmallText.copyWith(
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -528,8 +758,12 @@ class PricingStep extends GetView<CreateGigController> {
   // ===================== Add/Edit Global Extra Sheet =====================
   void _openAddGlobalExtraSheet({AdditionalFeature? existing}) {
     final nameCtrl = TextEditingController(text: existing?.name ?? '');
-    final priceCtrl = TextEditingController(text: existing?.price.toString() ?? '');
-    final daysCtrl = TextEditingController(text: existing?.extraDays.toString() ?? '');
+    final priceCtrl = TextEditingController(
+      text: existing?.price.toString() ?? '',
+    );
+    final daysCtrl = TextEditingController(
+      text: existing?.extraDays.toString() ?? '',
+    );
 
     Get.bottomSheet(
       Container(
@@ -547,17 +781,29 @@ class PricingStep extends GetView<CreateGigController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(height: 12),
               Text(
-                existing == null ? 'add_custom_extra'.tr : 'edit_custom_extra'.tr,
+                existing == null
+                    ? 'add_custom_extra'.tr
+                    : 'edit_custom_extra'.tr,
                 style: AppTextStyles.h6Bold,
               ),
               const SizedBox(height: 14),
 
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('quick_add'.tr, style: AppTextStyles.extraSmallMediumText),
+                child: Text(
+                  'quick_add'.tr,
+                  style: AppTextStyles.extraSmallMediumText,
+                ),
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -569,12 +815,18 @@ class PricingStep extends GetView<CreateGigController> {
                     return GestureDetector(
                       onTap: () => nameCtrl.text = t,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Text(_presetLabel(t), style: AppTextStyles.extraSmallText),
+                        child: Text(
+                          _presetLabel(t),
+                          style: AppTextStyles.extraSmallText,
+                        ),
                       ),
                     );
                   },
@@ -589,20 +841,28 @@ class PricingStep extends GetView<CreateGigController> {
                 controller: nameCtrl,
                 decoration: InputDecoration(
                   labelText: 'extra_name'.tr,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
 
               TextField(
                 controller: priceCtrl,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$'))],
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}$')),
+                ],
                 decoration: InputDecoration(
-                  labelText: 'extra_price_label'.trParams(
-                    {'currency': controller.selectedCurrency.value},
+                  labelText: 'extra_price_label'.trParams({
+                    'currency': controller.selectedCurrency.value,
+                  }),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -613,7 +873,9 @@ class PricingStep extends GetView<CreateGigController> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   labelText: 'extra_days'.tr,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -621,13 +883,16 @@ class PricingStep extends GetView<CreateGigController> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                      onPressed: () {
-                        final name = nameCtrl.text.trim();
-                        final price = double.tryParse(priceCtrl.text.trim()) ?? 0;
-                        final days = int.tryParse(daysCtrl.text.trim()) ?? 0;
+                  onPressed: () {
+                    final name = nameCtrl.text.trim();
+                    final price = double.tryParse(priceCtrl.text.trim()) ?? 0;
+                    final days = int.tryParse(daysCtrl.text.trim()) ?? 0;
 
                     if (name.isEmpty || price <= 0) {
-                      Utils.snackBar('invalid_input'.tr, 'enter_name_valid_price'.tr);
+                      Utils.snackBar(
+                        'invalid_input'.tr,
+                        'enter_name_valid_price'.tr,
+                      );
                       return;
                     }
 
@@ -643,11 +908,17 @@ class PricingStep extends GetView<CreateGigController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
                   child: Text(
                     'save'.tr,
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -674,24 +945,44 @@ class PricingStep extends GetView<CreateGigController> {
               margin: const EdgeInsets.only(top: 12),
               width: 40,
               height: 4,
-              decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(20),
-              child: Text('select_currency'.tr, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              child: Text(
+                'select_currency'.tr,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: controller.currencies.map((c) {
                     return ListTile(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       tileColor: const Color(0xffF4F7FF),
                       title: Text(c['name']!),
-                      trailing: Obx(() => controller.selectedCurrency.value == c['code']
-                          ? const Icon(Icons.radio_button_checked, color: Color(0xFF4C1CAE))
-                          : const Icon(Icons.radio_button_unchecked, color: Color(0xFF4C1CAE))),
-                      onTap: () => controller.selectedCurrency.value = c['code']!,
+                      trailing: Obx(
+                        () => controller.selectedCurrency.value == c['code']
+                            ? const Icon(
+                                Icons.radio_button_checked,
+                                color: Color(0xFF4C1CAE),
+                              )
+                            : const Icon(
+                                Icons.radio_button_unchecked,
+                                color: Color(0xFF4C1CAE),
+                              ),
+                      ),
+                      onTap: () =>
+                          controller.selectedCurrency.value = c['code']!,
                     );
                   }).toList(),
                 ),
@@ -706,9 +997,14 @@ class PricingStep extends GetView<CreateGigController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
-                  child: Text('done'.tr, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                  child: Text(
+                    'done'.tr,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                 ),
               ),
             ),
@@ -732,24 +1028,36 @@ class PricingStep extends GetView<CreateGigController> {
         expand: false,
         builder: (context, scrollController) {
           return Container(
-            decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
             child: Column(
               children: [
                 Container(
                   margin: const EdgeInsets.only(top: 12, bottom: 8),
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
                   child: Text('delivery_time'.tr, style: AppTextStyles.h6),
                 ),
                 const SizedBox(height: 12),
                 Expanded(
                   child: ListView.separated(
                     controller: scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     itemCount: options.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
@@ -759,18 +1067,29 @@ class PricingStep extends GetView<CreateGigController> {
                         final isSelected = pkg.deliveryTime == option;
 
                         return GestureDetector(
-                        onTap: () {
-                          controller.updatePackageDeliveryTime(option);
-                          Get.back();
-                        },
+                          onTap: () {
+                            controller.updatePackageDeliveryTime(option);
+                            Get.back();
+                          },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                            decoration: BoxDecoration(color: const Color(0xffF4F7FF), borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffF4F7FF),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(option, style: AppTextStyles.normalText),
-                                Icon(isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked, color: const Color(0xFF4C1CAE)),
+                                Icon(
+                                  isSelected
+                                      ? Icons.radio_button_checked
+                                      : Icons.radio_button_unchecked,
+                                  color: const Color(0xFF4C1CAE),
+                                ),
                               ],
                             ),
                           ),
@@ -781,7 +1100,13 @@ class PricingStep extends GetView<CreateGigController> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16),
-                  child: SizedBox(width: double.infinity, child: CustomButton(title: 'done'.tr, onPressed: () => Get.back())),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      title: 'done'.tr,
+                      onPressed: () => Get.back(),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -803,7 +1128,8 @@ class PricingStep extends GetView<CreateGigController> {
     final hasAnyPrice = prices.any((p) => p > 0);
 
     final lines = <String>[
-      if (controller.coreCommercialIncluded.value) 'feature_commercial_included'.tr,
+      if (controller.coreCommercialIncluded.value)
+        'feature_commercial_included'.tr,
       if (!controller.coreCommercialIncluded.value &&
           (controller.coreCommercialPriceController.text.trim().isNotEmpty))
         'feature_commercial_extra'.trParams({
@@ -813,15 +1139,25 @@ class PricingStep extends GetView<CreateGigController> {
       if (controller.coreRawIncluded.value) 'feature_raw_included'.tr,
       if (!controller.coreRawIncluded.value &&
           (controller.coreRawPriceController.text.trim().isNotEmpty))
-        'feature_raw_extra'.trParams({'currency': currency, 'price': controller.coreRawExtraPrice.toStringAsFixed(0)}),
-      if (controller.coreSubtitlesIncluded.value) 'feature_subtitles_included'.tr,
+        'feature_raw_extra'.trParams({
+          'currency': currency,
+          'price': controller.coreRawExtraPrice.toStringAsFixed(0),
+        }),
+      if (controller.coreSubtitlesIncluded.value)
+        'feature_subtitles_included'.tr,
       if (!controller.coreSubtitlesIncluded.value &&
           (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
-        'feature_subtitles_extra'.trParams({'currency': currency, 'price': controller.coreSubtitlesExtraPrice.toStringAsFixed(0)}),
+        'feature_subtitles_extra'.trParams({
+          'currency': currency,
+          'price': controller.coreSubtitlesExtraPrice.toStringAsFixed(0),
+        }),
       if (controller.coreScriptIncluded.value) 'feature_script_included'.tr,
       if (!controller.coreScriptIncluded.value &&
           (controller.coreScriptPriceController.text.trim().isNotEmpty))
-        'feature_script_extra'.trParams({'currency': currency, 'price': controller.coreScriptExtraPrice.toStringAsFixed(0)}),
+        'feature_script_extra'.trParams({
+          'currency': currency,
+          'price': controller.coreScriptExtraPrice.toStringAsFixed(0),
+        }),
     ];
 
     return Column(
@@ -858,7 +1194,9 @@ class PricingStep extends GetView<CreateGigController> {
                     children: [
                       const Icon(Icons.check, color: Colors.black, size: 16),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(f, style: const TextStyle(fontSize: 14))),
+                      Expanded(
+                        child: Text(f, style: const TextStyle(fontSize: 14)),
+                      ),
                     ],
                   ),
                 );
@@ -866,7 +1204,10 @@ class PricingStep extends GetView<CreateGigController> {
 
               if (controller.globalExtras.isNotEmpty) ...[
                 const SizedBox(height: 10),
-                  Text('custom_extras_label'.tr, style: AppTextStyles.extraSmallMediumText),
+                Text(
+                  'custom_extras_label'.tr,
+                  style: AppTextStyles.extraSmallMediumText,
+                ),
                 const SizedBox(height: 8),
                 ...controller.globalExtras.map((e) {
                   return Padding(
@@ -888,7 +1229,11 @@ class PricingStep extends GetView<CreateGigController> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.access_time, color: Color(0xFFFBBB00), size: 14),
+                      const Icon(
+                        Icons.access_time,
+                        color: Color(0xFFFBBB00),
+                        size: 14,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         delivery.isEmpty ? 'delivery_time'.tr : delivery,
@@ -902,7 +1247,9 @@ class PricingStep extends GetView<CreateGigController> {
                       Image.asset(ImageAssets.revisionIcon, width: 12),
                       const SizedBox(width: 8),
                       Text(
-                        'revisions_count'.trParams({'count': '${revisions == 0 ? '-' : revisions}'}),
+                        'revisions_count'.trParams({
+                          'count': '${revisions == 0 ? '-' : revisions}',
+                        }),
                         style: AppTextStyles.extraSmallMediumText,
                       ),
                     ],
@@ -929,5 +1276,3 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 }
-
-
