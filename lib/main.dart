@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collaby_app/firebase_options.dart';
+import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes.dart';
 import 'package:collaby_app/view/splash_screen.dart';
@@ -61,31 +62,32 @@ class _BootstrapAppState extends State<BootstrapApp> {
       } else {
         _appLocale = _appLanguageController.normalizeLocale(Get.deviceLocale);
       }
+    } catch (e) {
+      initError = e;
+    }
 
-      // Stripe
+    try {
       Stripe.publishableKey =
           'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
       await Stripe.instance
           .applySettings()
           .timeout(const Duration(seconds: 10));
+    } catch (_) {}
 
-      // Firebase
+    try {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       ).timeout(const Duration(seconds: 15));
+    } catch (_) {}
 
-      // Notificaciones
+    try {
       await AwsomeNotificationService()
           .initializeNotification()
           .timeout(const Duration(seconds: 15));
+    } catch (_) {}
 
-      initialized = true;
-    } catch (e) {
-      initError = e;
-    } finally {
-      _watchdog?.cancel();
-    }
-
+    initialized = true;
+    _watchdog?.cancel();
     if (mounted) setState(() {});
   }
 
@@ -128,8 +130,15 @@ class _LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Image.asset(
+          ImageAssets.logoImage,
+          width: 190.w,
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 }
