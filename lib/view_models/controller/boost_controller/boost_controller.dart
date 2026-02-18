@@ -78,8 +78,7 @@ class BoostController extends GetxController {
       LoadingIndicator.onStop(context: context);
       currentlyPurchasing.value = null;
 
-      if (response != null &&
-          (response['statusCode'] == 201 || response['statusCode'] == 200)) {
+      if (response != null && response['statusCode'] == 201 ||response['statusCode'] == 200) {
         Utils.snackBar('success'.tr, 'boost_purchase_success'.tr);
         // Navigate back
         Get.offAllNamed(

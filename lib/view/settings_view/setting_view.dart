@@ -2,7 +2,6 @@ import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/settings_view/widget/setting_menu_item.dart';
-import 'package:collaby_app/view_models/controller/settings_controller/app_language_controller.dart';
 import 'package:collaby_app/view_models/controller/settings_controller/delete_account_controller.dart';
 import 'package:collaby_app/view_models/controller/settings_controller/log_out_controller.dart';
 import 'package:get/get.dart';
@@ -14,7 +13,6 @@ class SettingsView extends StatelessWidget {
   );
 
   final LogoutController logoutController = Get.put(LogoutController());
-  final AppLanguageController appLanguageController = Get.put(AppLanguageController());
 
   @override
   Widget build(BuildContext context) {
@@ -68,22 +66,6 @@ class SettingsView extends StatelessWidget {
                         arguments: {'isEdit': true},
                       );
                     },
-                  ),
-                  SizedBox(height: 12),
-                  SettingsMenuItem(
-                    icon: ImageAssets.securityIcon,
-                    iconColor: Color(0xFF6366F1),
-                    iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
-                    title: 'settings_app_language'.tr,
-                    trailing: Text(
-                      _languageLabel(Get.locale ?? const Locale('en', 'US')),
-                      style: const TextStyle(
-                        color: Colors.black54,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: _showLanguageDialog,
                   ),
                   SizedBox(height: 12),
 
@@ -191,73 +173,5 @@ class SettingsView extends StatelessWidget {
       ),
       barrierDismissible: true,
     );
-  }
-
-  void _showLanguageDialog() {
-    Get.bottomSheet(
-      SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'settings_select_language'.tr,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              ...appLanguageController.supportedLocales.map((locale) {
-                final current = Get.locale ?? const Locale('en', 'US');
-                final selected = current.languageCode == locale.languageCode;
-                return ListTile(
-                  title: Text(_languageLabel(locale)),
-                  trailing: selected
-                      ? const Icon(Icons.check, color: Color(0xFF6F4BFF))
-                      : null,
-                  onTap: () async {
-                    await appLanguageController.changeLanguage(locale);
-                    Get.back();
-                  },
-                );
-              }),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-      isScrollControlled: true,
-    );
-  }
-
-  String _languageLabel(Locale locale) {
-    switch (locale.languageCode) {
-      case 'es':
-        return 'language_spanish'.tr;
-      case 'de':
-        return 'language_german'.tr;
-      case 'fr':
-        return 'language_french'.tr;
-      case 'pt':
-        return 'language_portuguese'.tr;
-      case 'it':
-        return 'language_italian'.tr;
-      case 'nl':
-        return 'language_dutch'.tr;
-      default:
-        return 'language_english'.tr;
-    }
   }
 }

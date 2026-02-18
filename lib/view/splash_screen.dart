@@ -1,9 +1,9 @@
 import 'package:collaby_app/view_models/services/notification_services/notification_service.dart';
 import 'package:collaby_app/view_models/services/splash_services.dart';
-import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,18 +14,12 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   SplashServices splashScreen = SplashServices();
-  bool _animate = false;
-
   @override
   void initState() {
     super.initState();
     FirebaseMessaging.onBackgroundMessage(handleBackgroundNotification);
     NotificationServices().handleForegroundNotification();
     splashScreen.isLogin();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      setState(() => _animate = true);
-    });
   }
 
   @override
@@ -35,22 +29,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Center(
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 700),
-            curve: Curves.easeOut,
-            opacity: _animate ? 1 : 0,
-            child: AnimatedScale(
-              duration: const Duration(milliseconds: 700),
-              curve: Curves.easeOutBack,
-              scale: _animate ? 1 : 0.92,
-              child: Image.asset(
-                ImageAssets.logoImage,
-                width: 190.w,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
+        body: Lottie.asset(
+          width: 500.w,
+
+          'assets/json/splash_animation.json',
+          repeat: false,
+          // animate: true,
+          // options:
+          // frameRate: FrameRate.max,
+          // delegates: LottieDelegates(values: [/* color overrides */]),
         ),
       ),
     );

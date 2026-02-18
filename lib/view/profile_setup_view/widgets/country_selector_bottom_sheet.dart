@@ -6,16 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CountrySelectorBottomSheet extends StatelessWidget {
-  CountrySelectorBottomSheet({
-    super.key,
-    this.selectedCountry,
-    this.onSelect,
-    this.onDone,
-  });
-
-  final String? selectedCountry;
-  final ValueChanged<String>? onSelect;
-  final VoidCallback? onDone;
+  CountrySelectorBottomSheet({super.key});
 
   final TextEditingController searchController = TextEditingController();
 
@@ -91,8 +82,7 @@ class CountrySelectorBottomSheet extends StatelessWidget {
                 itemCount: c.filteredCountries.length,
                 itemBuilder: (context, index) {
                   final country = c.filteredCountries[index];
-                  final currentSelected = selectedCountry ?? c.country;
-                  final isSelected = currentSelected == country;
+                  final isSelected = c.country == country;
 
                   return Padding(
                     padding: const EdgeInsets.all(2.0),
@@ -118,14 +108,7 @@ class CountrySelectorBottomSheet extends StatelessWidget {
                               ? Color(0xFF4C1CAE)
                               : Color(0xFF4C1CAE),
                         ),
-                        onTap: () {
-                          if (onSelect != null) {
-                            onSelect!(country);
-                            c.update();
-                            return;
-                          }
-                          c.updateCountry(country);
-                        },
+                        onTap: () => c.updateCountry(country),
                       ),
                     ),
                   );
@@ -139,13 +122,7 @@ class CountrySelectorBottomSheet extends StatelessWidget {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {
-                if (onDone != null) {
-                  onDone!();
-                  return;
-                }
-                Get.back();
-              },
+              onPressed: () => Get.back(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(

@@ -10,8 +10,6 @@ Widget buildTextField({
   int maxLines = 1,
   int? maxLength,
   int minLength = 0,
-  bool readOnly = false,
-  VoidCallback? onTap,
 }) {
   return StatefulBuilder(
     builder: (context, setState) {
@@ -48,6 +46,7 @@ Widget buildTextField({
         counterColor = Color(0xff969FAE);
       } else {
         counterColor = AppColor.primaryColor;
+        ;
       }
 
       return Column(
@@ -64,8 +63,6 @@ Widget buildTextField({
                 controller: controller,
                 maxLines: maxLines,
                 maxLength: maxLength,
-                readOnly: readOnly,
-                onTap: onTap,
                 onTapOutside: (event) {
                   FocusManager.instance.primaryFocus?.unfocus();
                 },

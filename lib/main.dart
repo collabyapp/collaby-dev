@@ -11,8 +11,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'res/localization/app_translations.dart';
-import 'view_models/controller/settings_controller/app_language_controller.dart';
-import 'view_models/controller/user_preference/user_preference_view_model.dart';
 import 'view_models/services/notification_services/awesome_notification_services.dart';
 
 void main() {
@@ -32,8 +30,6 @@ class _BootstrapAppState extends State<BootstrapApp> {
   Object? initError;
   bool initialized = false;
   Timer? _watchdog;
-  Locale? _appLocale;
-  final AppLanguageController _appLanguageController = Get.put(AppLanguageController());
 
   @override
   void initState() {
@@ -50,18 +46,6 @@ class _BootstrapAppState extends State<BootstrapApp> {
 
   Future<void> _init() async {
     try {
-      final savedLocaleMap = await UserPreference().getAppLocale();
-      if (savedLocaleMap != null) {
-        _appLocale = _appLanguageController.normalizeLocale(
-          Locale(
-            savedLocaleMap['languageCode'] ?? 'en',
-            savedLocaleMap['countryCode'] ?? 'US',
-          ),
-        );
-      } else {
-        _appLocale = _appLanguageController.normalizeLocale(Get.deviceLocale);
-      }
-
       // Stripe
       Stripe.publishableKey =
           'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
@@ -97,9 +81,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
         title: 'Collaby',
         debugShowCheckedModeBanner: false,
         translations: AppTranslations(),
-        locale: _appLocale ?? _appLanguageController.normalizeLocale(Get.deviceLocale),
+        locale: Get.deviceLocale,
         fallbackLocale: AppTranslations.fallbackLocale,
-        supportedLocales: _appLanguageController.supportedLocales,
         localizationsDelegates: const [
           FlutterQuillLocalizations.delegate, // <- required
         ],

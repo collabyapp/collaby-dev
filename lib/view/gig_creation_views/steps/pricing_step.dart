@@ -3,7 +3,6 @@ import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
-import 'package:collaby_app/utils/gig_feature_localizer.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/gig_creation_controller/create_gig_controller.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,20 @@ class PricingStep extends GetView<CreateGigController> {
   const PricingStep({super.key});
 
   String _presetLabel(String name) {
-    return localizeGigFeatureLabel(name);
+    switch (name) {
+      case 'Additional revision':
+        return 'preset_additional_revision'.tr;
+      case 'Rush delivery':
+        return 'preset_rush_delivery'.tr;
+      case 'Add logo':
+        return 'preset_add_logo'.tr;
+      case '4K export':
+        return 'preset_4k_export'.tr;
+      case 'Custom request':
+        return 'preset_custom_request'.tr;
+      default:
+        return name;
+    }
   }
 
   String _dayLabel(int days) {
@@ -487,10 +499,7 @@ class PricingStep extends GetView<CreateGigController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  localizeGigFeatureLabel(e.name),
-                  style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w600),
-                ),
+                Text(e.name, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Obx(() => Text(
                       'custom_extra_summary'.trParams({
@@ -558,7 +567,7 @@ class PricingStep extends GetView<CreateGigController> {
                   itemBuilder: (_, i) {
                     final t = controller.extraPresets[i];
                     return GestureDetector(
-                      onTap: () => nameCtrl.text = _presetLabel(t),
+                      onTap: () => nameCtrl.text = t,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(

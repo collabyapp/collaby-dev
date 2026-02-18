@@ -8,7 +8,6 @@ class SettingsMenuItem extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final bool isIcon;
-  final Widget? trailing;
 
   const SettingsMenuItem({
     required this.icon,
@@ -17,7 +16,6 @@ class SettingsMenuItem extends StatelessWidget {
     required this.title,
     required this.onTap,
     this.isIcon = true, // Default is true
-    this.trailing,
   });
 
   @override
@@ -49,10 +47,6 @@ class SettingsMenuItem extends StatelessWidget {
             ),
             SizedBox(width: 16),
             Expanded(child: Text(title, style: AppTextStyles.normalTextMedium)),
-            if (trailing != null) ...[
-              trailing!,
-              SizedBox(width: 8),
-            ],
             // Conditionally render the arrow icon
             if (isIcon)
               Icon(Icons.arrow_forward_ios, color: Color(0xFF6366F1), size: 16),

@@ -1,14 +1,13 @@
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/components/MilestoneProgreaaBar.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/profile_setup_view/common/TextInputField.dart';
 import 'package:collaby_app/view_models/controller/profile_setup_controller/profile_setup_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ShippingAddressView extends StatelessWidget {
-  ShippingAddressView({super.key});
-
   final ProfileSetUpController controller = Get.put(ProfileSetUpController());
 
   @override
@@ -68,8 +67,6 @@ class ShippingAddressView extends StatelessWidget {
                   label: 'shipping_country'.tr,
                   controller: controller.countryController.value,
                   placeholder: 'shipping_country'.tr,
-                  readOnly: true,
-                  onTap: controller.showShippingCountrySelector,
                 ),
               ],
             ),

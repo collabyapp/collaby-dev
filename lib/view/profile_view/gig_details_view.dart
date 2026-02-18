@@ -3,7 +3,6 @@ import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
-import 'package:collaby_app/utils/gig_feature_localizer.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/gig_details_controller.dart';
 import 'package:collaby_app/view_models/services/vedio_player_service/video_player_controller.dart';
 import 'package:collaby_app/view_models/services/vedio_player_service/video_player_view.dart';
@@ -343,12 +342,7 @@ class GigDetailView extends StatelessWidget {
                 children: [
                   const Icon(Icons.check, size: 18, color: Colors.black),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      localizeGigFeatureLabel(t),
-                      style: AppTextStyles.extraSmallText,
-                    ),
-                  ),
+                  Expanded(child: Text(t, style: AppTextStyles.extraSmallText)),
                 ],
               ),
             ),

@@ -24,8 +24,6 @@ class EarningsController extends GetxController {
   final earlyReleaseFee = 0.0.obs; // extra % for instant
   final standardProcessingDays = 0.obs; // days
   final infoTexts = <String>[].obs;
-  final instantWithdrawalEnabled = false.obs;
-  final payoutTier = 'level_one'.obs;
 
   // Withdrawal form data
   final method = WithdrawalMethod.standard.obs;
@@ -180,13 +178,6 @@ class EarningsController extends GetxController {
         earlyReleaseFee.value = (data['early_release_fee'] ?? 0).toDouble();
 
         standardProcessingDays.value = (data['standard_processing_days'] ?? 0);
-        instantWithdrawalEnabled.value = data['instant_enabled'] == true;
-        payoutTier.value = (data['payout_tier'] ?? 'level_one').toString();
-
-        if (!instantWithdrawalEnabled.value &&
-            method.value == WithdrawalMethod.instant) {
-          method.value = WithdrawalMethod.standard;
-        }
 
         final List<dynamic> texts = data['infoTexts'] ?? [];
         infoTexts.assignAll(texts.map((e) => e.toString()).toList());
@@ -243,11 +234,6 @@ class EarningsController extends GetxController {
       Utils.snackBar('Error', 'Please enter a valid amount');
       return false;
     }
-    if (method.value == WithdrawalMethod.instant &&
-        !instantWithdrawalEnabled.value) {
-      Utils.snackBar('Error', 'instant_withdrawal_not_available'.tr);
-      return false;
-    }
 
     isLoadingWithdrawal.value = true;
     try {
@@ -301,3 +287,4 @@ class EarningsController extends GetxController {
   //   super.onClose();
   // }
 }
+
