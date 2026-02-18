@@ -161,6 +161,8 @@ class CreateGigController extends GetxController
   /// Extras personalizados globales
   final RxList<AdditionalFeature> globalExtras = <AdditionalFeature>[].obs;
   final RxString creatorBadge = 'none'.obs;
+  final RxInt levelProgressPercent = 0.obs;
+  final RxMap<String, dynamic> levelRequirements = <String, dynamic>{}.obs;
 
   /// Core minimal shared:
   /// Included toggle + price if not included
@@ -328,6 +330,49 @@ class CreateGigController extends GetxController
           final raw = (data['badge'] ?? '').toString().trim().toLowerCase();
           if (raw.isNotEmpty) {
             creatorBadge.value = raw;
+          }
+
+          final progress = data['creatorLevelProgress'];
+          if (progress is Map<String, dynamic>) {
+            final pct = progress['levelTwoProgressPercent'];
+            levelProgressPercent.value = (pct is num) ? pct.round() : 0;
+
+            final req = progress['requirements'];
+            if (req is Map<String, dynamic>) {
+              levelRequirements.value = req;
+            }
+          } else {
+            // Fallback for older backend payloads
+            final reviewStats = data['reviewStats'];
+            final totalReviews = reviewStats is Map<String, dynamic>
+                ? (reviewStats['totalReviews'] as num?)?.toInt() ?? 0
+                : 0;
+            final averageRating = reviewStats is Map<String, dynamic>
+                ? (reviewStats['averageRating'] as num?)?.toDouble() ?? 0
+                : 0;
+            final hasGig = data['isGigCreated'] == true;
+
+            levelRequirements.value = {
+              'gigs': {'current': hasGig ? 1 : 0, 'target': 1, 'met': hasGig},
+              'reviews': {
+                'current': totalReviews,
+                'target': 10,
+                'met': totalReviews >= 10,
+              },
+              'averageRating': {
+                'current': averageRating,
+                'target': 4.5,
+                'met': averageRating >= 4.5,
+              },
+            };
+            final checks = [
+              hasGig ? 1 : 0,
+              totalReviews >= 10 ? 1 : 0,
+              averageRating >= 4.5 ? 1 : 0,
+            ];
+            levelProgressPercent.value =
+                ((checks.reduce((a, b) => a + b) / checks.length) * 100)
+                    .round();
           }
         }
       }

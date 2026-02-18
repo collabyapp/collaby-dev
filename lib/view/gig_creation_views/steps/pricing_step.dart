@@ -57,8 +57,6 @@ class PricingStep extends GetView<CreateGigController> {
             ),
             const SizedBox(height: 12),
             _buildAllTierPrices(),
-            const SizedBox(height: 16),
-            _creatorLevelCard(),
             const SizedBox(height: 24),
 
             // Extras
@@ -176,6 +174,39 @@ class PricingStep extends GetView<CreateGigController> {
         return const [];
     }
   }
+  Map<String, dynamic>? _reqMap(Map<String, dynamic> source, String key) {
+    final value = source[key];
+    if (value is Map<String, dynamic>) return value;
+    return null;
+  }
+
+  Widget _requirementRow({
+    required String label,
+    required String progressText,
+    required bool met,
+  }) {
+    final color = met ? const Color(0xff1D9C62) : const Color(0xff7A7A7A);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            met ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 16,
+            color: color,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '$label ($progressText)',
+              style: AppTextStyles.extraSmallText.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _creatorLevelCard() {
     return Obx(() {
@@ -184,6 +215,13 @@ class PricingStep extends GetView<CreateGigController> {
       final nextKey = _nextLevelLabelKey(badge);
       final currentBenefits = _currentBenefitKeys(badge);
       final nextBenefits = _nextBenefitKeys(badge);
+      final req = Map<String, dynamic>.from(controller.levelRequirements);
+      final progress = controller.levelProgressPercent.value;
+      final gigsReq = _reqMap(req, 'gigs');
+      final reviewsReq = _reqMap(req, 'reviews');
+      final completedReq = _reqMap(req, 'completedOrders');
+      final ratingReq = _reqMap(req, 'averageRating');
+      final daysReq = _reqMap(req, 'daysSinceRegistration');
 
       return Container(
         width: double.infinity,
@@ -208,7 +246,7 @@ class PricingStep extends GetView<CreateGigController> {
             ...currentBenefits.map(
               (k) => Padding(
                 padding: const EdgeInsets.only(bottom: 4),
-                child: Text('• ${k.tr}', style: AppTextStyles.extraSmallText),
+                child: Text('- ${k.tr}', style: AppTextStyles.extraSmallText),
               ),
             ),
             if (nextKey != null) ...[
@@ -223,10 +261,63 @@ class PricingStep extends GetView<CreateGigController> {
               ...nextBenefits.map(
                 (k) => Padding(
                   padding: const EdgeInsets.only(bottom: 4),
-                  child: Text('• ${k.tr}', style: AppTextStyles.extraSmallText),
+                  child: Text('- ${k.tr}', style: AppTextStyles.extraSmallText),
                 ),
               ),
             ],
+            const SizedBox(height: 10),
+            Text(
+              'creator_level_progress'.trParams({'percent': '$progress'}),
+              style: AppTextStyles.extraSmallText.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                minHeight: 8,
+                value: (progress.clamp(0, 100)) / 100,
+                backgroundColor: const Color(0xffE9E3FF),
+                valueColor: const AlwaysStoppedAnimation(Color(0xff816CED)),
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (gigsReq != null)
+              _requirementRow(
+                label: 'level_up_requirement_first_gig'.tr,
+                progressText:
+                    '${(gigsReq['current'] ?? 0)}/${(gigsReq['target'] ?? 1)}',
+                met: gigsReq['met'] == true,
+              ),
+            if (reviewsReq != null)
+              _requirementRow(
+                label: 'level_up_requirement_reviews'.tr,
+                progressText:
+                    '${(reviewsReq['current'] ?? 0)}/${(reviewsReq['target'] ?? 10)}',
+                met: reviewsReq['met'] == true,
+              ),
+            if (completedReq != null)
+              _requirementRow(
+                label: 'level_up_requirement_completed_orders'.tr,
+                progressText:
+                    '${(completedReq['current'] ?? 0)}/${(completedReq['target'] ?? 10)}',
+                met: completedReq['met'] == true,
+              ),
+            if (ratingReq != null)
+              _requirementRow(
+                label: 'level_up_requirement_rating'.tr,
+                progressText:
+                    '${(ratingReq['current'] ?? 0)}/${(ratingReq['target'] ?? 4.5)}',
+                met: ratingReq['met'] == true,
+              ),
+            if (daysReq != null)
+              _requirementRow(
+                label: 'level_up_requirement_days_active'.tr,
+                progressText:
+                    '${(daysReq['current'] ?? 0)}/${(daysReq['target'] ?? 30)}',
+                met: daysReq['met'] == true,
+              ),
           ],
         ),
       );
@@ -1276,3 +1367,4 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 }
+

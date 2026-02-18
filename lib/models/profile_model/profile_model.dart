@@ -1,6 +1,7 @@
 class ProfileModel {
   final String role;
   final String status;
+  final String badge;
   final String userId;
   final String imageUrl;
   final String firstName;
@@ -22,10 +23,12 @@ class ProfileModel {
   final List<PortfolioItem> portfolio;
   final List<GigReviewModel> reviews;
   final CreatorReviewStats? creatorReviewStats;
+  final CreatorLevelProgress? creatorLevelProgress;
 
   ProfileModel({
     required this.role,
     required this.status,
+    required this.badge,
     required this.userId,
     required this.imageUrl,
     required this.firstName,
@@ -47,12 +50,14 @@ class ProfileModel {
     required this.portfolio,
     required this.reviews,
     this.creatorReviewStats,
+    this.creatorLevelProgress,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       role: json['role'] ?? '',
       status: json['status'] ?? '',
+      badge: json['badge'] ?? 'none',
       userId: json['userId'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
       firstName: json['firstName'] ?? '',
@@ -94,6 +99,84 @@ class ProfileModel {
       creatorReviewStats: json['creatorReviewStats'] != null
           ? CreatorReviewStats.fromJson(json['creatorReviewStats'])
           : null,
+      creatorLevelProgress: json['creatorLevelProgress'] != null
+          ? CreatorLevelProgress.fromJson(json['creatorLevelProgress'])
+          : null,
+    );
+  }
+}
+
+class CreatorLevelProgress {
+  final int levelTwoProgressPercent;
+  final CreatorLevelRequirements requirements;
+
+  CreatorLevelProgress({
+    required this.levelTwoProgressPercent,
+    required this.requirements,
+  });
+
+  factory CreatorLevelProgress.fromJson(Map<String, dynamic> json) {
+    return CreatorLevelProgress(
+      levelTwoProgressPercent: (json['levelTwoProgressPercent'] ?? 0) as int,
+      requirements: CreatorLevelRequirements.fromJson(
+        (json['requirements'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+    );
+  }
+}
+
+class CreatorLevelRequirements {
+  final LevelRequirement gigs;
+  final LevelRequirement reviews;
+  final LevelRequirement completedOrders;
+  final LevelRequirement averageRating;
+  final LevelRequirement daysSinceRegistration;
+
+  CreatorLevelRequirements({
+    required this.gigs,
+    required this.reviews,
+    required this.completedOrders,
+    required this.averageRating,
+    required this.daysSinceRegistration,
+  });
+
+  factory CreatorLevelRequirements.fromJson(Map<String, dynamic> json) {
+    return CreatorLevelRequirements(
+      gigs: LevelRequirement.fromJson(
+        (json['gigs'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+      reviews: LevelRequirement.fromJson(
+        (json['reviews'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+      completedOrders: LevelRequirement.fromJson(
+        (json['completedOrders'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+      averageRating: LevelRequirement.fromJson(
+        (json['averageRating'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+      daysSinceRegistration: LevelRequirement.fromJson(
+        (json['daysSinceRegistration'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+      ),
+    );
+  }
+}
+
+class LevelRequirement {
+  final num current;
+  final num target;
+  final bool met;
+
+  LevelRequirement({
+    required this.current,
+    required this.target,
+    required this.met,
+  });
+
+  factory LevelRequirement.fromJson(Map<String, dynamic> json) {
+    return LevelRequirement(
+      current: (json['current'] ?? 0) as num,
+      target: (json['target'] ?? 0) as num,
+      met: json['met'] == true,
     );
   }
 }

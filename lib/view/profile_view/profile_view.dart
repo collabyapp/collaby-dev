@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
-import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/profile_view/boost_profile_view/boost_detials.dart';
@@ -15,6 +14,52 @@ import 'package:get/get.dart';
 
 class ProfileView extends StatelessWidget {
   final ProfileController controller = Get.put(ProfileController());
+
+  String _normalizeBadge(String raw) {
+    final v = raw.trim().toLowerCase();
+    if (v == 'level_two' || v == 'level2' || v == 'pro') return 'level_two';
+    if (v == 'level_one' || v == 'level1') return 'level_one';
+    return 'none';
+  }
+
+  String _levelLabel(String badge) {
+    switch (badge) {
+      case 'level_two':
+        return 'creator_level_two'.tr;
+      case 'level_one':
+        return 'creator_level_one'.tr;
+      default:
+        return 'creator_level_new'.tr;
+    }
+  }
+
+  Widget _requirementRow({
+    required String label,
+    required num current,
+    required num target,
+    required bool met,
+  }) {
+    final color = met ? const Color(0xff1D9C62) : const Color(0xff7A7A7A);
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Row(
+        children: [
+          Icon(
+            met ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 15,
+            color: color,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '$label (${current.toString()}/${target.toString()})',
+              style: AppTextStyles.extraSmallText.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,9 +264,80 @@ class ProfileView extends StatelessWidget {
   }
 
   Widget _buildBoostOrAnalyticsCard() {
+    final profile = controller.profileData.value;
+    final normalizedBadge = _normalizeBadge(profile?.badge ?? 'none');
+    final progress = profile?.creatorLevelProgress;
+    final progressPct = (progress?.levelTwoProgressPercent ?? 0).clamp(0, 100);
+
     return Column(
       children: [
         _buildProfileInfo(),
+        if (progress != null)
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xffF7F5FF),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xffE2DBFF)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
+                const SizedBox(height: 4),
+                Text(
+                  'creator_level_current'.trParams({'level': _levelLabel(normalizedBadge)}),
+                  style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'creator_level_progress'.trParams({'percent': '$progressPct'}),
+                  style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    minHeight: 8,
+                    value: progressPct / 100,
+                    backgroundColor: const Color(0xffE9E3FF),
+                    valueColor: const AlwaysStoppedAnimation(Color(0xff816CED)),
+                  ),
+                ),
+                _requirementRow(
+                  label: 'level_up_requirement_first_gig'.tr,
+                  current: progress.requirements.gigs.current,
+                  target: progress.requirements.gigs.target,
+                  met: progress.requirements.gigs.met,
+                ),
+                _requirementRow(
+                  label: 'level_up_requirement_reviews'.tr,
+                  current: progress.requirements.reviews.current,
+                  target: progress.requirements.reviews.target,
+                  met: progress.requirements.reviews.met,
+                ),
+                _requirementRow(
+                  label: 'level_up_requirement_completed_orders'.tr,
+                  current: progress.requirements.completedOrders.current,
+                  target: progress.requirements.completedOrders.target,
+                  met: progress.requirements.completedOrders.met,
+                ),
+                _requirementRow(
+                  label: 'level_up_requirement_rating'.tr,
+                  current: progress.requirements.averageRating.current,
+                  target: progress.requirements.averageRating.target,
+                  met: progress.requirements.averageRating.met,
+                ),
+                _requirementRow(
+                  label: 'level_up_requirement_days_active'.tr,
+                  current: progress.requirements.daysSinceRegistration.current,
+                  target: progress.requirements.daysSinceRegistration.target,
+                  met: progress.requirements.daysSinceRegistration.met,
+                ),
+              ],
+            ),
+          ),
         SizedBox(height: 10),
         Container(
           child: controller.hasActiveSubscription
