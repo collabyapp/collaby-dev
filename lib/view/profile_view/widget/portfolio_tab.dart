@@ -6,6 +6,7 @@ import 'package:collaby_app/view_models/services/vedio_player_service/video_play
 import 'package:collaby_app/view_models/services/vedio_player_service/video_player_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 class PortfolioTab extends StatelessWidget {
   final ProfileController controller = Get.find<ProfileController>();
 
@@ -50,7 +51,10 @@ class PortfolioTab extends StatelessWidget {
                     childAspectRatio: 0.8,
                   ),
                   itemCount: items.length,
-                  itemBuilder: (_, i) => _PortfolioTile(item: items[i]),
+                  itemBuilder: (_, i) => _PortfolioTile(
+                    item: items[i],
+                    onHide: () => controller.hidePortfolioItem(items[i]),
+                  ),
                 ),
               ],
             ),
@@ -62,8 +66,9 @@ class PortfolioTab extends StatelessWidget {
 }
 
 class _PortfolioTile extends StatelessWidget {
-  const _PortfolioTile({required this.item});
+  const _PortfolioTile({required this.item, required this.onHide});
   final PortfolioItem item;
+  final VoidCallback onHide;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +117,25 @@ class _PortfolioTile extends StatelessWidget {
                   ),
                 ),
               ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: GestureDetector(
+                onTap: onHide,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -138,6 +138,7 @@ class AppUrl {
 
   static const String creatorProfileUrl = '$baseUrl/creator/profile';
   static const String updateCreatorProfile = '$baseUrl/user/creator/profile';
+  static const String hidePortfolioItemUrl = '$baseUrl/creator/portfolio/hide';
 
   // Boost endpoints
   static const String getBoostPlans = '$baseUrl/boost/plans';

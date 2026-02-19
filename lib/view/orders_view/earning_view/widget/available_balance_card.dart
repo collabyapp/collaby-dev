@@ -1,11 +1,16 @@
-
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/view_models/controller/order_controller/earning_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AvailableBalanceCard extends GetView<EarningsController> {
+  final CurrencyPreferenceController currencyController = Get.put(
+    CurrencyPreferenceController(),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,7 +37,12 @@ class AvailableBalanceCard extends GetView<EarningsController> {
                 const SizedBox(height: 4),
                 Obx(
                   () => Text(
-                    '\$${controller.availableBalance.value.toStringAsFixed(2)}',
+                    formatAmountInPreferredCurrency(
+                      controller.availableBalance.value,
+                      sourceCurrency: 'USD',
+                      preferredCurrency:
+                          currencyController.preferredCurrency.value,
+                    ),
                     style: AppTextStyles.normalTextMedium.copyWith(
                       color: Color(0XFF4C1CAE),
                     ),
@@ -40,10 +50,12 @@ class AvailableBalanceCard extends GetView<EarningsController> {
                 ),
                 if (controller.pendingAmount.value > 0) ...[
                   const SizedBox(height: 8),
-                  Text(
-                    'Pending: \$${controller.pendingAmount.value.toStringAsFixed(2)}',
-                    style: AppTextStyles.extraSmallText.copyWith(
-                      color: Colors.orange,
+                  Obx(
+                    () => Text(
+                      'Pending: ${formatAmountInPreferredCurrency(controller.pendingAmount.value, sourceCurrency: 'USD', preferredCurrency: currencyController.preferredCurrency.value)}',
+                      style: AppTextStyles.extraSmallText.copyWith(
+                        color: Colors.orange,
+                      ),
                     ),
                   ),
                 ],

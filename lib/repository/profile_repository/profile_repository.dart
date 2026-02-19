@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/res/app_url/app_url.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
@@ -42,5 +42,16 @@ class ProfileRepository {
       rethrow;
     }
   }
-}
 
+  Future<dynamic> hidePortfolioItemApi(String url) async {
+    final token = await _userPref.getToken();
+    return _apiServices.postApi(
+      {'url': url},
+      AppUrl.hidePortfolioItemUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+  }
+}

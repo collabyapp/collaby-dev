@@ -2,13 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/profile_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GigsTab extends StatelessWidget {
   final ProfileController controller = Get.find<ProfileController>();
+  final CurrencyPreferenceController currencyController = Get.put(
+    CurrencyPreferenceController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +73,10 @@ class GigsTab extends StatelessWidget {
                     children: [
                       Icon(Icons.work_outline, size: 64, color: Colors.grey),
                       SizedBox(height: 16),
-                      Text('no_services_yet'.tr, style: AppTextStyles.normalTextBold),
+                      Text(
+                        'no_services_yet'.tr,
+                        style: AppTextStyles.normalTextBold,
+                      ),
                       SizedBox(height: 8),
                       Text(
                         'create_first_service'.tr,
@@ -177,12 +185,21 @@ class GigsTab extends StatelessWidget {
                                   ),
                                 ),
                                 Spacer(),
-                                Text(
-                                  '\$${gig.startingPrice}',
-                                  style: AppTextStyles.extraSmallText.copyWith(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColor.primaryColor,
+                                Obx(
+                                  () => Text(
+                                    formatAmountInPreferredCurrency(
+                                      gig.startingPrice.toDouble(),
+                                      sourceCurrency: 'USD',
+                                      preferredCurrency: currencyController
+                                          .preferredCurrency
+                                          .value,
+                                    ),
+                                    style: AppTextStyles.extraSmallText
+                                        .copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColor.primaryColor,
+                                        ),
                                   ),
                                 ),
                               ],

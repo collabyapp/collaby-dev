@@ -1,6 +1,9 @@
 import 'package:collaby_app/models/orders_model/earnings_models.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PayoutTile extends StatelessWidget {
   final Payout payout;
@@ -9,6 +12,7 @@ class PayoutTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currencyController = Get.put(CurrencyPreferenceController());
     String subtitle;
     Color subtitleColor;
 
@@ -49,9 +53,16 @@ class PayoutTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '\$${payout.amount.toStringAsFixed(2)}',
-                      style: AppTextStyles.h5,
+                    Obx(
+                      () => Text(
+                        formatAmountInPreferredCurrency(
+                          payout.amount,
+                          sourceCurrency: 'USD',
+                          preferredCurrency:
+                              currencyController.preferredCurrency.value,
+                        ),
+                        style: AppTextStyles.h5,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(

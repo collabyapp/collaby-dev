@@ -1,5 +1,7 @@
 import 'package:collaby_app/models/orders_model/earnings_models.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as math;
@@ -22,6 +24,7 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currencyController = Get.put(CurrencyPreferenceController());
     final card = Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -38,9 +41,15 @@ class SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Center(
-            child: Text(
-              '${amount.toStringAsFixed(2)} USD',
-              style: AppTextStyles.h3,
+            child: Obx(
+              () => Text(
+                formatAmountInPreferredCurrency(
+                  amount,
+                  sourceCurrency: 'USD',
+                  preferredCurrency: currencyController.preferredCurrency.value,
+                ),
+                style: AppTextStyles.h3,
+              ),
             ),
           ),
           const SizedBox(height: 18),
@@ -51,7 +60,11 @@ class SummaryCard extends StatelessWidget {
             children: [
               Text('transaction_fees'.tr, style: AppTextStyles.smallText),
               Text(
-                '${fee.toStringAsFixed(1)} USD',
+                formatAmountInPreferredCurrency(
+                  fee,
+                  sourceCurrency: 'USD',
+                  preferredCurrency: currencyController.preferredCurrency.value,
+                ),
                 style: AppTextStyles.normalTextMedium,
               ),
             ],

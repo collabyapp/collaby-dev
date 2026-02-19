@@ -119,7 +119,7 @@ class CreateGigController extends GetxController
   }
 
   // ===================== PRICING =====================
-  final selectedCurrency = 'USD'.obs;
+  final selectedCurrency = 'EUR'.obs;
 
   late final List<Rx<PackageModel>> packages;
   late final List<TextEditingController> priceControllers;
@@ -249,7 +249,9 @@ class CreateGigController extends GetxController
 
   final RxBool isDeclarationAccepted = false.obs;
 
-  int get maxVideosAllowed => 4;
+  int get maxIntroVideosAllowed => 1;
+  int get maxPortfolioVideosAllowed => 2;
+  int get maxVideosAllowed => maxIntroVideosAllowed + maxPortfolioVideosAllowed;
   bool get hasIntroVideo => galleryVideos.isNotEmpty;
 
   bool get isGalleryReady {
@@ -416,7 +418,7 @@ class CreateGigController extends GetxController
 
           // precios por tier
           final price = (getP('price') ?? 0).toDouble();
-          final currency = (getP('currency') ?? 'USD').toString();
+          final currency = (getP('currency') ?? 'EUR').toString();
 
           priceControllers[i].text = price == 0 ? '' : price.toStringAsFixed(0);
           updatePackagePrice(i, price);

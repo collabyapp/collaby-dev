@@ -2,16 +2,21 @@ import 'package:collaby_app/models/orders_model/orders_models.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/view/orders_view/earning_view/earning_view.dart';
 import 'package:collaby_app/view/orders_view/notification_view.dart';
 import 'package:collaby_app/view/orders_view/order_details_view/order_details_view.dart';
 import 'package:collaby_app/view/orders_view/order_request_view/order_request_view.dart';
 import 'package:collaby_app/view_models/controller/order_controller/order_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrdersView extends StatelessWidget {
   final OrdersController controller = Get.put(OrdersController());
+  final CurrencyPreferenceController currencyController = Get.put(
+    CurrencyPreferenceController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +80,13 @@ class OrdersView extends StatelessWidget {
                           children: [
                             Obx(
                               () => Text(
-                                '\$${controller.earningAvailable.value.toStringAsFixed(2)}',
+                                formatAmountInPreferredCurrency(
+                                  controller.earningAvailable.value,
+                                  sourceCurrency: 'USD',
+                                  preferredCurrency: currencyController
+                                      .preferredCurrency
+                                      .value,
+                                ),
                                 style: AppTextStyles.normalTextMedium,
                               ),
                             ),

@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserPreference {
+  static const String _preferredCurrencyKey = 'preferredCurrency';
   Future<void> saveUser({
     String? token,
     String? email,
@@ -40,6 +41,19 @@ class UserPreference {
     await sp.remove('email');
     await sp.remove('userId');
     await sp.remove('isLogin');
+  }
+
+  Future<void> savePreferredCurrency(String currency) async {
+    final sp = await SharedPreferences.getInstance();
+    await sp.setString(_preferredCurrencyKey, currency.toUpperCase());
+  }
+
+  Future<String> getPreferredCurrency() async {
+    final sp = await SharedPreferences.getInstance();
+    final stored = (sp.getString(_preferredCurrencyKey) ?? 'EUR')
+        .trim()
+        .toUpperCase();
+    return stored.isEmpty ? 'EUR' : stored;
   }
 
   Future<String?> getToken() async {

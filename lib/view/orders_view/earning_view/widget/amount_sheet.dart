@@ -1,10 +1,16 @@
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/view_models/controller/order_controller/earning_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EnterAmountSheet extends GetView<EarningsController> {
+  final CurrencyPreferenceController currencyController = Get.put(
+    CurrencyPreferenceController(),
+  );
+
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
@@ -36,12 +42,20 @@ class EnterAmountSheet extends GetView<EarningsController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('available_balance'.tr, style: AppTextStyles.smallText),
+                      Text(
+                        'available_balance'.tr,
+                        style: AppTextStyles.smallText,
+                      ),
 
                       const SizedBox(height: 4),
                       Obx(
                         () => Text(
-                          '\$${controller.availableBalance.value.toStringAsFixed(2)}',
+                          formatAmountInPreferredCurrency(
+                            controller.availableBalance.value,
+                            sourceCurrency: 'USD',
+                            preferredCurrency:
+                                currencyController.preferredCurrency.value,
+                          ),
                           style: AppTextStyles.normalTextMedium.copyWith(
                             color: Color(0xff4C1CAE),
                           ),
@@ -78,9 +92,23 @@ class EnterAmountSheet extends GetView<EarningsController> {
                                   color: Color(0xff4C4C54),
                                 ),
                                 const SizedBox(width: 8),
-                                Text('USD', style: AppTextStyles.normalText),
+                                Obx(
+                                  () => Text(
+                                    currencyController.preferredCurrency.value,
+                                    style: AppTextStyles.normalText,
+                                  ),
+                                ),
                                 const SizedBox(width: 16),
-                                Text('\$', style: AppTextStyles.normalText),
+                                Obx(
+                                  () => Text(
+                                    currencySymbol(
+                                      currencyController
+                                          .preferredCurrency
+                                          .value,
+                                    ),
+                                    style: AppTextStyles.normalText,
+                                  ),
+                                ),
                                 const SizedBox(width: 6),
 
                                 Expanded(

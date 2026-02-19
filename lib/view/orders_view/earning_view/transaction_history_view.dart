@@ -1,5 +1,7 @@
 import 'package:collaby_app/models/orders_model/earnings_models.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/view_models/controller/order_controller/earning_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +10,7 @@ class TransactionsHistoryView extends GetView<EarningsController> {
 
   @override
   Widget build(BuildContext context) {
+    final currencyController = Get.put(CurrencyPreferenceController());
     return Scaffold(
       appBar: AppBar(title: Text('transactions_title'.tr)),
       body: ListView.separated(
@@ -33,11 +36,18 @@ class TransactionsHistoryView extends GetView<EarningsController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '\$${p.amount.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
+                        Obx(
+                          () => Text(
+                            formatAmountInPreferredCurrency(
+                              p.amount,
+                              sourceCurrency: 'USD',
+                              preferredCurrency:
+                                  currencyController.preferredCurrency.value,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 6),

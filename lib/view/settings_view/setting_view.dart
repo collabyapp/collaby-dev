@@ -2,6 +2,7 @@ import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/settings_view/widget/setting_menu_item.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:collaby_app/view_models/controller/settings_controller/delete_account_controller.dart';
 import 'package:collaby_app/view_models/controller/settings_controller/log_out_controller.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,9 @@ class SettingsView extends StatelessWidget {
   );
 
   final LogoutController logoutController = Get.put(LogoutController());
+  final CurrencyPreferenceController currencyPreferenceController = Get.put(
+    CurrencyPreferenceController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +70,19 @@ class SettingsView extends StatelessWidget {
                         arguments: {'isEdit': true},
                       );
                     },
+                  ),
+                  SizedBox(height: 12),
+                  Obx(
+                    () => SettingsMenuItem(
+                      icon: ImageAssets.walletIcon,
+                      iconColor: Color(0xFF6366F1),
+                      iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
+                      title:
+                          '${'settings_currency'.tr} (${currencyPreferenceController.preferredCurrency.value})',
+                      onTap: () {
+                        _showCurrencySelector(context);
+                      },
+                    ),
                   ),
                   SizedBox(height: 12),
 
@@ -172,6 +189,48 @@ class SettingsView extends StatelessWidget {
         ],
       ),
       barrierDismissible: true,
+    );
+  }
+
+  void _showCurrencySelector(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Text('settings_choose_currency'.tr),
+        content: SizedBox(
+          width: 320,
+          child: Obx(
+            () => SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: CurrencyPreferenceController.supportedCurrencies
+                    .map(
+                      (currency) => RadioListTile<String>(
+                        value: currency,
+                        groupValue: currencyPreferenceController
+                            .preferredCurrency
+                            .value,
+                        dense: true,
+                        activeColor: const Color(0xFF6366F1),
+                        title: Text(currency),
+                        onChanged: (value) async {
+                          if (value == null) return;
+                          await currencyPreferenceController.changeCurrency(
+                            value,
+                          );
+                          if (Get.isDialogOpen ?? false) {
+                            Get.back();
+                          }
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

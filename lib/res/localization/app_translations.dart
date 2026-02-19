@@ -57,7 +57,7 @@ class AppTranslations extends Translations {
       'select_video_style_hint': 'You can select maximum 3 video styles',
       'portfolio_intro_title': 'Portfolio & Intro Video',
       'portfolio_intro_desc':
-          'Upload 1 intro video (required). This will be your profile cover.\nYou can add up to 3 more portfolio videos.',
+          'Upload 1 intro video (required). This will be your profile cover.\nYou can add up to 2 portfolio videos.',
       'intro_video_required': 'Intro video (required)',
       'add_intro_video': 'Add intro video',
       'intro_video_cover_hint':
@@ -263,6 +263,8 @@ class AppTranslations extends Translations {
       'settings_account_security': 'Account Security',
       'settings_billing_withdrawal': 'Billing & Withdrawal',
       'settings_shipping_address': 'Shipping Address',
+      'settings_currency': 'Currency',
+      'settings_choose_currency': 'Choose currency',
       'settings_delete_account': 'Delete Account',
       'settings_logout': 'Logout',
       'settings_logging_out': 'Logging out...',
@@ -340,6 +342,7 @@ class AppTranslations extends Translations {
       'no_services_hint': 'Create a service to continue.',
       'no_portfolio_items': 'No portfolio items yet.',
       'ugc_portfolio': 'UGC Portfolio',
+      'removed_from_portfolio': 'Removed from portfolio',
       'profile_bio': 'Bio',
       'profile_age_group': 'Age Group',
       'age_group_18_24': '18-24',
@@ -727,7 +730,7 @@ class AppTranslations extends Translations {
       'select_video_style_hint': 'Puedes seleccionar maximo 3 estilos de video',
       'portfolio_intro_title': 'Portafolio e Intro Video',
       'portfolio_intro_desc':
-          'Sube 1 video intro (obligatorio). Este sera tu portada de perfil.\nPuedes agregar hasta 3 videos mas de portafolio.',
+          'Sube 1 video intro (obligatorio). Este sera tu portada de perfil.\nPuedes agregar hasta 2 videos de portafolio.',
       'intro_video_required': 'Video intro (obligatorio)',
       'add_intro_video': 'Agregar video intro',
       'intro_video_cover_hint':
@@ -936,6 +939,8 @@ class AppTranslations extends Translations {
       'settings_account_security': 'Seguridad de la cuenta',
       'settings_billing_withdrawal': 'Pagos y retiros',
       'settings_shipping_address': 'Direccion de envio',
+      'settings_currency': 'Moneda',
+      'settings_choose_currency': 'Elegir moneda',
       'settings_delete_account': 'Eliminar cuenta',
       'settings_logout': 'Cerrar sesion',
       'settings_logging_out': 'Cerrando sesion...',
@@ -1015,6 +1020,7 @@ class AppTranslations extends Translations {
       'no_services_hint': 'Crea un servicio para continuar.',
       'no_portfolio_items': 'Aun no hay elementos en el portafolio.',
       'ugc_portfolio': 'Portafolio UGC',
+      'removed_from_portfolio': 'Eliminado del portafolio',
       'profile_bio': 'Bio',
       'profile_age_group': 'Grupo de edad',
       'age_group_18_24': '18-24',

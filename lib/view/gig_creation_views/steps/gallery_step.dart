@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+import 'dart:io';
 
 import 'package:collaby_app/models/create_gig_model/video_model.dart';
 import 'package:collaby_app/res/colors/app_color.dart';
@@ -24,12 +24,19 @@ class GalleryStep extends GetView<CreateGigController> {
           const SizedBox(height: 8),
           Text(
             'portfolio_intro_desc'.tr,
-            style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
+            style: AppTextStyles.extraSmallText.copyWith(
+              color: const Color(0xff77787A),
+            ),
           ),
           const SizedBox(height: 18),
 
           // Intro (required)
-          Text('intro_video_required'.tr, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            'intro_video_required'.tr,
+            style: AppTextStyles.smallText.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 10),
 
           SizedBox(
@@ -58,12 +65,19 @@ class GalleryStep extends GetView<CreateGigController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('portfolio_videos_optional'.tr, style: AppTextStyles.smallText.copyWith(fontWeight: FontWeight.w700)),
+              Text(
+                'portfolio_videos_optional'.tr,
+                style: AppTextStyles.smallText.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               Obx(() {
                 final count = controller.portfolioVideos.length;
                 return Text(
-                  '$count / 3',
-                  style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
+                  '$count / ${controller.maxPortfolioVideosAllowed}',
+                  style: AppTextStyles.extraSmallText.copyWith(
+                    color: const Color(0xff77787A),
+                  ),
                 );
               }),
             ],
@@ -73,24 +87,26 @@ class GalleryStep extends GetView<CreateGigController> {
           Expanded(
             child: Obx(() {
               final portfolio = controller.portfolioVideos;
-              final canAdd = portfolio.length < 3;
-              const slots = 4;
+              final canAdd =
+                  portfolio.length < controller.maxPortfolioVideosAllowed;
+              final slots = controller.maxPortfolioVideosAllowed;
 
               return LayoutBuilder(
                 builder: (context, constraints) {
                   final tile = (constraints.maxWidth - 16) / 2;
-                  final gridHeight = (tile * 2) + 12;
+                  final gridHeight = tile;
 
                   return SizedBox(
                     height: gridHeight,
                     child: GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1,
+                          ),
                       itemCount: slots,
                       itemBuilder: (context, index) {
                         if (index < portfolio.length) {
@@ -131,11 +147,15 @@ class GalleryStep extends GetView<CreateGigController> {
                     height: 20,
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: controller.isDeclarationAccepted.value ? AppColor.primaryColor : Colors.grey,
+                        color: controller.isDeclarationAccepted.value
+                            ? AppColor.primaryColor
+                            : Colors.grey,
                         width: 2,
                       ),
                       borderRadius: BorderRadius.circular(4),
-                      color: controller.isDeclarationAccepted.value ? AppColor.primaryColor : Colors.transparent,
+                      color: controller.isDeclarationAccepted.value
+                          ? AppColor.primaryColor
+                          : Colors.transparent,
                     ),
                     child: controller.isDeclarationAccepted.value
                         ? const Icon(Icons.check, size: 14, color: Colors.white)
@@ -205,7 +225,9 @@ class _AddVideoCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   subtitle,
-                  style: AppTextStyles.extraSmallText.copyWith(color: const Color(0xff77787A)),
+                  style: AppTextStyles.extraSmallText.copyWith(
+                    color: const Color(0xff77787A),
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -236,16 +258,16 @@ class _IntroVideoTileState extends State<_IntroVideoTile> {
 
   @override
   Widget build(BuildContext context) {
-    return _VideoTile(
-      key: widget.key,
-      item: widget.item,
-      isIntro: true,
-    );
+    return _VideoTile(key: widget.key, item: widget.item, isIntro: true);
   }
 }
 
 class _VideoTile extends StatefulWidget {
-  const _VideoTile({required super.key, required this.item, required this.isIntro});
+  const _VideoTile({
+    required super.key,
+    required this.item,
+    required this.isIntro,
+  });
   final VideoItem item;
   final bool isIntro;
 
@@ -269,7 +291,12 @@ class _VideoTileState extends State<_VideoTile> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: widget.isIntro ? const Color(0xff4C1CAE) : Colors.grey.shade300, width: widget.isIntro ? 2 : 1),
+          border: Border.all(
+            color: widget.isIntro
+                ? const Color(0xff4C1CAE)
+                : Colors.grey.shade300,
+            width: widget.isIntro ? 2 : 1,
+          ),
         ),
         child: Stack(
           children: [
@@ -289,7 +316,11 @@ class _VideoTileState extends State<_VideoTile> {
                   return Container(
                     color: Colors.grey.shade200,
                     child: const Center(
-                      child: Icon(Icons.video_library, size: 40, color: Colors.grey),
+                      child: Icon(
+                        Icons.video_library,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
                     ),
                   );
                 }),
@@ -302,14 +333,21 @@ class _VideoTileState extends State<_VideoTile> {
                 top: 8,
                 left: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xff4C1CAE),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     'cover_badge'.tr,
-                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -344,7 +382,11 @@ class _VideoTileState extends State<_VideoTile> {
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.play_arrow_rounded, size: 35, color: Color(0xff816CED)),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 35,
+                        color: Color(0xff816CED),
+                      ),
                     ),
                   ),
                 ),
@@ -359,14 +401,21 @@ class _VideoTileState extends State<_VideoTile> {
                 final dur = widget.item.duration.value;
                 if (dur == Duration.zero) return const SizedBox.shrink();
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.7),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     controller.formatDuration(dur),
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 );
               }),
@@ -403,7 +452,9 @@ class _VideoTileState extends State<_VideoTile> {
   }
 
   Widget _buildThumbnail(String thumbnailUrl) {
-    final isUrl = thumbnailUrl.startsWith('http://') || thumbnailUrl.startsWith('https://');
+    final isUrl =
+        thumbnailUrl.startsWith('http://') ||
+        thumbnailUrl.startsWith('https://');
 
     return isUrl
         ? Image.network(
@@ -416,10 +467,13 @@ class _VideoTileState extends State<_VideoTile> {
                 child: Center(
                   child: CircularProgressIndicator(
                     value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                        ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
                         : null,
                     strokeWidth: 2,
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xff816CED)),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Color(0xff816CED),
+                    ),
                   ),
                 ),
               );
@@ -441,7 +495,10 @@ class _VideoTileState extends State<_VideoTile> {
         children: [
           const Icon(Icons.videocam, color: Colors.grey, size: 32),
           const SizedBox(height: 8),
-          Text('video_ready'.tr, style: TextStyle(color: Colors.grey.shade600, fontSize: 10)),
+          Text(
+            'video_ready'.tr,
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 10),
+          ),
         ],
       ),
     );
@@ -501,13 +558,21 @@ class _UploadingIndicator extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               status,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.grey),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               '$pct%',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xff4C1CAE)),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff4C1CAE),
+              ),
             ),
             const SizedBox(height: 8),
             Container(
@@ -587,6 +652,3 @@ class _EmptyVideoSlot extends StatelessWidget {
     );
   }
 }
-
- 
-

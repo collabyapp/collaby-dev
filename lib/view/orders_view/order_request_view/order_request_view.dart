@@ -1,13 +1,18 @@
 import 'package:collaby_app/models/orders_model/orders_models.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/utils/currency_utils.dart';
 import 'package:collaby_app/view_models/controller/order_controller/order_details_controller.dart';
+import 'package:collaby_app/view_models/controller/settings_controller/currency_preference_controller.dart';
 import 'package:collaby_app/view_models/services/downlaod_file_service/downlaod_file_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OrderRequestView extends StatelessWidget {
   final OrderDetailController controller = Get.put(OrderDetailController());
+  final CurrencyPreferenceController currencyController = Get.put(
+    CurrencyPreferenceController(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -154,11 +159,16 @@ class OrderRequestView extends StatelessWidget {
                             style: AppTextStyles.normalTextMedium,
                           ),
                           Spacer(),
-                          Image.asset(ImageAssets.dollarIcon, width: 12),
-                          SizedBox(width: 4),
-                          Text(
-                            '\$ ${order.creatorEarnings.toStringAsFixed(0)}',
-                            style: AppTextStyles.normalText,
+                          Obx(
+                            () => Text(
+                              formatAmountInPreferredCurrency(
+                                order.creatorEarnings,
+                                sourceCurrency: order.currency,
+                                preferredCurrency:
+                                    currencyController.preferredCurrency.value,
+                              ),
+                              style: AppTextStyles.normalText,
+                            ),
                           ),
                         ],
                       ),

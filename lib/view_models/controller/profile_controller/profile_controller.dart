@@ -144,7 +144,7 @@ class ProfileController extends GetxController
 
   /// Navigate to gig detail
   void navigateToGigDetail(MyGigModel gig, int index) {
-    if (gig.gigId == null || gig.gigId.toString().isEmpty) {
+    if (gig.gigId.toString().isEmpty) {
       Utils.snackBar('error'.tr, 'error_no_service'.tr);
       return;
     }
@@ -156,12 +156,14 @@ class ProfileController extends GetxController
 
   /// Edit service (open create gig flow prefilled)
   Future<void> editService(MyGigModel gig) async {
-    if (gig.gigId == null || gig.gigId.toString().isEmpty) {
+    if (gig.gigId.toString().isEmpty) {
       Utils.snackBar('error'.tr, 'error_no_service'.tr);
       return;
     }
     try {
-      final response = await _gigRepository.getGigDetailApi(gig.gigId.toString());
+      final response = await _gigRepository.getGigDetailApi(
+        gig.gigId.toString(),
+      );
       final data = response is Map<String, dynamic> ? response['data'] : null;
       if (data == null) {
         Utils.snackBar('error'.tr, 'error_no_service'.tr);
@@ -186,6 +188,51 @@ class ProfileController extends GetxController
       fetchProfileData(refresh: true),
       if (currentIndex.value == 1) fetchMyGigs(refresh: true),
     ]);
+  }
+
+  Future<void> hidePortfolioItem(PortfolioItem item) async {
+    final url = item.deliveryFile.url.trim();
+    if (url.isEmpty) return;
+
+    try {
+      await _profileRepository.hidePortfolioItemApi(url);
+      final current = profileData.value;
+      if (current != null) {
+        final nextPortfolio = current.portfolio
+            .where((p) => p.deliveryFile.url != url)
+            .toList();
+        profileData.value = ProfileModel(
+          role: current.role,
+          status: current.status,
+          badge: current.badge,
+          userId: current.userId,
+          imageUrl: current.imageUrl,
+          firstName: current.firstName,
+          lastName: current.lastName,
+          displayName: current.displayName,
+          description: current.description,
+          ageGroup: current.ageGroup,
+          gender: current.gender,
+          country: current.country,
+          languages: current.languages,
+          shippingAddress: current.shippingAddress,
+          niches: current.niches,
+          reviewStats: current.reviewStats,
+          subscription: current.subscription,
+          analytics: current.analytics,
+          isConnectedAccount: current.isConnectedAccount,
+          stripeConnectedAccountId: current.stripeConnectedAccountId,
+          activeBoost: current.activeBoost,
+          portfolio: nextPortfolio,
+          reviews: current.reviews,
+          creatorReviewStats: current.creatorReviewStats,
+          creatorLevelProgress: current.creatorLevelProgress,
+        );
+      }
+      Utils.snackBar('success'.tr, 'removed_from_portfolio'.tr);
+    } catch (e) {
+      Utils.snackBar('error'.tr, e.toString());
+    }
   }
 
   // @override
