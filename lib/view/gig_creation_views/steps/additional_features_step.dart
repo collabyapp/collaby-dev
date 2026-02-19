@@ -8,25 +8,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+String _presetLabel(String name) {
+  switch (name) {
+    case 'Additional revision':
+      return 'preset_additional_revision'.tr;
+    case 'Rush delivery':
+      return 'preset_rush_delivery'.tr;
+    case 'Add logo':
+      return 'preset_add_logo'.tr;
+    case '4K export':
+      return 'preset_4k_export'.tr;
+    case 'Custom request':
+      return 'preset_custom_request'.tr;
+    default:
+      return name;
+  }
+}
+
 class AdditionalFeaturesStep extends GetView<CreateGigController> {
   const AdditionalFeaturesStep({super.key});
-
-  String _presetLabel(String name) {
-    switch (name) {
-      case 'Additional revision':
-        return 'preset_additional_revision'.tr;
-      case 'Rush delivery':
-        return 'preset_rush_delivery'.tr;
-      case 'Add logo':
-        return 'preset_add_logo'.tr;
-      case '4K export':
-        return 'preset_4k_export'.tr;
-      case 'Custom request':
-        return 'preset_custom_request'.tr;
-      default:
-        return name;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
