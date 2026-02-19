@@ -55,6 +55,9 @@ class NotificationModel {
   static NotificationType _mapType(String raw) {
     switch (raw) {
       case 'order_requested':
+      case 'order_accepted':
+      case 'order_declined':
+      case 'order_delivered':
         return NotificationType.order;
       case 'revision_requested':
         return NotificationType.message;

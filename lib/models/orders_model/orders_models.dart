@@ -150,11 +150,57 @@ class OrderModel {
     return null;
   }
 
+  static DateTime _resolveEndDate(
+    Map<String, dynamic> json, {
+    required int deliveryTimeDays,
+  }) {
+    final directEndDate =
+        _safeDateTime(json['calculatedDeliveryDate']) ??
+        _safeDateTime(json['expectedDeliveryDate']) ??
+        _safeDateTime(json['deliveryDate']) ??
+        _safeDateTime(json['endDate']);
+    if (directEndDate != null) return directEndDate;
+
+    final baseDate =
+        _safeDateTime(json['acceptedAt']) ??
+        _safeDateTime(json['inProgressAt']) ??
+        _safeDateTime(json['requirementsSubmittedAt']) ??
+        _safeDateTime(json['updatedAt']) ??
+        _safeDateTime(json['createdAt']) ??
+        DateTime.now();
+
+    final safeDays = deliveryTimeDays > 0 ? deliveryTimeDays : 0;
+    return baseDate.add(Duration(days: safeDays));
+  }
+
+  static double? _resolveDaysRemaining(
+    Map<String, dynamic> json,
+    DateTime endDate,
+  ) {
+    // Backend sometimes returns 0 right after acceptance; in that case,
+    // derive from endDate instead of trusting the stale payload.
+    final raw = _safeDouble(json['daysRemaining'], fallback: -1);
+    if (raw > 0) return raw;
+
+    final hoursLeft = endDate.difference(DateTime.now()).inMinutes / 60.0;
+    final derivedDays = hoursLeft / 24.0;
+    return derivedDays > 0 ? derivedDays : 0;
+  }
+
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     try {
       // Safe extraction with fallbacks
       final brandInfo = json['brandInfo'] as Map<String, dynamic>?;
       final brandProfile = json['brandProfile'] as Map<String, dynamic>?;
+      final resolvedDeliveryTimeDays = _safeInt(json['deliveryTimeDays']);
+      final resolvedEndDate = _resolveEndDate(
+        json,
+        deliveryTimeDays: resolvedDeliveryTimeDays,
+      );
+      final resolvedDaysRemaining = _resolveDaysRemaining(
+        json,
+        resolvedEndDate,
+      );
 
       return OrderModel(
         id: _safeString(json['_id'] ?? json['id']),
@@ -174,8 +220,7 @@ class OrderModel {
         brandIndustry: _safeString(
           brandInfo?['industry'] ?? brandProfile?['industry'],
         ),
-        endDate:
-            _safeDateTime(json['calculatedDeliveryDate']) ?? DateTime.now(),
+        endDate: resolvedEndDate,
         status: parseStatus(_safeString(json['status'])),
         paymentStatus: _safeString(json['paymentStatus']),
         pricingName: _safeString(
@@ -187,9 +232,9 @@ class OrderModel {
           json['currency'] ?? (json['pricing'] as Map?)?['currency'],
           fallback: 'USD',
         ),
-        deliveryTimeDays: _safeInt(json['deliveryTimeDays']),
+        deliveryTimeDays: resolvedDeliveryTimeDays,
         numberOfRevisions: _safeInt(json['numberOfRevisions']),
-        daysRemaining: _safeDouble(json['daysRemaining']),
+        daysRemaining: resolvedDaysRemaining,
         hasRequirementsSubmitted: _safeBool(json['hasRequirementsSubmitted']),
         requirementsSubmittedAt: _safeDateTime(json['requirementsSubmittedAt']),
         createdAt: _safeDateTime(json['createdAt']) ?? DateTime.now(),

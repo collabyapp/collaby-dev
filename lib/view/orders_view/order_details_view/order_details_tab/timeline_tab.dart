@@ -43,7 +43,9 @@ Widget buildTimelineTab(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            title.isEmpty ? 'Untitled order' : title,
+                            title.isEmpty
+                                ? 'order_timeline_untitled_order'.tr
+                                : title,
                             style: AppTextStyles.smallMediumText,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -51,8 +53,8 @@ Widget buildTimelineTab(
                           const SizedBox(height: 4),
                           Text(
                             orderNumber.isEmpty
-                                ? 'Order'
-                                : 'Order #$orderNumber',
+                                ? 'order_timeline_order_label'.tr
+                                : '${'order_timeline_order_label'.tr} #$orderNumber',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[600],
@@ -71,7 +73,7 @@ Widget buildTimelineTab(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Order Request: ${_safeDate(orderDate)}',
+                        '${'order_timeline_order_request'.tr}: ${_safeDate(orderDate)}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -92,16 +94,20 @@ Widget buildTimelineTab(
           ),
 
         if (!isLoading && (activityEvents.isEmpty))
-          const Expanded(
+          Expanded(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.timeline, size: 64, color: Color(0xFFD6D6D6)),
-                  SizedBox(height: 16),
+                  const Icon(
+                    Icons.timeline,
+                    size: 64,
+                    color: Color(0xFFD6D6D6),
+                  ),
+                  const SizedBox(height: 16),
                   Text(
-                    'No activity timeline available',
-                    style: TextStyle(color: Colors.grey),
+                    'order_timeline_no_activity'.tr,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
@@ -159,10 +165,8 @@ Widget buildTimelineTab(
                     contentsBuilder: (context, index) {
                       final e = activityEvents[index];
 
-                      final title = e.title.trim().isNotEmpty == true
-                          ? e.title.trim()
-                          : 'Activity';
-                      final desc = e.description;
+                      final title = _getLocalizedActivityTitle(e);
+                      final desc = _getLocalizedActivityDescription(e);
                       final createdAt = e.createdAt; // DateTime?
                       final performedByEmail = e.performedBy.email;
                       final meta = e.metadata; // nullable
@@ -249,7 +253,7 @@ Widget buildTimelineTab(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        'View Submission',
+                                        'order_timeline_view_submission'.tr,
                                         style: AppTextStyles.smallTextBold
                                             .copyWith(
                                               color: const Color(0xff816CED),
@@ -338,7 +342,7 @@ Widget _buildMetadataSectionSafe(ActivityMetadata metadata) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Revision Reason:',
+                'order_timeline_revision_reason'.tr,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -400,7 +404,9 @@ Widget _buildMetadataSectionSafe(ActivityMetadata metadata) {
               Icon(Icons.attach_file, size: 16, color: Colors.blue[700]),
               const SizedBox(width: 6),
               Text(
-                '$files file(s) delivered',
+                'order_timeline_files_delivered'.trParams({
+                  'count': files.toString(),
+                }),
                 style: TextStyle(fontSize: 12, color: Colors.blue[900]),
               ),
             ],
@@ -441,14 +447,72 @@ String _formatDate(DateTime date) {
 
   if (difference.inDays == 0) {
     if (difference.inHours == 0) {
-      return '${difference.inMinutes}m ago';
+      return 'order_timeline_minutes_ago'.trParams({
+        'minutes': difference.inMinutes.toString(),
+      });
     }
-    return '${difference.inHours}h ago';
+    return 'order_timeline_hours_ago'.trParams({
+      'hours': difference.inHours.toString(),
+    });
   } else if (difference.inDays == 1) {
-    return 'Yesterday';
+    return 'order_timeline_yesterday'.tr;
   } else if (difference.inDays < 7) {
-    return '${difference.inDays}d ago';
+    return 'order_timeline_days_ago'.trParams({
+      'days': difference.inDays.toString(),
+    });
   } else {
     return DateFormat('dd MMM, yyyy').format(date);
+  }
+}
+
+String _getLocalizedActivityTitle(ActivityEvent event) {
+  switch (event.activityType.toLowerCase()) {
+    case 'payment_processed':
+      return 'order_activity_payment_processed'.tr;
+    case 'requirements_submitted':
+      return 'order_activity_requirements_submitted'.tr;
+    case 'order_created':
+      return 'order_activity_order_created'.tr;
+    case 'order_accepted':
+      return 'order_activity_order_accepted'.tr;
+    case 'order_declined':
+      return 'order_activity_order_declined'.tr;
+    case 'order_delivered':
+      return 'order_activity_order_delivered'.tr;
+    case 'revision_requested':
+      return 'order_activity_revision_requested'.tr;
+    case 'revision_delivered':
+      return 'order_activity_revision_delivered'.tr;
+    case 'creator_review':
+      return 'order_activity_creator_review'.tr;
+    default:
+      return event.title.trim().isNotEmpty
+          ? event.title.trim()
+          : 'order_timeline_activity'.tr;
+  }
+}
+
+String _getLocalizedActivityDescription(ActivityEvent event) {
+  switch (event.activityType.toLowerCase()) {
+    case 'payment_processed':
+      return 'order_activity_desc_payment_processed'.tr;
+    case 'requirements_submitted':
+      return 'order_activity_desc_requirements_submitted'.tr;
+    case 'order_created':
+      return 'order_activity_desc_order_created'.tr;
+    case 'order_accepted':
+      return 'order_activity_desc_order_accepted'.tr;
+    case 'order_declined':
+      return 'order_activity_desc_order_declined'.tr;
+    case 'order_delivered':
+      return 'order_activity_desc_order_delivered'.tr;
+    case 'revision_requested':
+      return 'order_activity_desc_revision_requested'.tr;
+    case 'revision_delivered':
+      return 'order_activity_desc_revision_delivered'.tr;
+    case 'creator_review':
+      return 'order_activity_desc_creator_review'.tr;
+    default:
+      return event.description;
   }
 }

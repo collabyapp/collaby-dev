@@ -1,4 +1,4 @@
-﻿import 'package:collaby_app/models/orders_model/orders_models.dart';
+import 'package:collaby_app/models/orders_model/orders_models.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/view/orders_view/order_details_view/order_details_tab/chat_tab.dart';
@@ -54,9 +54,9 @@ class OrderDetailView extends StatelessWidget {
             child: Obx(
               () => Row(
                 children: [
-                  Expanded(child: _buildTab('Timeline', 0)),
-                  Expanded(child: _buildTab('Chat', 1)),
-                  Expanded(child: _buildTab('Delivery', 2)),
+                  Expanded(child: _buildTab('order_tab_timeline'.tr, 0)),
+                  Expanded(child: _buildTab('order_tab_chat'.tr, 1)),
+                  Expanded(child: _buildTab('order_tab_delivery'.tr, 2)),
                 ],
               ),
             ),
@@ -145,12 +145,15 @@ class OrderDetailView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Your order has been delivered. Wait for\n approval from client',
+                'order_delivered_wait_approval'.tr,
                 style: AppTextStyles.extraSmallText.copyWith(fontSize: 10),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 12),
-              CustomButton(title: 'Delivered', isDisabled: true),
+              CustomButton(
+                title: 'orders_status_delivered'.tr,
+                isDisabled: true,
+              ),
             ],
           ),
         );
@@ -169,7 +172,7 @@ class OrderDetailView extends StatelessWidget {
               Obx(
                 () => CustomButton(
                   isDisabled: !controller.canDeliverNow.value,
-                  title: 'Deliver Now',
+                  title: 'order_deliver_now'.tr,
                   onPressed: () {
                     // log(controller.canDeliverNow.value);
                     DeliverWorkBottomSheet.show(controller.orderId.toString());
@@ -184,7 +187,3 @@ class OrderDetailView extends StatelessWidget {
     return SizedBox.shrink();
   }
 }
-
-
-
-

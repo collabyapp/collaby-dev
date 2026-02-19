@@ -100,9 +100,15 @@ class OrdersView extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Obx(() => _buildTab('orders_tab_active'.tr, 0))),
-                    Expanded(child: Obx(() => _buildTab('orders_tab_new'.tr, 1))),
-                    Expanded(child: Obx(() => _buildTab('orders_tab_completed'.tr, 2))),
+                    Expanded(
+                      child: Obx(() => _buildTab('orders_tab_active'.tr, 0)),
+                    ),
+                    Expanded(
+                      child: Obx(() => _buildTab('orders_tab_new'.tr, 1)),
+                    ),
+                    Expanded(
+                      child: Obx(() => _buildTab('orders_tab_completed'.tr, 2)),
+                    ),
                   ],
                 ),
               ),
@@ -191,10 +197,7 @@ class OrdersView extends StatelessWidget {
           children: [
             Image.asset(ImageAssets.noOrderImage, width: 58),
             SizedBox(height: 16),
-            Text(
-              'orders_empty_active'.tr,
-              style: AppTextStyles.extraSmallText,
-            ),
+            Text('orders_empty_active'.tr, style: AppTextStyles.extraSmallText),
           ],
         ),
       );
@@ -277,6 +280,21 @@ class OrdersView extends StatelessWidget {
   // }
 
   Widget _buildOrderCard(OrderModel order) {
+    final isActiveOrder =
+        order.status == OrderStatus.inProgress ||
+        order.status == OrderStatus.active ||
+        order.status == OrderStatus.inRevision ||
+        order.status == OrderStatus.delivered;
+    final computedDaysLeft = order.daysRemaining != null
+        ? order.daysRemaining!.ceil()
+        : 0;
+    final fallbackDaysLeft = order.deliveryTimeDays > 0
+        ? order.deliveryTimeDays
+        : 1;
+    final displayDaysLeft = computedDaysLeft > 0
+        ? computedDaysLeft
+        : fallbackDaysLeft;
+
     return GestureDetector(
       onTap: () {
         if (order.status == OrderStatus.newOrder) {
@@ -405,16 +423,16 @@ class OrdersView extends StatelessWidget {
                 Text(
                   order.status == OrderStatus.completed ||
                           order.status == OrderStatus.declined
-                      ? 'orders_ended_on'.trParams(
-                        {'date': _formatDate(order.endDate)},
-                      )
-                      : order.daysRemaining != null
-                      ? 'orders_days_left'.trParams(
-                        {'days': order.daysRemaining!.ceil().toString()},
-                      )
-                      : 'orders_deliver_on'.trParams(
-                        {'date': _formatDate(order.endDate)},
-                      ),
+                      ? 'orders_ended_on'.trParams({
+                          'date': _formatDate(order.endDate),
+                        })
+                      : isActiveOrder
+                      ? 'orders_days_left'.trParams({
+                          'days': displayDaysLeft.toString(),
+                        })
+                      : 'orders_deliver_on'.trParams({
+                          'date': _formatDate(order.endDate),
+                        }),
                   style: AppTextStyles.extraSmallText.copyWith(fontSize: 11),
                 ),
               ],

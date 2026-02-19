@@ -41,8 +41,8 @@ class DeliverWorkBottomSheet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(width: 24),
-                const Text(
-                  'Deliver your work',
+                Text(
+                  'order_deliver_your_work'.tr,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 GestureDetector(
@@ -63,8 +63,8 @@ class DeliverWorkBottomSheet extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Work Detail Label
-                  const Text(
-                    'Work Detail',
+                  Text(
+                    'order_work_detail'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -88,11 +88,14 @@ class DeliverWorkBottomSheet extends StatelessWidget {
                         FocusManager.instance.primaryFocus?.unfocus();
                       },
                       textAlignVertical: TextAlignVertical.top,
-                      decoration: const InputDecoration(
-                        hintText: 'Please describe your work in detail',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: 'order_describe_work_detail'.tr,
+                        hintStyle: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(16),
+                        contentPadding: const EdgeInsets.all(16),
                       ),
                     ),
                   ),
@@ -165,8 +168,8 @@ class DeliverWorkBottomSheet extends StatelessWidget {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          'Deliver Now',
+                      : Text(
+                          'order_deliver_now'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -216,7 +219,7 @@ class _UploadButton extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Upload your work',
+              'order_upload_your_work'.tr,
               style: TextStyle(
                 fontSize: 12,
                 color: isDisabled ? Colors.grey : Colors.black87,
@@ -280,8 +283,8 @@ class _VideoUploadItem extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const Text(
-                          'Uploading',
+                        Text(
+                          'order_uploading'.tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,

@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:collaby_app/repository/order_repository/order_repository.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
@@ -368,7 +368,7 @@ class OrderDetailController extends GetxController {
         currentOrder.value = order;
 
         isOrderProcessed.value = true;
-        Utils.snackBar('Success', 'Order accepted successfully!');
+        Utils.snackBar('success'.tr, 'order_accept_success'.tr);
 
         // Refresh activity timeline
         await fetchActivityTimeline(order.id);
@@ -380,10 +380,13 @@ class OrderDetailController extends GetxController {
           );
         });
       } else {
-        Utils.snackBar('Error', 'Failed to accept order');
+        Utils.snackBar('error'.tr, 'order_accept_failed'.tr);
       }
     } catch (e) {
-      Utils.snackBar('Error', 'Failed to accept order: ${e.toString()}');
+      Utils.snackBar(
+        'error'.tr,
+        'order_accept_failed_detail'.trParams({'error': e.toString()}),
+      );
       debugPrint('Error in acceptOrder: $e');
     } finally {
       isSubmitting.value = false;
@@ -542,6 +545,3 @@ class OrderDetailController extends GetxController {
     super.dispose();
   }
 }
-
-
-
