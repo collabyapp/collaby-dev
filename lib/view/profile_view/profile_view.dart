@@ -192,6 +192,7 @@ class ProfileView extends StatelessWidget {
 
   Widget _buildProfileInfo() {
     final profile = controller.profileData.value;
+    final normalizedBadge = _normalizeBadge(profile?.badge ?? 'level_one');
     if (profile == null) return SizedBox.shrink();
 
     return Padding(
@@ -270,6 +271,29 @@ class ProfileView extends StatelessWidget {
                       children: [
                         Text(profile.displayName, style: AppTextStyles.h6Bold),
                         SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => _showLevelInfoSheet(normalizedBadge),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffEFEAFF),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xffD5C9FF)),
+                            ),
+                            child: Text(
+                              _levelLabel(normalizedBadge),
+                              style: const TextStyle(
+                                color: Color(0xff4D2CAD),
+                                fontSize: 11,
+                                fontFamily: AppFonts.OpenSansSemiBold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 6),
                         if (controller.hasActiveSubscription)
                           Container(
                             padding: EdgeInsets.symmetric(
@@ -313,6 +337,54 @@ class ProfileView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showLevelInfoSheet(String normalizedBadge) {
+    Get.bottomSheet(
+      Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
+              const SizedBox(height: 4),
+              Text(
+                'creator_level_current'.trParams({
+                  'level': _levelLabel(normalizedBadge),
+                }),
+                style: AppTextStyles.extraSmallText,
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 122,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _levelPreviewCard(
+                      'level_one',
+                      isCurrent: normalizedBadge == 'level_one',
+                    ),
+                    _levelPreviewCard(
+                      'level_two',
+                      isCurrent: normalizedBadge == 'level_two',
+                    ),
+                    _levelPreviewCard('pro', isCurrent: normalizedBadge == 'pro'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      isScrollControlled: true,
     );
   }
 

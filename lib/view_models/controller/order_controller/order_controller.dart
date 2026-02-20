@@ -70,7 +70,6 @@ class OrdersController extends GetxController {
     try {
       if (refresh) {
         currentPage.value = 1;
-        orders.clear();
         hasMoreData.value = true;
       }
 
