@@ -117,6 +117,8 @@ class AppTranslations extends Translations {
       'creator_level_new': 'New',
       'creator_level_one': 'Level 1',
       'creator_level_two': 'Pro (Level 2)',
+      'creator_level_pro': 'Pro',
+      'creator_level_swipe_hint': 'Swipe to see all levels and benefits',
       'level_feature_publish_gigs': 'Publish gigs and receive orders',
       'level_feature_standard_withdrawal': 'Standard withdrawals available',
       'level_feature_priority_discovery': 'More visibility in discovery',
@@ -796,6 +798,9 @@ class AppTranslations extends Translations {
       'creator_level_new': 'Nuevo',
       'creator_level_one': 'Nivel 1',
       'creator_level_two': 'Pro (Nivel 2)',
+      'creator_level_pro': 'Pro',
+      'creator_level_swipe_hint':
+          'Desliza para ver todos los niveles y sus ventajas',
       'level_feature_publish_gigs': 'Publicar gigs y recibir pedidos',
       'level_feature_standard_withdrawal': 'Retiro estándar disponible',
       'level_feature_priority_discovery': 'Más visibilidad en descubrimiento',

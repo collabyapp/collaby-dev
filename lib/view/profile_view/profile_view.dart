@@ -17,20 +17,73 @@ class ProfileView extends StatelessWidget {
 
   String _normalizeBadge(String raw) {
     final v = raw.trim().toLowerCase();
-    if (v == 'level_two' || v == 'level2' || v == 'pro') return 'level_two';
+    if (v == 'pro' || v == 'level_three' || v == 'level3') return 'pro';
+    if (v == 'level_two' || v == 'level2') return 'level_two';
     if (v == 'level_one' || v == 'level1') return 'level_one';
-    return 'none';
+    return 'level_one';
   }
 
   String _levelLabel(String badge) {
     switch (badge) {
+      case 'pro':
+        return 'creator_level_pro'.tr;
       case 'level_two':
         return 'creator_level_two'.tr;
-      case 'level_one':
-        return 'creator_level_one'.tr;
       default:
-        return 'creator_level_new'.tr;
+        return 'creator_level_one'.tr;
     }
+  }
+
+  String _nextLevel(String badge) {
+    switch (badge) {
+      case 'level_one':
+        return 'level_two';
+      case 'level_two':
+        return 'pro';
+      default:
+        return 'pro';
+    }
+  }
+
+  Widget _levelPreviewCard(String levelKey, {required bool isCurrent}) {
+    final title = _levelLabel(levelKey);
+    final features = <String>[
+      'level_feature_publish_gigs'.tr,
+      if (levelKey == 'level_one') 'level_feature_standard_withdrawal'.tr,
+      if (levelKey != 'level_one') 'level_feature_priority_discovery'.tr,
+      if (levelKey == 'pro') 'level_feature_instant_withdrawal'.tr,
+    ];
+
+    return Container(
+      width: 260,
+      margin: const EdgeInsets.only(right: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isCurrent ? const Color(0xffEFEAFF) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: isCurrent ? const Color(0xff816CED) : const Color(0xffE5E7EB),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.smallTextBold.copyWith(
+              color: isCurrent ? const Color(0xff4D2CAD) : const Color(0xff111827),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...features.map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text('• $f', style: AppTextStyles.extraSmallText),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _requirementRow({
@@ -268,6 +321,7 @@ class ProfileView extends StatelessWidget {
     final normalizedBadge = _normalizeBadge(profile?.badge ?? 'none');
     final progress = profile?.creatorLevelProgress;
     final progressPct = (progress?.levelTwoProgressPercent ?? 0).clamp(0, 100);
+    final nextLevel = _nextLevel(normalizedBadge);
 
     return Column(
       children: [
@@ -288,6 +342,11 @@ class ProfileView extends StatelessWidget {
               Text(
                 'creator_level_current'.trParams({'level': _levelLabel(normalizedBadge)}),
                 style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'creator_level_next'.trParams({'level': _levelLabel(nextLevel)}),
+                style: AppTextStyles.extraSmallText,
               ),
               const SizedBox(height: 8),
               if (progress != null) ...[
@@ -341,6 +400,26 @@ class ProfileView extends StatelessWidget {
                   style: AppTextStyles.extraSmallText,
                 ),
               ],
+              const SizedBox(height: 10),
+              Text('creator_level_swipe_hint'.tr, style: AppTextStyles.extraSmallText),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 122,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _levelPreviewCard(
+                      'level_one',
+                      isCurrent: normalizedBadge == 'level_one',
+                    ),
+                    _levelPreviewCard(
+                      'level_two',
+                      isCurrent: normalizedBadge == 'level_two',
+                    ),
+                    _levelPreviewCard('pro', isCurrent: normalizedBadge == 'pro'),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

@@ -12,11 +12,43 @@ import 'package:collaby_app/view_models/controller/settings_controller/currency_
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OrdersView extends StatelessWidget {
+class OrdersView extends StatefulWidget {
+  const OrdersView({super.key});
+
+  @override
+  State<OrdersView> createState() => _OrdersViewState();
+}
+
+class _OrdersViewState extends State<OrdersView> {
   final OrdersController controller = Get.put(OrdersController());
   final CurrencyPreferenceController currencyController = Get.put(
     CurrencyPreferenceController(),
   );
+  late final PageController _pageController;
+  Worker? _tabWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: controller.selectedTab.value);
+    _tabWorker = ever<int>(controller.selectedTab, (index) {
+      if (!_pageController.hasClients) return;
+      final current = _pageController.page?.round() ?? 0;
+      if (current == index) return;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabWorker?.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,13 +156,27 @@ class OrdersView extends StatelessWidget {
                 ),
               ),
 
-              // Content
+              // Content (swipe enabled)
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value && controller.orders.isEmpty) {
                     return Center(child: CircularProgressIndicator());
                   }
-                  return _buildTabContent();
+                  return PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      if (controller.selectedTab.value != index) {
+                        controller.changeTab(index);
+                      }
+                    },
+                    children: [
+                      _buildOrdersList(controller.activeOrders),
+                      _buildOrdersList(controller.newOrders),
+                      controller.completedOrders.isEmpty
+                          ? _buildEmptyCompletedState()
+                          : _buildOrdersList(controller.completedOrders),
+                    ],
+                  );
                 }),
               ),
             ],
@@ -153,6 +199,13 @@ class OrdersView extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         controller.changeTab(index);
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+          );
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16),
@@ -183,21 +236,6 @@ class OrdersView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildTabContent() {
-    switch (controller.selectedTab.value) {
-      case 0: // Active
-        return _buildOrdersList(controller.activeOrders);
-      case 1: // New
-        return _buildOrdersList(controller.newOrders);
-      case 2: // Completed
-        return controller.completedOrders.isEmpty
-            ? _buildEmptyCompletedState()
-            : _buildOrdersList(controller.completedOrders);
-      default:
-        return Container();
-    }
   }
 
   Widget _buildOrdersList(List<OrderModel> orders) {
