@@ -1,16 +1,48 @@
-# collaby_app
+# Collaby Mobile App
 
-A new Flutter project.
+## Fast local testing (without TestFlight)
 
-## Getting Started
+This is the recommended flow to validate UI/UX quickly before publishing.
 
-This project is a starting point for a Flutter application.
+### 1) Android emulator (Windows)
 
-A few resources to get you started if this is your first Flutter project:
+Requirements:
+- Flutter SDK installed and in PATH
+- Android Studio installed
+- At least one Android Virtual Device (AVD) created in Device Manager
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+From project root:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_android_emulator.ps1
+```
+
+Optional (launch a specific emulator):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_android_emulator.ps1 -EmulatorId "YOUR_EMULATOR_ID"
+```
+
+To list emulator IDs:
+
+```powershell
+flutter emulators
+```
+
+### 2) Web debug (fast UI iteration)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\run_web_debug.ps1
+```
+
+### 3) Physical device (USB)
+
+```powershell
+flutter devices
+flutter run -d <device_id>
+```
+
+## Notes
+
+- On Windows, you cannot run iOS Simulator. For iOS final validation, continue using TestFlight/Codemagic.
+- API is configured in `lib/res/app_url/app_url.dart` (`https://api.collaby.co`).
