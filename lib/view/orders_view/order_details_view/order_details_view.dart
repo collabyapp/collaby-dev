@@ -9,8 +9,40 @@ import 'package:collaby_app/view_models/controller/order_controller/order_detail
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class OrderDetailView extends StatelessWidget {
+class OrderDetailView extends StatefulWidget {
+  const OrderDetailView({super.key});
+
+  @override
+  State<OrderDetailView> createState() => _OrderDetailViewState();
+}
+
+class _OrderDetailViewState extends State<OrderDetailView> {
   final OrderDetailController controller = Get.put(OrderDetailController());
+  late final PageController _pageController;
+  Worker? _tabWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: controller.selectedTab.value);
+    _tabWorker = ever<int>(controller.selectedTab, (index) {
+      if (!_pageController.hasClients) return;
+      final current = _pageController.page?.round() ?? 0;
+      if (current == index) return;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabWorker?.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +94,25 @@ class OrderDetailView extends StatelessWidget {
             ),
           ),
 
-          // Content
-          Expanded(child: Obx(() => _buildTabContent(context))),
+          // Content with swipe
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                if (controller.selectedTab.value != index) {
+                  controller.changeTab(index);
+                }
+              },
+              children: [
+                buildTimelineTab(context, controller),
+                buildChatTab(
+                  controller.orderChatId.toString(),
+                  controller.orderId.toString(),
+                ),
+                buildDeliveryTab(controller),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: DecoratedBox(
@@ -86,7 +135,16 @@ class OrderDetailView extends StatelessWidget {
 
   Widget _buildTab(String title, int index) {
     return GestureDetector(
-      onTap: () => controller.changeTab(index),
+      onTap: () {
+        controller.changeTab(index);
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
@@ -116,22 +174,6 @@ class OrderDetailView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Widget _buildTabContent(BuildContext context) {
-    switch (controller.selectedTab.value) {
-      case 0:
-        return buildTimelineTab(context, controller);
-      case 1:
-        return buildChatTab(
-          controller.orderChatId.toString(),
-          controller.orderId.toString(),
-        );
-      case 2:
-        return buildDeliveryTab(controller);
-      default:
-        return Container();
-    }
   }
 
   Widget _buildBottomBar() {
