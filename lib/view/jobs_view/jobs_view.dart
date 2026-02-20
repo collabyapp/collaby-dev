@@ -7,79 +7,95 @@ import 'package:collaby_app/view_models/controller/job_controller/job_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class JobsView extends StatelessWidget {
-  JobsView({Key? key}) : super(key: key);
+class JobsView extends StatefulWidget {
+  const JobsView({Key? key}) : super(key: key);
 
+  @override
+  State<JobsView> createState() => _JobsViewState();
+}
+
+class _JobsViewState extends State<JobsView> {
   final JobController controller = Get.put(JobController());
+  late final PageController _pageController;
+  Worker? _tabWorker;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: controller.currentTabIndex.value);
+    _tabWorker = ever<int>(controller.currentTabIndex, (index) {
+      if (!_pageController.hasClients) return;
+      final current = _pageController.page?.round() ?? 0;
+      if (current == index) return;
+      _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabWorker?.dispose();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      initialIndex: controller.currentTabIndex.value,
-      child: Builder(
-        builder: (context) {
-          final tabCtrl = DefaultTabController.of(context);
-          tabCtrl.addListener(() {
-            if (!tabCtrl.indexIsChanging) {
-              controller.changeTab(tabCtrl.index);
-            }
-          });
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('jobs_title'.tr, style: AppTextStyles.normalTextBold),
-              centerTitle: false,
-              automaticallyImplyLeading: false,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('jobs_title'.tr, style: AppTextStyles.normalTextBold),
+        centerTitle: false,
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+              child: SearchField(
+                onChanged: controller.updateSearchQuery,
+              ),
             ),
-            body: SafeArea(
-              child: Column(
+
+            // Custom tabs
+            Container(
+              decoration: BoxDecoration(
+                color: Color(0xffF4F7FF),
+                border: Border(bottom: BorderSide(color: Colors.black12)),
+              ),
+              child: Row(
                 children: [
-                  // Search
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
-                    child: SearchField(
-                      onChanged: controller.updateSearchQuery,
-                    ),
-                  ),
-
-                  // Custom tabs
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Color(0xffF4F7FF),
-                      border: Border(bottom: BorderSide(color: Colors.black12)),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(child: Obx(() => _buildTab('jobs_tab_new'.tr, 0))),
-                        Expanded(child: Obx(() => _buildTab('jobs_tab_saved'.tr, 1))),
-                        Expanded(child: Obx(() => _buildTab('jobs_tab_applied'.tr, 2))),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Tab content
-                  Expanded(
-                    child: Obx(() {
-                      switch (controller.currentTabIndex.value) {
-                        case 0:
-                          return NewJobsTab(controller: controller);
-                        case 1:
-                          return SavedJobsTab(controller: controller);
-                        case 2:
-                          return AppliedJobsTab(controller: controller);
-                        default:
-                          return Container();
-                      }
-                    }),
-                  ),
+                  Expanded(child: Obx(() => _buildTab('jobs_tab_new'.tr, 0))),
+                  Expanded(child: Obx(() => _buildTab('jobs_tab_saved'.tr, 1))),
+                  Expanded(child: Obx(() => _buildTab('jobs_tab_applied'.tr, 2))),
                 ],
               ),
             ),
-          );
-        },
+
+            const SizedBox(height: 8),
+
+            // Swipe content
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  if (controller.currentTabIndex.value != index) {
+                    controller.changeTab(index);
+                  }
+                },
+                children: [
+                  NewJobsTab(controller: controller),
+                  SavedJobsTab(controller: controller),
+                  AppliedJobsTab(controller: controller),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -88,6 +104,13 @@ class JobsView extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         controller.changeTab(index);
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+          );
+        }
       },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16),
@@ -120,6 +143,5 @@ class JobsView extends StatelessWidget {
     );
   }
 }
-
 
 
