@@ -2,6 +2,7 @@
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 class ViewTransactionsTile extends StatelessWidget {
   final VoidCallback onTap;
   const ViewTransactionsTile({required this.onTap});
@@ -29,7 +30,7 @@ class ViewTransactionsTile extends StatelessWidget {
             SizedBox(width: 20),
             Expanded(
               child: Text(
-                'View Transactions History',
+                'view_transactions_history'.tr,
                 style: AppTextStyles.normalTextMedium,
               ),
             ),
@@ -40,4 +41,3 @@ class ViewTransactionsTile extends StatelessWidget {
     );
   }
 }
-

@@ -272,25 +272,25 @@ class ProfileView extends StatelessWidget {
     return Column(
       children: [
         _buildProfileInfo(),
-        if (progress != null)
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xffF7F5FF),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xffE2DBFF)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
-                const SizedBox(height: 4),
-                Text(
-                  'creator_level_current'.trParams({'level': _levelLabel(normalizedBadge)}),
-                  style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xffF7F5FF),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xffE2DBFF)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
+              const SizedBox(height: 4),
+              Text(
+                'creator_level_current'.trParams({'level': _levelLabel(normalizedBadge)}),
+                style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              if (progress != null) ...[
                 Text(
                   'creator_level_progress'.trParams({'percent': '$progressPct'}),
                   style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
@@ -335,9 +335,15 @@ class ProfileView extends StatelessWidget {
                   target: progress.requirements.daysSinceRegistration.target,
                   met: progress.requirements.daysSinceRegistration.met,
                 ),
+              ] else ...[
+                Text(
+                  'creator_level_progress_unavailable'.tr,
+                  style: AppTextStyles.extraSmallText,
+                ),
               ],
-            ),
+            ],
           ),
+        ),
         SizedBox(height: 10),
         Container(
           child: controller.hasActiveSubscription

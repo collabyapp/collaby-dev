@@ -24,7 +24,7 @@ class ConnectAccountCard extends GetView<EarningsController> {
               SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Connect Bank Account',
+                  'connect_bank_account_title'.tr,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -36,7 +36,7 @@ class ConnectAccountCard extends GetView<EarningsController> {
           ),
           SizedBox(height: 12),
           Text(
-            'Connect your bank account to withdraw your earnings',
+            'connect_bank_account_subtitle'.tr,
             style: TextStyle(
               color: Colors.white.withOpacity(0.9),
               fontSize: 14,
@@ -56,7 +56,7 @@ class ConnectAccountCard extends GetView<EarningsController> {
                 ),
               ),
               child: Text(
-                'Connect Now',
+                'connect_now'.tr,
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
@@ -66,4 +66,3 @@ class ConnectAccountCard extends GetView<EarningsController> {
     );
   }
 }
-
