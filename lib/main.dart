@@ -9,8 +9,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'bootstrap/stripe_bootstrap.dart';
 import 'res/localization/app_translations.dart';
 import 'view_models/services/notification_services/awesome_notification_services.dart';
 
@@ -47,14 +47,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
 
   Future<void> _init() async {
     try {
-      // Stripe (skip on web)
-      if (!kIsWeb) {
-        Stripe.publishableKey =
-            'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
-        await Stripe.instance
-            .applySettings()
-            .timeout(const Duration(seconds: 10));
-      }
+      // Stripe
+      await initializeStripe().timeout(const Duration(seconds: 10));
 
       // Firebase
       await Firebase.initializeApp(
