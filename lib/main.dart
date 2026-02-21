@@ -5,6 +5,7 @@ import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes.dart';
 import 'package:collaby_app/view/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,9 +60,11 @@ class _BootstrapAppState extends State<BootstrapApp> {
       ).timeout(const Duration(seconds: 15));
 
       // Notificaciones
-      await AwsomeNotificationService()
-          .initializeNotification()
-          .timeout(const Duration(seconds: 15));
+      if (!kIsWeb) {
+        await AwsomeNotificationService()
+            .initializeNotification()
+            .timeout(const Duration(seconds: 15));
+      }
 
       initialized = true;
     } catch (e) {
