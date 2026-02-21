@@ -10,6 +10,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+Widget _safeAsset(
+  String path, {
+  double? width,
+  double? height,
+  Color? color,
+  IconData fallbackIcon = Icons.image_not_supported_outlined,
+}) {
+  return Image.asset(
+    path,
+    width: width,
+    height: height,
+    color: color,
+    errorBuilder: (context, error, stackTrace) {
+      final size = (width ?? height ?? 18).clamp(12, 64).toDouble();
+      return Icon(
+        fallbackIcon,
+        size: size,
+        color: color ?? const Color(0xFF9CA3AF),
+      );
+    },
+  );
+}
+
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
@@ -55,7 +78,11 @@ class _GradientHeader extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         child: Padding(
           padding: EdgeInsets.only(bottom: 300.h),
-          child: Image.asset(ImageAssets.logoImage, width: 138),
+          child: _safeAsset(
+            ImageAssets.logoImage,
+            width: 138,
+            fallbackIcon: Icons.flutter_dash,
+          ),
         ),
       ),
     );
@@ -182,11 +209,11 @@ class _EmailField extends StatelessWidget {
   }
 
   Widget _buildPrefixIcon(String asset, Color color) {
-    return SizedBox(
+        return SizedBox(
       width: 13,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Image.asset(asset, color: color),
+        child: _safeAsset(asset, color: color),
       ),
     );
   }
@@ -226,19 +253,20 @@ class _PasswordField extends StatelessWidget {
       width: 13,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Image.asset(asset, color: color),
+        child: _safeAsset(asset, color: color),
       ),
     );
   }
 
   Widget _buildVisibilityToggle() {
     return IconButton(
-      icon: Image.asset(
+      icon: _safeAsset(
         controller.obscure
             ? ImageAssets.visibility_off_outlined
             : ImageAssets.visibility_outlined,
         width: 20,
         color: const Color(0xFF585C65),
+        fallbackIcon: controller.obscure ? Icons.visibility_off : Icons.visibility,
       ),
       onPressed: controller.toggleObscure,
     );
@@ -309,13 +337,23 @@ class _SocialButtons extends StatelessWidget {
     return Row(
       children: [
         SocialButton(
-          icon: Image.asset(ImageAssets.googleIcon, width: 20, height: 20),
+          icon: _safeAsset(
+            ImageAssets.googleIcon,
+            width: 20,
+            height: 20,
+            fallbackIcon: Icons.g_mobiledata,
+          ),
           label: 'Google',
           onTap: controller.tapGoogle,
         ),
         const SizedBox(width: 12),
         SocialButton(
-          icon: Image.asset(ImageAssets.appleIcon, width: 20, height: 20),
+          icon: _safeAsset(
+            ImageAssets.appleIcon,
+            width: 20,
+            height: 20,
+            fallbackIcon: Icons.apple,
+          ),
           label: 'Apple',
           onTap: controller.tapApple,
         ),
