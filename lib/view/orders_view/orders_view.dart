@@ -25,27 +25,15 @@ class _OrdersViewState extends State<OrdersView> {
     CurrencyPreferenceController(),
   );
   late final PageController _pageController;
-  Worker? _tabWorker;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: controller.selectedTab.value);
-    _tabWorker = ever<int>(controller.selectedTab, (index) {
-      if (!_pageController.hasClients) return;
-      final current = _pageController.page?.round() ?? 0;
-      if (current == index) return;
-      _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-      );
-    });
   }
 
   @override
   void dispose() {
-    _tabWorker?.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -164,6 +152,7 @@ class _OrdersViewState extends State<OrdersView> {
                   }
                   return PageView(
                     controller: _pageController,
+                    physics: const PageScrollPhysics(),
                     onPageChanged: (index) {
                       if (controller.selectedTab.value != index) {
                         controller.changeTab(index);
