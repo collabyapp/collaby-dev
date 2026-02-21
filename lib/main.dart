@@ -47,12 +47,14 @@ class _BootstrapAppState extends State<BootstrapApp> {
 
   Future<void> _init() async {
     try {
-      // Stripe
-      Stripe.publishableKey =
-          'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
-      await Stripe.instance
-          .applySettings()
-          .timeout(const Duration(seconds: 10));
+      // Stripe (skip on web)
+      if (!kIsWeb) {
+        Stripe.publishableKey =
+            'pk_test_51SXGtqEC0R7ZrnKnZCRrvuGK7lBeUFefObcBR5PToQy2VX8oV7iVIcbrsUoaEYb1ERLrun8Ot63EiYHx1O33K2o900hw6b7jTs';
+        await Stripe.instance
+            .applySettings()
+            .timeout(const Duration(seconds: 10));
+      }
 
       // Firebase
       await Firebase.initializeApp(
