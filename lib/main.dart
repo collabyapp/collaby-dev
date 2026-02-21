@@ -50,10 +50,12 @@ class _BootstrapAppState extends State<BootstrapApp> {
       // Stripe
       await initializeStripe().timeout(const Duration(seconds: 10));
 
-      // Firebase
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      ).timeout(const Duration(seconds: 15));
+      // Firebase (skip on web local debug if not configured)
+      if (!kIsWeb) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        ).timeout(const Duration(seconds: 15));
+      }
 
       // Notificaciones
       if (!kIsWeb) {
