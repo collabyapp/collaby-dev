@@ -19,6 +19,7 @@ class RouteName {
   static const String bottomNavigationView = '/bottom_navigation_view';
   static const String jobDetailsView = '/job_details_view';
   static const String settingsView = '/settings_view';
+  static const String creatorLevelView = '/creator_level_view';
   static const String withdrawalView = '/withdrawal_view';
   static const String gigDetailView = '/gig_detail_view';
 

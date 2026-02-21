@@ -104,226 +104,6 @@ class PricingStep extends GetView<CreateGigController> {
     );
   }
 
-  String _normalizedBadge(String raw) {
-    final v = raw.trim().toLowerCase();
-    if (v == 'level_two' || v == 'level2' || v == 'pro') return 'level_two';
-    if (v == 'level_one' || v == 'level1') return 'level_one';
-    return 'none';
-  }
-
-  String _currentLevelLabelKey(String badge) {
-    switch (badge) {
-      case 'level_two':
-        return 'creator_level_two';
-      case 'level_one':
-        return 'creator_level_one';
-      default:
-        return 'creator_level_new';
-    }
-  }
-
-  String? _nextLevelLabelKey(String badge) {
-    switch (badge) {
-      case 'none':
-        return 'creator_level_one';
-      case 'level_one':
-        return 'creator_level_two';
-      default:
-        return null;
-    }
-  }
-
-  List<String> _currentBenefitKeys(String badge) {
-    switch (badge) {
-      case 'level_two':
-        return const [
-          'level_feature_publish_gigs',
-          'level_feature_priority_discovery',
-          'level_feature_instant_withdrawal',
-        ];
-      case 'level_one':
-        return const [
-          'level_feature_publish_gigs',
-          'level_feature_priority_discovery',
-          'level_feature_standard_withdrawal',
-        ];
-      default:
-        return const [
-          'level_feature_publish_gigs',
-          'level_feature_standard_withdrawal',
-        ];
-    }
-  }
-
-  List<String> _nextBenefitKeys(String badge) {
-    switch (badge) {
-      case 'none':
-        return const [
-          'level_up_requirement_first_gig',
-          'level_feature_priority_discovery',
-        ];
-      case 'level_one':
-        return const [
-          'level_up_requirement_reviews',
-          'level_up_requirement_completed_orders',
-          'level_up_requirement_rating',
-          'level_up_requirement_days_active',
-          'level_feature_instant_withdrawal',
-        ];
-      default:
-        return const [];
-    }
-  }
-  Map<String, dynamic>? _reqMap(Map<String, dynamic> source, String key) {
-    final value = source[key];
-    if (value is Map<String, dynamic>) return value;
-    return null;
-  }
-
-  Widget _requirementRow({
-    required String label,
-    required String progressText,
-    required bool met,
-  }) {
-    final color = met ? const Color(0xff1D9C62) : const Color(0xff7A7A7A);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            met ? Icons.check_circle : Icons.radio_button_unchecked,
-            size: 16,
-            color: color,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              '$label ($progressText)',
-              style: AppTextStyles.extraSmallText.copyWith(color: color),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _creatorLevelCard() {
-    return Obx(() {
-      final badge = _normalizedBadge(controller.creatorBadge.value);
-      final currentKey = _currentLevelLabelKey(badge);
-      final nextKey = _nextLevelLabelKey(badge);
-      final currentBenefits = _currentBenefitKeys(badge);
-      final nextBenefits = _nextBenefitKeys(badge);
-      final req = Map<String, dynamic>.from(controller.levelRequirements);
-      final progress = controller.levelProgressPercent.value;
-      final gigsReq = _reqMap(req, 'gigs');
-      final reviewsReq = _reqMap(req, 'reviews');
-      final completedReq = _reqMap(req, 'completedOrders');
-      final ratingReq = _reqMap(req, 'averageRating');
-      final daysReq = _reqMap(req, 'daysSinceRegistration');
-
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: const Color(0xffF7F5FF),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xffE2DBFF)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
-            const SizedBox(height: 6),
-            Text(
-              'creator_level_current'.trParams({'level': currentKey.tr}),
-              style: AppTextStyles.extraSmallText.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 6),
-            ...currentBenefits.map(
-              (k) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text('- ${k.tr}', style: AppTextStyles.extraSmallText),
-              ),
-            ),
-            if (nextKey != null) ...[
-              const SizedBox(height: 10),
-              Text(
-                'creator_level_next'.trParams({'level': nextKey.tr}),
-                style: AppTextStyles.extraSmallText.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              ...nextBenefits.map(
-                (k) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text('- ${k.tr}', style: AppTextStyles.extraSmallText),
-                ),
-              ),
-            ],
-            const SizedBox(height: 10),
-            Text(
-              'creator_level_progress'.trParams({'percent': '$progress'}),
-              style: AppTextStyles.extraSmallText.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                minHeight: 8,
-                value: (progress.clamp(0, 100)) / 100,
-                backgroundColor: const Color(0xffE9E3FF),
-                valueColor: const AlwaysStoppedAnimation(Color(0xff816CED)),
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (gigsReq != null)
-              _requirementRow(
-                label: 'level_up_requirement_first_gig'.tr,
-                progressText:
-                    '${(gigsReq['current'] ?? 0)}/${(gigsReq['target'] ?? 1)}',
-                met: gigsReq['met'] == true,
-              ),
-            if (reviewsReq != null)
-              _requirementRow(
-                label: 'level_up_requirement_reviews'.tr,
-                progressText:
-                    '${(reviewsReq['current'] ?? 0)}/${(reviewsReq['target'] ?? 10)}',
-                met: reviewsReq['met'] == true,
-              ),
-            if (completedReq != null)
-              _requirementRow(
-                label: 'level_up_requirement_completed_orders'.tr,
-                progressText:
-                    '${(completedReq['current'] ?? 0)}/${(completedReq['target'] ?? 10)}',
-                met: completedReq['met'] == true,
-              ),
-            if (ratingReq != null)
-              _requirementRow(
-                label: 'level_up_requirement_rating'.tr,
-                progressText:
-                    '${(ratingReq['current'] ?? 0)}/${(ratingReq['target'] ?? 4.5)}',
-                met: ratingReq['met'] == true,
-              ),
-            if (daysReq != null)
-              _requirementRow(
-                label: 'level_up_requirement_days_active'.tr,
-                progressText:
-                    '${(daysReq['current'] ?? 0)}/${(daysReq['target'] ?? 30)}',
-                met: daysReq['met'] == true,
-              ),
-          ],
-        ),
-      );
-    });
-  }
-
   // ===================== Prices for all tiers =====================
   Widget _buildAllTierPrices() {
     return Column(
@@ -1212,6 +992,8 @@ class PricingStep extends GetView<CreateGigController> {
 
   // ===================== Preview =====================
   Widget _buildPackagePreview() {
+    // Force reactive rebuild when text controllers change in core extras.
+    controller.previewRefreshTick.value;
     final currency = controller.selectedCurrency.value;
     final prices = controller.packages.map((p) => p.value.price).toList();
     final delivery = controller.packages[0].value.deliveryTime;
@@ -1223,32 +1005,20 @@ class PricingStep extends GetView<CreateGigController> {
         'feature_commercial_included'.tr,
       if (!controller.coreCommercialIncluded.value &&
           (controller.coreCommercialPriceController.text.trim().isNotEmpty))
-        'feature_commercial_extra'.trParams({
-          'currency': currency,
-          'price': controller.coreCommercialExtraPrice.toStringAsFixed(0),
-        }),
+        '${'extra_commercial'.tr} - +${_formatPreviewMoney(controller.coreCommercialExtraPrice, currency)}',
       if (controller.coreRawIncluded.value) 'feature_raw_included'.tr,
       if (!controller.coreRawIncluded.value &&
           (controller.coreRawPriceController.text.trim().isNotEmpty))
-        'feature_raw_extra'.trParams({
-          'currency': currency,
-          'price': controller.coreRawExtraPrice.toStringAsFixed(0),
-        }),
+        '${'extra_raw'.tr} - +${_formatPreviewMoney(controller.coreRawExtraPrice, currency)}',
       if (controller.coreSubtitlesIncluded.value)
         'feature_subtitles_included'.tr,
       if (!controller.coreSubtitlesIncluded.value &&
           (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
-        'feature_subtitles_extra'.trParams({
-          'currency': currency,
-          'price': controller.coreSubtitlesExtraPrice.toStringAsFixed(0),
-        }),
+        '${'extra_subtitles'.tr} - +${_formatPreviewMoney(controller.coreSubtitlesExtraPrice, currency)}',
       if (controller.coreScriptIncluded.value) 'feature_script_included'.tr,
       if (!controller.coreScriptIncluded.value &&
           (controller.coreScriptPriceController.text.trim().isNotEmpty))
-        'feature_script_extra'.trParams({
-          'currency': currency,
-          'price': controller.coreScriptExtraPrice.toStringAsFixed(0),
-        }),
+        '${'extra_script'.tr} - +${_formatPreviewMoney(controller.coreScriptExtraPrice, currency)}',
     ];
 
     return Column(
@@ -1304,11 +1074,7 @@ class PricingStep extends GetView<CreateGigController> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Text(
-                      'custom_extra_line'.trParams({
-                        'name': e.name,
-                        'currency': currency,
-                        'price': e.price.toStringAsFixed(0),
-                      }),
+                      '- ${e.name} (+${_formatPreviewMoney(e.price, currency)})',
                       style: AppTextStyles.extraSmallText,
                     ),
                   );
@@ -1360,11 +1126,26 @@ class PricingStep extends GetView<CreateGigController> {
         Image.asset(ImageAssets.dollarIcon, height: 12),
         const SizedBox(width: 8),
         Text(
-          '$label: ${price > 0 ? '$currency ${price.toStringAsFixed(0)}' : '-'}',
+          '$label: ${price > 0 ? _formatPreviewMoney(price, currency) : '-'}',
           style: AppTextStyles.normalTextMedium,
         ),
       ],
     );
   }
-}
 
+  String _formatPreviewMoney(double amount, String currency) {
+    final noDecimals = amount.toStringAsFixed(
+      amount == amount.truncateToDouble() ? 0 : 2,
+    );
+    switch (currency.toUpperCase()) {
+      case 'EUR':
+        return '$noDecimals€';
+      case 'USD':
+        return '\$$noDecimals';
+      case 'GBP':
+        return '£$noDecimals';
+      default:
+        return '$noDecimals $currency';
+    }
+  }
+}

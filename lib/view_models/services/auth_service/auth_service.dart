@@ -1,8 +1,8 @@
-﻿import 'dart:developer';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:collaby_app/repository/auth_repository/sign_in_repository/sign_in_repository.dart';
 import 'package:collaby_app/repository/auth_repository/verify_token_repository/verify_token_repository.dart';
 import 'package:collaby_app/repository/auth_repository/otp_verification_repository/otp_verification_repository.dart';
-import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/user_preference/user_preference_view_model.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view_models/services/notification_services/notification_service.dart';
@@ -37,24 +37,31 @@ class AuthService {
        _otpRepo = otpVerificationRepository ?? OtpVerificationRepository(),
        _prefs = userPreference ?? UserPreference();
 
+  Future<String?> _resolveFcmTokenForAuth() async {
+    final token = await NotificationServices.getDeviceToken();
+    if (token != null && token.isNotEmpty) {
+      return token;
+    }
+
+    // In web/local debug FCM is frequently unavailable: do not block login.
+    if (kIsWeb) {
+      return null;
+    }
+    return null;
+  }
+
   /// Email/password sign-in -> returns token (string).
   Future<String> signInWithEmail({
     required String email,
     required String password,
   }) async {
-    String? fcmToken = await NotificationServices.getDeviceToken();
-
-    if (fcmToken == null || fcmToken.isEmpty) {
-      Utils.snackBar(
-        'Error',
-        'Failed to retrieve device token. Please try again.',
-      );
-      throw 'Failed to retrieve device token';
-    }
+    final fcmToken = await _resolveFcmTokenForAuth();
 
     log('fcmToken: $fcmToken');
 
-    await _prefs.saveFCMToken(fcmToken);
+    if (fcmToken != null && fcmToken.isNotEmpty) {
+      await _prefs.saveFCMToken(fcmToken);
+    }
     final resp = await _signInRepo.signInApi({
       'email': email,
       'password': password,
@@ -83,19 +90,13 @@ class AuthService {
   }
 
   Future<String> signInWithGoogle({required String idToken}) async {
-    String? fcmToken = await NotificationServices.getDeviceToken();
-
-    if (fcmToken == null || fcmToken.isEmpty) {
-      Utils.snackBar(
-        'Error',
-        'Failed to retrieve device token. Please try again.',
-      );
-      throw 'Failed to retrieve device token';
-    }
+    final fcmToken = await _resolveFcmTokenForAuth();
 
     log('fcmToken: $fcmToken');
 
-    await _prefs.saveFCMToken(fcmToken);
+    if (fcmToken != null && fcmToken.isNotEmpty) {
+      await _prefs.saveFCMToken(fcmToken);
+    }
     // If your server expects "id_token", change the key accordingly.
     final resp = await _signInRepo.signInWithGoogleApi({
       'idToken': idToken,
@@ -124,19 +125,13 @@ class AuthService {
   }
 
   Future<String> signInWithApple({required String idToken}) async {
-    String? fcmToken = await NotificationServices.getDeviceToken();
-
-    if (fcmToken == null || fcmToken.isEmpty) {
-      Utils.snackBar(
-        'Error',
-        'Failed to retrieve device token. Please try again.',
-      );
-      throw 'Failed to retrieve device token';
-    }
+    final fcmToken = await _resolveFcmTokenForAuth();
 
     log('fcmToken: $fcmToken');
 
-    await _prefs.saveFCMToken(fcmToken);
+    if (fcmToken != null && fcmToken.isNotEmpty) {
+      await _prefs.saveFCMToken(fcmToken);
+    }
     // If your server expects "id_token", change the key accordingly.
     final resp = await _signInRepo.signInWithAppleApi({
       'idToken': idToken,
@@ -287,4 +282,5 @@ class AuthService {
 
 
 }
+
 

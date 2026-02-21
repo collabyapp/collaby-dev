@@ -72,6 +72,16 @@ class SettingsView extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 12),
+                  SettingsMenuItem(
+                    icon: ImageAssets.securityIcon,
+                    iconColor: Color(0xFF6366F1),
+                    iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
+                    title: 'creator_level_title'.tr,
+                    onTap: () {
+                      Get.toNamed(RouteName.creatorLevelView);
+                    },
+                  ),
+                  SizedBox(height: 12),
                   Obx(
                     () => SettingsMenuItem(
                       icon: ImageAssets.walletIcon,

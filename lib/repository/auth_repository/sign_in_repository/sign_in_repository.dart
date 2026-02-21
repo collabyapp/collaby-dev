@@ -4,6 +4,24 @@ import 'package:collaby_app/res/app_url/app_url.dart';
 class SignInRepository {
   final NetworkApiServices _apiService = NetworkApiServices();
 
+  Map<String, String> _authHeaders({
+    String? fcmToken,
+    bool includeRole = false,
+    bool json = false,
+  }) {
+    final headers = <String, String>{};
+    if (includeRole) {
+      headers['x-role'] = 'creator';
+    }
+    if (json) {
+      headers['Content-Type'] = 'application/json';
+    }
+    if (fcmToken != null && fcmToken.trim().isNotEmpty) {
+      headers['x-fcm-token'] = fcmToken;
+    }
+    return headers;
+  }
+
   Future<dynamic> signInApi(
     Map<String, dynamic> data, {
     String? fcmToken,
@@ -11,7 +29,7 @@ class SignInRepository {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.login(),
-      headers: {'x-fcm-token': fcmToken.toString(), 'x-role': 'creator'},
+      headers: _authHeaders(fcmToken: fcmToken, includeRole: true),
       sendJson: false,
     );
 
@@ -22,10 +40,7 @@ class SignInRepository {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.loginWithGoogle(),
-      headers: {
-        'x-fcm-token': fcmToken.toString(),
-        'Content-Type': 'application/json',
-      },
+      headers: _authHeaders(fcmToken: fcmToken, json: true),
       sendJson: true,
     );
     return response;
@@ -35,10 +50,7 @@ class SignInRepository {
     dynamic response = await _apiService.postApi(
       data,
       AppUrl.loginWithApple(),
-      headers: {
-        'x-fcm-token': fcmToken.toString(),
-        'Content-Type': 'application/json',
-      },
+      headers: _authHeaders(fcmToken: fcmToken, json: true),
       sendJson: true,
     );
     return response;

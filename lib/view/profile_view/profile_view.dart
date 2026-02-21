@@ -34,86 +34,6 @@ class ProfileView extends StatelessWidget {
     }
   }
 
-  String _nextLevel(String badge) {
-    switch (badge) {
-      case 'level_one':
-        return 'level_two';
-      case 'level_two':
-        return 'pro';
-      default:
-        return 'pro';
-    }
-  }
-
-  Widget _levelPreviewCard(String levelKey, {required bool isCurrent}) {
-    final title = _levelLabel(levelKey);
-    final features = <String>[
-      'level_feature_publish_gigs'.tr,
-      if (levelKey == 'level_one') 'level_feature_standard_withdrawal'.tr,
-      if (levelKey != 'level_one') 'level_feature_priority_discovery'.tr,
-      if (levelKey == 'pro') 'level_feature_instant_withdrawal'.tr,
-    ];
-
-    return Container(
-      width: 260,
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isCurrent ? const Color(0xffEFEAFF) : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: isCurrent ? const Color(0xff816CED) : const Color(0xffE5E7EB),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.smallTextBold.copyWith(
-              color: isCurrent ? const Color(0xff4D2CAD) : const Color(0xff111827),
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...features.map(
-            (f) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text('• $f', style: AppTextStyles.extraSmallText),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _requirementRow({
-    required String label,
-    required num current,
-    required num target,
-    required bool met,
-  }) {
-    final color = met ? const Color(0xff1D9C62) : const Color(0xff7A7A7A);
-    return Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: Row(
-        children: [
-          Icon(
-            met ? Icons.check_circle : Icons.radio_button_unchecked,
-            size: 15,
-            color: color,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              '$label (${current.toString()}/${target.toString()})',
-              style: AppTextStyles.extraSmallText.copyWith(color: color),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -221,11 +141,7 @@ class ProfileView extends StatelessWidget {
                     backgroundColor: Colors.grey[200],
                     backgroundImage: provider,
                     child: provider == null
-                        ? Icon(
-                            Icons.person,
-                            size: 50,
-                            color: Colors.grey[400],
-                          )
+                        ? Icon(Icons.person, size: 50, color: Colors.grey[400])
                         : null,
                   );
                 },
@@ -247,10 +163,7 @@ class ProfileView extends StatelessWidget {
                       color: Colors.white,
                       shape: BoxShape.circle,
                       boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
-                        ),
+                        BoxShadow(color: Colors.black12, blurRadius: 4),
                       ],
                     ),
                     child: Image.asset(ImageAssets.cameraIcon, width: 16),
@@ -272,7 +185,7 @@ class ProfileView extends StatelessWidget {
                         Text(profile.displayName, style: AppTextStyles.h6Bold),
                         SizedBox(width: 8),
                         GestureDetector(
-                          onTap: () => _showLevelInfoSheet(normalizedBadge),
+                          onTap: () => Get.toNamed(RouteName.creatorLevelView),
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -281,7 +194,9 @@ class ProfileView extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: const Color(0xffEFEAFF),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xffD5C9FF)),
+                              border: Border.all(
+                                color: const Color(0xffD5C9FF),
+                              ),
                             ),
                             child: Text(
                               _levelLabel(normalizedBadge),
@@ -340,172 +255,24 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  void _showLevelInfoSheet(String normalizedBadge) {
-    Get.bottomSheet(
-      Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
-              const SizedBox(height: 4),
-              Text(
-                'creator_level_current'.trParams({
-                  'level': _levelLabel(normalizedBadge),
-                }),
-                style: AppTextStyles.extraSmallText,
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 122,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _levelPreviewCard(
-                      'level_one',
-                      isCurrent: normalizedBadge == 'level_one',
-                    ),
-                    _levelPreviewCard(
-                      'level_two',
-                      isCurrent: normalizedBadge == 'level_two',
-                    ),
-                    _levelPreviewCard('pro', isCurrent: normalizedBadge == 'pro'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      isScrollControlled: true,
-    );
-  }
-
   Widget _buildBoostOrAnalyticsCard() {
     final profile = controller.profileData.value;
-    final normalizedBadge = _normalizeBadge(profile?.badge ?? 'none');
-    final progress = profile?.creatorLevelProgress;
-    final progressPct = (progress?.levelTwoProgressPercent ?? 0).clamp(0, 100);
-    final nextLevel = _nextLevel(normalizedBadge);
-
+    final normalizedBadge = _normalizeBadge(profile?.badge ?? 'level_one');
     return Column(
       children: [
         _buildProfileInfo(),
-        Container(
-          margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xffF7F5FF),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xffE2DBFF)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('creator_level_title'.tr, style: AppTextStyles.smallTextBold),
-              const SizedBox(height: 4),
-              Text(
-                'creator_level_current'.trParams({'level': _levelLabel(normalizedBadge)}),
-                style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'creator_level_next'.trParams({'level': _levelLabel(nextLevel)}),
-                style: AppTextStyles.extraSmallText,
-              ),
-              const SizedBox(height: 8),
-              if (progress != null) ...[
-                Text(
-                  'creator_level_progress'.trParams({'percent': '$progressPct'}),
-                  style: AppTextStyles.extraSmallText.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    minHeight: 8,
-                    value: progressPct / 100,
-                    backgroundColor: const Color(0xffE9E3FF),
-                    valueColor: const AlwaysStoppedAnimation(Color(0xff816CED)),
-                  ),
-                ),
-                _requirementRow(
-                  label: 'level_up_requirement_first_gig'.tr,
-                  current: progress.requirements.gigs.current,
-                  target: progress.requirements.gigs.target,
-                  met: progress.requirements.gigs.met,
-                ),
-                _requirementRow(
-                  label: 'level_up_requirement_reviews'.tr,
-                  current: progress.requirements.reviews.current,
-                  target: progress.requirements.reviews.target,
-                  met: progress.requirements.reviews.met,
-                ),
-                _requirementRow(
-                  label: 'level_up_requirement_completed_orders'.tr,
-                  current: progress.requirements.completedOrders.current,
-                  target: progress.requirements.completedOrders.target,
-                  met: progress.requirements.completedOrders.met,
-                ),
-                _requirementRow(
-                  label: 'level_up_requirement_rating'.tr,
-                  current: progress.requirements.averageRating.current,
-                  target: progress.requirements.averageRating.target,
-                  met: progress.requirements.averageRating.met,
-                ),
-                _requirementRow(
-                  label: 'level_up_requirement_days_active'.tr,
-                  current: progress.requirements.daysSinceRegistration.current,
-                  target: progress.requirements.daysSinceRegistration.target,
-                  met: progress.requirements.daysSinceRegistration.met,
-                ),
-              ] else ...[
-                Text(
-                  'creator_level_progress_unavailable'.tr,
-                  style: AppTextStyles.extraSmallText,
-                ),
-              ],
-              const SizedBox(height: 10),
-              Text('creator_level_swipe_hint'.tr, style: AppTextStyles.extraSmallText),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 122,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _levelPreviewCard(
-                      'level_one',
-                      isCurrent: normalizedBadge == 'level_one',
-                    ),
-                    _levelPreviewCard(
-                      'level_two',
-                      isCurrent: normalizedBadge == 'level_two',
-                    ),
-                    _levelPreviewCard('pro', isCurrent: normalizedBadge == 'pro'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Container(
           child: controller.hasActiveSubscription
               ? _buildAnalyticsCard()
-              : _buildBoostCard(),
+              : _buildBoostCard(normalizedBadge),
         ),
       ],
     );
   }
 
-  Widget _buildBoostCard() {
+  Widget _buildBoostCard(String normalizedBadge) {
+    final canBoost = normalizedBadge == 'level_two' || normalizedBadge == 'pro';
     return Container(
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.all(20),
@@ -527,15 +294,19 @@ class ProfileView extends StatelessWidget {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              // Navigate to boost screen
-              Get.to(() => BoostProfileScreen());
-            },
+            onPressed: canBoost
+                ? () {
+                    Get.to(() => BoostProfileScreen());
+                  }
+                : null,
             icon: Image.asset(ImageAssets.boostIcon, width: 20, height: 20),
-            label: Text('boost_now'.tr, style: AppTextStyles.extraSmallMediumText),
+            label: Text(
+              canBoost ? 'boost_now'.tr : 'boost_from_level_two'.tr,
+              style: AppTextStyles.extraSmallMediumText,
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              backgroundColor: canBoost ? Colors.white : Colors.white70,
+              foregroundColor: canBoost ? Colors.black : Colors.black54,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),

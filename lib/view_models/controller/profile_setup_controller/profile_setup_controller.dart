@@ -687,10 +687,7 @@ class ProfileSetUpController extends GetxController {
         };
 
         hasChanges.value = false;
-        Utils.snackBar(
-          'success'.tr,
-          message ?? 'profile_updated_success'.tr,
-        );
+        Utils.snackBar('success'.tr, 'profile_updated_success'.tr);
 
         Get.offAllNamed(RouteName.bottomNavigationView, arguments: {'index': 3});
       } else {
@@ -734,10 +731,7 @@ class ProfileSetUpController extends GetxController {
       final data = res['data'] as Map<String, dynamic>?;
 
       if (statusCode == 201) {
-        Utils.snackBar(
-          'success'.tr,
-          message ?? 'profile_setup_completed'.tr,
-        );
+        Utils.snackBar('success'.tr, 'profile_setup_completed'.tr);
 
         // âœ… aquÃ­ es donde tÃº enlazas â€œseguiditoâ€ al Servicio:
         // Cambia esta ruta a la que uses para CreateGigView renombrada como Servicio.

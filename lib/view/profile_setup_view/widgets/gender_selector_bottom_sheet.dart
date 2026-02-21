@@ -85,8 +85,8 @@ class GenderSelectorBottomSheet extends StatelessWidget {
 
 String _genderLabel(String value) {
   final v = value.toLowerCase();
-  if (v.contains('male')) return 'gender_male'.tr;
   if (v.contains('female')) return 'gender_female'.tr;
+  if (v.contains('male')) return 'gender_male'.tr;
   if (v.contains('non')) return 'gender_non_binary'.tr;
   return value;
 }

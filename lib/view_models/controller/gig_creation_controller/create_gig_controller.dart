@@ -12,6 +12,7 @@ import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/gig_details_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_quill/flutter_quill.dart';
@@ -163,6 +164,7 @@ class CreateGigController extends GetxController
   final RxString creatorBadge = 'none'.obs;
   final RxInt levelProgressPercent = 0.obs;
   final RxMap<String, dynamic> levelRequirements = <String, dynamic>{}.obs;
+  final RxInt previewRefreshTick = 0.obs;
 
   /// Core minimal shared:
   /// Included toggle + price if not included
@@ -198,24 +200,32 @@ class CreateGigController extends GetxController
       ) ??
       0;
 
+  void markPreviewDirty() {
+    previewRefreshTick.value++;
+  }
+
   void setCoreScriptIncluded(bool v) {
     coreScriptIncluded.value = v;
     if (v) coreScriptPriceController.text = '';
+    markPreviewDirty();
   }
 
   void setCoreRawIncluded(bool v) {
     coreRawIncluded.value = v;
     if (v) coreRawPriceController.text = '';
+    markPreviewDirty();
   }
 
   void setCoreSubtitlesIncluded(bool v) {
     coreSubtitlesIncluded.value = v;
     if (v) coreSubtitlesPriceController.text = '';
+    markPreviewDirty();
   }
 
   void setCoreCommercialIncluded(bool v) {
     coreCommercialIncluded.value = v;
     if (v) coreCommercialPriceController.text = '';
+    markPreviewDirty();
   }
 
   /// Pricing Ready:
@@ -296,6 +306,12 @@ class CreateGigController extends GetxController
     coreSubtitlesPriceController = TextEditingController();
     coreCommercialPriceController = TextEditingController();
     revisionsController = TextEditingController();
+
+    coreScriptPriceController.addListener(markPreviewDirty);
+    coreRawPriceController.addListener(markPreviewDirty);
+    coreSubtitlesPriceController.addListener(markPreviewDirty);
+    coreCommercialPriceController.addListener(markPreviewDirty);
+    revisionsController.addListener(markPreviewDirty);
 
     tabController = TabController(length: tabs.length, vsync: this);
     tabController.addListener(() {
@@ -743,6 +759,7 @@ class CreateGigController extends GetxController
       if (p == null) return;
       p.price = price;
     });
+    markPreviewDirty();
   }
 
   void addOrUpdateGlobalExtra({
@@ -794,7 +811,11 @@ class CreateGigController extends GetxController
         maxDuration: const Duration(minutes: 5),
       );
       if (x == null) return;
-      await _ingestPickedVideo(File(x.path));
+      if (kIsWeb) {
+        await _ingestPickedVideoWeb(x);
+      } else {
+        await _ingestPickedVideo(File(x.path));
+      }
     } catch (e) {
       debugPrint('Error picking video: $e');
       Utils.snackBar('error'.tr, 'pick_video_failed'.tr);
@@ -849,6 +870,57 @@ class CreateGigController extends GetxController
             : 'upload_video_failed'.tr,
       );
     }
+  }
+
+  Future<void> _ingestPickedVideoWeb(XFile file) async {
+    final id = DateTime.now().microsecondsSinceEpoch.toString();
+    final item = VideoItem(id: id, path: file.path);
+    galleryVideos.add(item);
+
+    try {
+      item.isUploading.value = true;
+      item.uploadProgress.value = 0.0;
+      item.uploadStatus.value = 'upload_preparing_video'.tr;
+
+      final videoBytes = await file.readAsBytes();
+      if (videoBytes.isEmpty) {
+        throw Exception('Selected video is empty');
+      }
+
+      item.uploadStatus.value = 'upload_generating_thumbnail'.tr;
+      final thumbBytes = await _buildWebFallbackThumbnailBytes();
+      item.uploadProgress.value = 0.4;
+
+      item.uploadStatus.value = 'upload_uploading_video'.tr;
+      final result = await _networkService.uploadVideoWithThumbnail(
+        videoBytes: videoBytes,
+        thumbnailBytes: thumbBytes,
+        videoFileName: file.name.isEmpty ? 'video.mp4' : file.name,
+        thumbnailFileName: 'thumbnail.png',
+        useCase: 'gigs-attachments',
+        headers: const {},
+      );
+
+      item.videoUrl.value = result.url;
+      if ((result.thumbnailUrl ?? '').isNotEmpty) {
+        item.thumbnailUrl.value = result.thumbnailUrl!;
+      }
+
+      item.path = result.url;
+      item.uploadProgress.value = 1.0;
+      item.isUploading.value = false;
+      item.uploadStatus.value = 'upload_complete'.tr;
+    } catch (e) {
+      debugPrint('Error processing web video: $e');
+      galleryVideos.removeWhere((v) => v.id == id);
+
+      Utils.snackBar('error'.tr, 'upload_video_failed'.tr);
+    }
+  }
+
+  Future<Uint8List> _buildWebFallbackThumbnailBytes() async {
+    final data = await rootBundle.load('assets/images/logo.png');
+    return data.buffer.asUint8List();
   }
 
   Future<String?> _generateThumbnail(String videoPath) async {
@@ -1034,9 +1106,7 @@ class CreateGigController extends GetxController
   String _inferFeatureTypeFromName(String name) {
     final n = name.toLowerCase();
     if (n.contains('revision')) return 'additionalRevision';
-    if (n.contains('rush')) return 'rushDelivery';
-    if (n.contains('logo')) return 'addLogo';
-    if (n.contains('4k')) return 'export4k';
+    if (n.contains('script')) return 'script';
     return 'custom';
   }
 
@@ -1061,19 +1131,19 @@ class CreateGigController extends GetxController
     // shared extras (paid)
     final sharedExtras = <Map<String, dynamic>>[];
 
-    const allowedFeatureTypes = <String>{
-      'script',
-      'additionalRevision',
-      'custom',
-    };
-
     String _safeFeatureType(String value) {
       final normalized = value.trim().toLowerCase();
-      if (normalized == 'scriptwriting' || normalized == 'script')
-        return 'script';
-      if (normalized == 'additionalrevision') return 'additionalRevision';
-      if (allowedFeatureTypes.contains(value)) return value;
-      return 'custom';
+      switch (normalized) {
+        case 'script':
+        case 'scriptwriting':
+          return 'script';
+        case 'additionalrevision':
+          return 'additionalRevision';
+        case 'custom':
+        default:
+          // Legacy backend compatibility: keep unknown extras as custom.
+          return 'custom';
+      }
     }
 
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
@@ -1086,7 +1156,7 @@ class CreateGigController extends GetxController
 
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': _safeFeatureType('rawFiles'),
+        'featureType': _safeFeatureType('custom'),
         'price': coreRawExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -1094,7 +1164,7 @@ class CreateGigController extends GetxController
 
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': _safeFeatureType('subtitles'),
+        'featureType': _safeFeatureType('custom'),
         'price': coreSubtitlesExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -1237,9 +1307,61 @@ class CreateGigController extends GetxController
               ..addAll({'pricings': payload['pricing']}))
           : payload;
 
-      final response = isEditMode.value
-          ? await gigCreationRepo.updateGigApi(editingGigId!, updatePayload)
-          : await gigCreationRepo.createGigApi(payload);
+      bool _isAdditionalFeatureValidationError(String msg) {
+        final m = msg.toLowerCase();
+        return m.contains('additionalfeatures') &&
+            (m.contains('featuretype') || m.contains('must be one of'));
+      }
+
+      Map<String, dynamic> _stripAdditionalFeatures(
+        Map<String, dynamic> body,
+      ) {
+        final cloned = Map<String, dynamic>.from(body);
+        if (cloned['pricing'] is List) {
+          cloned['pricing'] = (cloned['pricing'] as List)
+              .map((p) {
+                if (p is Map<String, dynamic>) {
+                  return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+                }
+                return p;
+              })
+              .toList();
+        }
+        if (cloned['pricings'] is List) {
+          cloned['pricings'] = (cloned['pricings'] as List)
+              .map((p) {
+                if (p is Map<String, dynamic>) {
+                  return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+                }
+                return p;
+              })
+              .toList();
+        }
+        return cloned;
+      }
+
+      dynamic response;
+      try {
+        response = isEditMode.value
+            ? await gigCreationRepo.updateGigApi(editingGigId!, updatePayload)
+            : await gigCreationRepo.createGigApi(payload);
+      } catch (firstError) {
+        final firstMessage = firstError.toString();
+        if (_isAdditionalFeatureValidationError(firstMessage)) {
+          final fallbackPayload = isEditMode.value
+              ? _stripAdditionalFeatures(updatePayload)
+              : _stripAdditionalFeatures(payload);
+
+          response = isEditMode.value
+              ? await gigCreationRepo.updateGigApi(
+                  editingGigId!,
+                  fallbackPayload,
+                )
+              : await gigCreationRepo.createGigApi(fallbackPayload);
+        } else {
+          rethrow;
+        }
+      }
 
       uploadProgress.value = 1.0;
 
@@ -1257,13 +1379,40 @@ class CreateGigController extends GetxController
             Get.find<GigDetailController>().fetchGigDetail();
           } catch (_) {}
         } else {
-          Utils.snackBar('success'.tr, message ?? 'publish_success'.tr);
+          Utils.snackBar('success'.tr, 'publish_success'.tr);
           _navigateToSuccessScreen();
         }
       } else {
-        throw Exception(
-          message ?? 'error_failed_status'.trParams({'code': '$statusCode'}),
-        );
+        final msg =
+            message ?? 'error_failed_status'.trParams({'code': '$statusCode'});
+        if (_isAdditionalFeatureValidationError(msg)) {
+          final fallbackPayload = isEditMode.value
+              ? _stripAdditionalFeatures(updatePayload)
+              : _stripAdditionalFeatures(payload);
+          final retryResponse = isEditMode.value
+              ? await gigCreationRepo.updateGigApi(editingGigId!, fallbackPayload)
+              : await gigCreationRepo.createGigApi(fallbackPayload);
+          final retryStatus = retryResponse?['statusCode'] as int?;
+          final retryMessage = retryResponse?['message'] as String?;
+          if (retryStatus == 200 || retryStatus == 201) {
+            if (isEditMode.value) {
+              Get.back();
+              try {
+                Get.find<GigDetailController>().fetchGigDetail();
+              } catch (_) {}
+            } else {
+              Utils.snackBar('success'.tr, 'publish_success'.tr);
+              _navigateToSuccessScreen();
+            }
+          } else {
+            throw Exception(
+              retryMessage ??
+                  'error_failed_status'.trParams({'code': '$retryStatus'}),
+            );
+          }
+        } else {
+          throw Exception(msg);
+        }
       }
     } catch (e, stackTrace) {
       debugPrint('Submission error: $e');
@@ -1442,6 +1591,7 @@ class CreateGigController extends GetxController
     if (revisionsController.text != nextText) {
       revisionsController.text = nextText;
     }
+    markPreviewDirty();
   }
 
   void updatePackageDeliveryTime(String deliveryTime) {

@@ -22,6 +22,7 @@ import 'package:collaby_app/view/gig_creation_views/gig_created_view/gig_created
 import 'package:collaby_app/view/bottom_navigation/bottom_navigation_view.dart';
 import 'package:collaby_app/view/jobs_view/job_details_view.dart';
 import 'package:collaby_app/view/settings_view/setting_view.dart';
+import 'package:collaby_app/view/settings_view/creator_level_view.dart';
 import 'package:collaby_app/view/settings_view/withdrawal_view/withdrawal_view.dart';
 import 'package:collaby_app/view/profile_view/gig_details_view.dart';
 
@@ -109,6 +110,10 @@ class AppRoutes {
         GetPage(
           name: RouteName.settingsView,
           page: () => SettingsView(),
+        ),
+        GetPage(
+          name: RouteName.creatorLevelView,
+          page: () => CreatorLevelView(),
         ),
         GetPage(
           name: RouteName.withdrawalView,
