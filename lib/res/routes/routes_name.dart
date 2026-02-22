@@ -20,7 +20,7 @@ class RouteName {
   static const String jobDetailsView = '/job_details_view';
   static const String settingsView = '/settings_view';
   static const String creatorLevelView = '/creator_level_view';
+  static const String helpSupportView = '/help_support_view';
   static const String withdrawalView = '/withdrawal_view';
   static const String gigDetailView = '/gig_detail_view';
-
 }

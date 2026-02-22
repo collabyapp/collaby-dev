@@ -307,10 +307,34 @@ class CreateGigController extends GetxController
     coreCommercialPriceController = TextEditingController();
     revisionsController = TextEditingController();
 
-    coreScriptPriceController.addListener(markPreviewDirty);
-    coreRawPriceController.addListener(markPreviewDirty);
-    coreSubtitlesPriceController.addListener(markPreviewDirty);
-    coreCommercialPriceController.addListener(markPreviewDirty);
+    coreScriptPriceController.addListener(() {
+      final hasValue = coreScriptPriceController.text.trim().isNotEmpty;
+      if (hasValue && coreScriptIncluded.value) {
+        coreScriptIncluded.value = false;
+      }
+      markPreviewDirty();
+    });
+    coreRawPriceController.addListener(() {
+      final hasValue = coreRawPriceController.text.trim().isNotEmpty;
+      if (hasValue && coreRawIncluded.value) {
+        coreRawIncluded.value = false;
+      }
+      markPreviewDirty();
+    });
+    coreSubtitlesPriceController.addListener(() {
+      final hasValue = coreSubtitlesPriceController.text.trim().isNotEmpty;
+      if (hasValue && coreSubtitlesIncluded.value) {
+        coreSubtitlesIncluded.value = false;
+      }
+      markPreviewDirty();
+    });
+    coreCommercialPriceController.addListener(() {
+      final hasValue = coreCommercialPriceController.text.trim().isNotEmpty;
+      if (hasValue && coreCommercialIncluded.value) {
+        coreCommercialIncluded.value = false;
+      }
+      markPreviewDirty();
+    });
     revisionsController.addListener(markPreviewDirty);
 
     tabController = TabController(length: tabs.length, vsync: this);
@@ -484,224 +508,51 @@ class CreateGigController extends GetxController
                     .toString()
                     .toLowerCase()
                     .trim();
-                final priceStr = (x['price'] ?? 0).toString();
-                final daysStr = (x['deliveryTimesIndays'] ?? 0).toString();
+                final pr =
+                    ((x['price'] ?? 0) as num?)?.toDouble() ??
+                    (double.tryParse((x['price'] ?? 0).toString()) ?? 0.0);
+                final days =
+                    ((x['deliveryTimesIndays'] ?? 0) as num?)?.toInt() ??
+                    (int.tryParse((x['deliveryTimesIndays'] ?? 0).toString()) ??
+                        0);
 
-                final pr = double.tryParse(priceStr) ?? 0.0;
-                final days = int.tryParse(daysStr) ?? 0;
-
-                // core paid
-                if (t == 'scriptwriting' || t == 'script') {
-                  if (!coreScriptIncluded.value)
+                if (t == 'script' || t == 'scriptwriting') {
+                  if (!coreScriptIncluded.value) {
                     coreScriptPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawfiles' ||
-                    t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'subtitles') {
-                  if (!coreSubtitlesIncluded.value)
-                    coreSubtitlesPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'rawFiles' ||
-                    t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' ||
-                    t == 'raw_files' ||
-                    t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'raw_files') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else if (t == 'rawfiles' || t == 'rawFiles') {
-                  if (!coreRawIncluded.value)
-                    coreRawPriceController.text = pr.toString();
-                } else {
-                  // custom global extra
-                  globalExtras.add(
-                    AdditionalFeature(
-                      id: DateTime.now().microsecondsSinceEpoch.toString(),
-                      name: (x['featureType'] ?? 'custom').toString(),
-                      price: pr,
-                      extraDays: days,
-                    ),
-                  );
+                  }
+                  continue;
                 }
+
+                if (t == 'rawfiles' || t == 'raw_files') {
+                  if (!coreRawIncluded.value) {
+                    coreRawPriceController.text = pr.toString();
+                  }
+                  continue;
+                }
+
+                if (t == 'subtitles') {
+                  if (!coreSubtitlesIncluded.value) {
+                    coreSubtitlesPriceController.text = pr.toString();
+                  }
+                  continue;
+                }
+
+                final readableName = switch (t) {
+                  'additionalrevision' => 'Additional revision',
+                  'rushdelivery' => 'Rush delivery',
+                  'addlogo' => 'Add logo',
+                  'export4k' => '4K export',
+                  _ => (x['featureType'] ?? 'custom').toString(),
+                };
+
+                globalExtras.add(
+                  AdditionalFeature(
+                    id: DateTime.now().microsecondsSinceEpoch.toString(),
+                    name: readableName,
+                    price: pr,
+                    extraDays: days,
+                  ),
+                );
               }
             }
           }
@@ -1106,7 +957,10 @@ class CreateGigController extends GetxController
   String _inferFeatureTypeFromName(String name) {
     final n = name.toLowerCase();
     if (n.contains('revision')) return 'additionalRevision';
-    if (n.contains('script')) return 'script';
+    if (n.contains('script')) return 'scriptwriting';
+    if (n.contains('rush')) return 'rushDelivery';
+    if (n.contains('logo')) return 'addLogo';
+    if (n.contains('4k')) return 'export4k';
     return 'custom';
   }
 
@@ -1136,9 +990,15 @@ class CreateGigController extends GetxController
       switch (normalized) {
         case 'script':
         case 'scriptwriting':
-          return 'script';
+          return 'scriptwriting';
         case 'additionalrevision':
           return 'additionalRevision';
+        case 'rushdelivery':
+          return 'rushDelivery';
+        case 'addlogo':
+          return 'addLogo';
+        case 'export4k':
+          return 'export4k';
         case 'custom':
         default:
           // Legacy backend compatibility: keep unknown extras as custom.
@@ -1148,7 +1008,7 @@ class CreateGigController extends GetxController
 
     if (!coreScriptIncluded.value && coreScriptExtraPrice > 0) {
       sharedExtras.add({
-        'featureType': _safeFeatureType('script'),
+        'featureType': _safeFeatureType('scriptwriting'),
         'price': coreScriptExtraPrice,
         'deliveryTimesIndays': 0,
       });
@@ -1182,17 +1042,11 @@ class CreateGigController extends GetxController
       final type = _safeFeatureType(_inferFeatureTypeFromName(e.name));
 
       // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
-      if (type == 'additionalRevision' ||
-          type == 'rushDelivery' ||
-          type == 'addLogo' ||
-          type == 'export4k' ||
-          type == 'custom') {
-        sharedExtras.add({
-          'featureType': type,
-          'price': e.price,
-          'deliveryTimesIndays': e.extraDays,
-        });
-      }
+      sharedExtras.add({
+        'featureType': type,
+        'price': e.price,
+        'deliveryTimesIndays': e.extraDays,
+      });
     }
 
     final pricingList = <Map<String, dynamic>>[];
@@ -1310,32 +1164,28 @@ class CreateGigController extends GetxController
       bool _isAdditionalFeatureValidationError(String msg) {
         final m = msg.toLowerCase();
         return m.contains('additionalfeatures') &&
-            (m.contains('featuretype') || m.contains('must be one of'));
+            (m.contains('featuretype') ||
+                m.contains('must be one of') ||
+                m.contains('property name should not exist'));
       }
 
-      Map<String, dynamic> _stripAdditionalFeatures(
-        Map<String, dynamic> body,
-      ) {
+      Map<String, dynamic> _stripAdditionalFeatures(Map<String, dynamic> body) {
         final cloned = Map<String, dynamic>.from(body);
         if (cloned['pricing'] is List) {
-          cloned['pricing'] = (cloned['pricing'] as List)
-              .map((p) {
-                if (p is Map<String, dynamic>) {
-                  return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
-                }
-                return p;
-              })
-              .toList();
+          cloned['pricing'] = (cloned['pricing'] as List).map((p) {
+            if (p is Map<String, dynamic>) {
+              return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+            }
+            return p;
+          }).toList();
         }
         if (cloned['pricings'] is List) {
-          cloned['pricings'] = (cloned['pricings'] as List)
-              .map((p) {
-                if (p is Map<String, dynamic>) {
-                  return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
-                }
-                return p;
-              })
-              .toList();
+          cloned['pricings'] = (cloned['pricings'] as List).map((p) {
+            if (p is Map<String, dynamic>) {
+              return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+            }
+            return p;
+          }).toList();
         }
         return cloned;
       }
@@ -1390,7 +1240,10 @@ class CreateGigController extends GetxController
               ? _stripAdditionalFeatures(updatePayload)
               : _stripAdditionalFeatures(payload);
           final retryResponse = isEditMode.value
-              ? await gigCreationRepo.updateGigApi(editingGigId!, fallbackPayload)
+              ? await gigCreationRepo.updateGigApi(
+                  editingGigId!,
+                  fallbackPayload,
+                )
               : await gigCreationRepo.createGigApi(fallbackPayload);
           final retryStatus = retryResponse?['statusCode'] as int?;
           final retryMessage = retryResponse?['message'] as String?;

@@ -34,17 +34,25 @@ class CreatorLevelView extends StatelessWidget {
           'level_feature_max_visibility',
           'level_feature_promote_priority',
           'level_feature_support_priority_high',
+          'level_feature_withdraw_fast_3',
+          'level_feature_instant_available',
+          'level_feature_instant_manual_only',
         ];
       case 'level_two':
         return const [
           'level_feature_promote_enabled',
           'level_feature_priority_discovery',
           'level_feature_support_priority_medium',
+          'level_feature_withdraw_fast_7',
+          'level_feature_instant_available',
+          'level_feature_instant_manual_only',
         ];
       default:
         return const [
           'level_feature_standard_visibility',
           'level_feature_support_standard',
+          'level_feature_withdraw_standard_14',
+          'level_feature_instant_not_available',
         ];
     }
   }

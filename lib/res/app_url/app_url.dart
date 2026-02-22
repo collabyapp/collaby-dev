@@ -167,4 +167,24 @@ class AppUrl {
   static String withdraw() {
     return '$baseUrl/payment/wallet/withdraw';
   }
+
+  // Support tickets
+  static String createSupportTicket() => '$baseUrl/support-tickets';
+
+  static String getMySupportTickets(Map<String, dynamic>? queryParams) {
+    String url = '$baseUrl/support-tickets/me';
+    if (queryParams != null && queryParams.isNotEmpty) {
+      final queryString = queryParams.entries
+          .map((e) => '${e.key}=${e.value}')
+          .join('&');
+      url += '?$queryString';
+    }
+    return url;
+  }
+
+  static String getMySupportTicket(String ticketId) =>
+      '$baseUrl/support-tickets/me/$ticketId';
+
+  static String replyMySupportTicket(String ticketId) =>
+      '$baseUrl/support-tickets/me/$ticketId/replies';
 }

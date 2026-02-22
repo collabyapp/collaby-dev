@@ -82,6 +82,16 @@ class SettingsView extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 12),
+                  SettingsMenuItem(
+                    icon: ImageAssets.walletIcon,
+                    iconColor: Color(0xFF6366F1),
+                    iconBgColor: Color(0xFF6366F1).withOpacity(0.1),
+                    title: 'settings_support_tickets'.tr,
+                    onTap: () {
+                      Get.toNamed(RouteName.helpSupportView);
+                    },
+                  ),
+                  SizedBox(height: 12),
                   Obx(
                     () => SettingsMenuItem(
                       icon: ImageAssets.walletIcon,

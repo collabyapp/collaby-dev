@@ -1139,11 +1139,11 @@ class PricingStep extends GetView<CreateGigController> {
     );
     switch (currency.toUpperCase()) {
       case 'EUR':
-        return '$noDecimals€';
+        return '$noDecimals\u20AC';
       case 'USD':
         return '\$$noDecimals';
       case 'GBP':
-        return '£$noDecimals';
+        return '\u00A3$noDecimals';
       default:
         return '$noDecimals $currency';
     }
