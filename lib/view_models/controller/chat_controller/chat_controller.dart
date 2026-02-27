@@ -51,6 +51,28 @@ class ChatController extends GetxController {
   // NEW: Track optimistic message IDs
   final Set<String> _optimisticMessageIds = <String>{};
 
+  List<ChatUser> _parseChatsSafely(List<dynamic> chatsData) {
+    return chatsData
+        .map((chat) {
+          try {
+            if (chat is Map<String, dynamic>) {
+              return ChatUser.fromJson(chat);
+            }
+            if (chat is Map) {
+              return ChatUser.fromJson(Map<String, dynamic>.from(chat));
+            }
+            return null;
+          } catch (e) {
+            if (kDebugMode) {
+              log('Skipping malformed chat item: $e');
+            }
+            return null;
+          }
+        })
+        .whereType<ChatUser>()
+        .toList();
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -249,8 +271,7 @@ class ChatController extends GetxController {
   Future<void> loadChats() async {
     try {
       final chatsData = await apiService.getUserChats(currentUserId.value);
-
-      users.value = chatsData.map((chat) => ChatUser.fromJson(chat)).toList();
+      users.value = _parseChatsSafely(chatsData);
 
       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 
@@ -705,7 +726,7 @@ class ChatController extends GetxController {
       }
 
       final chatsData = await apiService.getUserChats(currentUserId.value);
-      users.value = chatsData.map((chat) => ChatUser.fromJson(chat)).toList();
+      users.value = _parseChatsSafely(chatsData);
 
       users.sort((a, b) => b.lastSeen.compareTo(a.lastSeen));
 

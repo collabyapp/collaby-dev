@@ -147,23 +147,30 @@ class _OrdersViewState extends State<OrdersView> {
               // Content (swipe enabled)
               Expanded(
                 child: Obx(() {
-                  if (controller.isLoading.value && controller.orders.isEmpty) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  return PageView(
-                    controller: _pageController,
-                    physics: const PageScrollPhysics(),
-                    onPageChanged: (index) {
-                      if (controller.selectedTab.value != index) {
-                        controller.changeTab(index);
-                      }
-                    },
+                  final active = controller.activeOrders;
+                  final newer = controller.newOrders;
+                  final completed = controller.completedOrders;
+
+                  return Stack(
                     children: [
-                      _buildOrdersList(controller.activeOrders),
-                      _buildOrdersList(controller.newOrders),
-                      controller.completedOrders.isEmpty
-                          ? _buildEmptyCompletedState()
-                          : _buildOrdersList(controller.completedOrders),
+                      PageView(
+                        controller: _pageController,
+                        physics: const PageScrollPhysics(),
+                        onPageChanged: (index) {
+                          if (controller.selectedTab.value != index) {
+                            controller.changeTab(index);
+                          }
+                        },
+                        children: [
+                          _buildOrdersList(active),
+                          _buildOrdersList(newer),
+                          completed.isEmpty
+                              ? _buildEmptyCompletedState()
+                              : _buildOrdersList(completed),
+                        ],
+                      ),
+                      if (controller.isLoading.value && controller.orders.isEmpty)
+                        const Center(child: CircularProgressIndicator()),
                     ],
                   );
                 }),

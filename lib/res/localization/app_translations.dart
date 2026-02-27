@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AppTranslations extends Translations {
@@ -300,8 +300,11 @@ class AppTranslations extends Translations {
           'Open a ticket and track responses from the support team.',
       'support_ticket_category': 'Category',
       'support_ticket_subject': 'Subject',
+      'support_ticket_order_subject_prefix': 'Order support',
       'support_ticket_subject_hint': 'Write a short subject',
       'support_ticket_description': 'Description',
+      'support_ticket_order_description_prefill':
+          'I need support with this order. Please review the case and advise the next step.',
       'support_ticket_description_hint':
           'Explain your issue with as much detail as possible',
       'support_ticket_create': 'Open ticket',
@@ -316,9 +319,12 @@ class AppTranslations extends Translations {
       'support_ticket_created': 'Ticket created successfully.',
       'support_ticket_reply_sent': 'Reply sent successfully.',
       'support_ticket_load_error': 'Failed to load support tickets.',
+      'support_ticket_unavailable':
+          'Support tickets are not available right now. Please try again later.',
       'support_ticket_create_error':
           'Could not create ticket. Check subject and description.',
       'support_ticket_reply_error': 'Could not send reply.',
+      'support_ticket_linked_order': 'Linked order: @order',
       'support_ticket_status_open': 'Open',
       'support_ticket_status_in_progress': 'In progress',
       'support_ticket_status_resolved': 'Resolved',
@@ -453,6 +459,8 @@ class AppTranslations extends Translations {
           'Interest submitted. Waiting for the client\'s response to decide if they\'d like to hire you.',
       'job_hired': 'Hired',
       'job_withdraw_interest': 'Withdraw Interest',
+      'job_interest_withdrawn_success': 'Interest withdrawn successfully.',
+      'job_interest_withdrawn_failed': 'Failed to withdraw interest.',
       'job_interested': 'I\'m Interested',
       'job_submitted_on': 'Submitted: @date',
       'orders_title': 'Orders',
@@ -474,6 +482,20 @@ class AppTranslations extends Translations {
       'boost_profile_coming_soon': 'Profile boost feature will be implemented',
       'order_detail_title': 'Order Detail',
       'order_delivery_submission': 'Submission',
+      'order_delivery_empty_state': 'No deliveries yet.',
+      'order_delivery_view_detail': 'View details',
+      'order_delivery_revision_requested': 'Revision requested',
+      'order_delivery_revision_request': 'Revision request',
+      'order_delivery_revision_action':
+          'Please submit a revised delivery to continue.',
+      'order_delivery_revision_final_action':
+          'Final revision reached. Please coordinate with support if needed.',
+      'order_delivery_details_title': 'Delivery details',
+      'order_delivery_status': 'Status',
+      'order_delivery_submitted_on': 'Submitted on',
+      'order_delivery_work_description': 'Work description',
+      'order_delivery_files': 'Files',
+      'order_delivery_revision_details': 'Revision details',
       'order_request_title': 'Order Request',
       'order_request_new_badge': 'New',
       'order_request_error_title': 'Error Loading Order',
@@ -749,7 +771,7 @@ class AppTranslations extends Translations {
       'tab_overview': 'Resumen',
       'tab_niches': 'Nichos',
       'tab_pricing': 'Precios',
-      'tab_description': 'Descripción',
+      'tab_description': 'Descripci\u00f3n',
       'tab_gallery': 'Galería',
       'create_service': 'Crear servicio',
       'edit_service': 'Editar servicio',
@@ -769,13 +791,13 @@ class AppTranslations extends Translations {
       'edit_service_cta': 'Editar servicio',
       'no_services_yet': 'Aún no hay servicios',
       'create_first_service': 'Crea tu primer servicio para empezar',
-      'service_description': 'Descripción del servicio',
+      'service_description': 'Descripci\u00f3n del servicio',
       'service_description_hint':
           'Cuenta los servicios que ofreces y presentate brevemente.',
       'description_placeholder':
           'Escribe que ofreces, que recibe el cliente y notas importantes...',
       'char_count': 'Caracteres: @count / @min',
-      'description_too_short': 'Descripción demasiado corta',
+      'description_too_short': 'Descripci\u00f3n demasiado corta',
       'description_min_chars': 'Escribe al menos @min caracteres.',
       'preview': 'Vista previa',
       'preview_hint': 'Vista previa (rellena para ver)',
@@ -783,9 +805,9 @@ class AppTranslations extends Translations {
       'no_services_cta': 'Crea tu primer servicio para empezar.',
       'overview_title': 'Resumen',
       'overview_subtitle':
-          'Que te describe mejor? (opcional)\nSelecciona todo lo que aplique.',
+          '¿Qué te describe mejor? (opcional)\nSelecciona todo lo que aplique.',
       'overview_info':
-          'Si no seleccionas nada, se te listara como creador UGC general por defecto.',
+          'Si no seleccionas nada, se te listará como creador UGC general por defecto.',
       'trait_have_pets': 'Tengo mascotas',
       'trait_couple_creator': 'Soy creador en pareja',
       'trait_mom_creator': 'Soy creadora mama',
@@ -986,8 +1008,9 @@ class AppTranslations extends Translations {
           'Conecta con marcas, haz crecer tu audiencia y convierte tu creatividad en ingresos sin esfuerzo',
       'onboarding_get_started': 'Empezar',
       'onboarding_have_account': '¿Ya tienes una cuenta? ',
-      'onboarding_login': 'Iniciar sesión',
-      'login_subtitle': 'Ingresa tu email y contraseña para iniciar sesión.',
+      'onboarding_login': 'Iniciar sesi\u00f3n',
+      'login_subtitle':
+          'Ingresa tu email y contraseña para iniciar sesi\u00f3n.',
       'login_email_hint': 'Ingresa tu email',
       'login_password_label': 'Contraseña',
       'login_password_hint': 'Ingresa tu contraseña',
@@ -1009,7 +1032,7 @@ class AppTranslations extends Translations {
       'signup_apple': 'Apple',
       'signup_have_account': 'Ya tienes una cuenta?  ',
       'signup_failed': 'Registro fallido',
-      'signup_failed_generic': 'El registro fallo. Intentalo de nuevo.',
+      'signup_failed_generic': 'El registro fallo. Inténtalo de nuevo.',
       'signup_unexpected_response': 'Respuesta inesperada del servidor.',
       'signup_email_required': 'Ingresa tu email',
       'signup_email_invalid': 'Ingresa un email valido.',
@@ -1038,20 +1061,23 @@ class AppTranslations extends Translations {
       'settings_currency': 'Moneda',
       'settings_choose_currency': 'Elegir moneda',
       'settings_delete_account': 'Eliminar cuenta',
-      'settings_logout': 'Cerrar sesión',
+      'settings_logout': 'cerrar sesión',
       'support_ticket_title': 'Soporte y tickets',
       'support_ticket_subtitle':
           'Abre un ticket y sigue las respuestas del equipo de soporte.',
-      'support_ticket_category': 'Categoría',
+      'support_ticket_category': 'Categor\u00eda',
       'support_ticket_subject': 'Asunto',
+      'support_ticket_order_subject_prefix': 'Soporte de pedido',
       'support_ticket_subject_hint': 'Escribe un asunto corto',
-      'support_ticket_description': 'Descripción',
+      'support_ticket_description': 'Descripci\u00f3n',
+      'support_ticket_order_description_prefill':
+          'Necesito soporte con este pedido. Por favor revisen el caso e indiquen el siguiente paso.',
       'support_ticket_description_hint':
           'Explica el problema con el mayor detalle posible',
       'support_ticket_create': 'Abrir ticket',
       'support_ticket_creating': 'Abriendo ticket...',
       'support_ticket_my_tickets': 'Mis tickets',
-      'support_ticket_empty': 'Todavía no tienes tickets de soporte.',
+      'support_ticket_empty': 'Todav\u00eda no tienes tickets de soporte.',
       'support_ticket_reply': 'Respuesta',
       'support_ticket_reply_hint': 'Escribe tu mensaje',
       'support_ticket_send_reply': 'Enviar respuesta',
@@ -1061,23 +1087,26 @@ class AppTranslations extends Translations {
       'support_ticket_created': 'Ticket creado correctamente.',
       'support_ticket_reply_sent': 'Respuesta enviada correctamente.',
       'support_ticket_load_error': 'No se pudieron cargar los tickets.',
+      'support_ticket_unavailable':
+          'Los tickets de soporte no est\u00e1n disponibles ahora mismo. Int\u00e9ntalo m\u00e1s tarde.',
       'support_ticket_create_error':
           'No se pudo crear el ticket. Revisa asunto y descripción.',
       'support_ticket_reply_error': 'No se pudo enviar la respuesta.',
+      'support_ticket_linked_order': 'Pedido vinculado: @order',
       'support_ticket_status_open': 'Abierto',
       'support_ticket_status_in_progress': 'En progreso',
       'support_ticket_status_resolved': 'Resuelto',
       'support_ticket_status_closed': 'Cerrado',
       'support_ticket_cat_general': 'General',
-      'support_ticket_cat_account_billing': 'Cuenta y facturación',
+      'support_ticket_cat_account_billing': 'Cuenta y facturaci\u00f3n',
       'support_ticket_cat_order_issue': 'Problema con pedido',
-      'support_ticket_cat_technical': 'Técnico',
-      'support_ticket_cat_content_policy': 'Políticas de contenido',
-      'settings_logging_out': 'Cerrando sesión...',
+      'support_ticket_cat_technical': 'T\u00e9cnico',
+      'support_ticket_cat_content_policy': 'Pol\u00edticas de contenido',
+      'settings_logging_out': 'Cerrando sesi\u00f3n...',
       'settings_deleting_account': 'Eliminando cuenta...',
       'settings_delete_confirm_body':
-          'Seguro que quieres eliminar tu cuenta? Esta accion no se puede deshacer.',
-      'settings_loading_payment': 'Cargando informacion de pagos...',
+          'Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.',
+      'settings_loading_payment': 'Cargando información de pagos...',
       'settings_bank_account': 'Cuenta bancaria',
       'settings_for_withdrawals': 'Para retiros',
       'connect_bank_account_title': 'Conectar cuenta bancaria',
@@ -1085,14 +1114,14 @@ class AppTranslations extends Translations {
           'Conecta tu cuenta bancaria para retirar tus ganancias',
       'connect_now': 'Conectar ahora',
       'view_transactions_history': 'Ver historial de transacciones',
-      'settings_payment_method': 'Metodo de pago',
+      'settings_payment_method': 'Método de pago',
       'settings_active_payment_card': 'Tarjeta activa',
       'settings_no_card_attached': 'No hay tarjeta vinculada',
       'settings_no_payment_card': 'Sin tarjeta de pago',
       'settings_add_card_hint':
           'Agrega una tarjeta para realizar compras\ny gestionar suscripciones',
       'settings_add_payment_card': 'Agregar tarjeta',
-      'settings_payment_card_limit': 'Limite de tarjeta',
+      'settings_payment_card_limit': 'Límite de tarjeta',
       'settings_payment_card_limit_body':
           'Solo puedes tener una tarjeta vinculada a la vez. Para agregar una nueva, elimina la actual primero.',
       'settings_verified': 'Verificado',
@@ -1102,7 +1131,7 @@ class AppTranslations extends Translations {
       'settings_expires': 'Expira',
       'settings_type': 'Tipo',
       'settings_load_payment_failed':
-          'No se pudo cargar la informacion de pagos',
+          'No se pudo cargar la información de pagos',
       'settings_card_already_attached': 'Tarjeta ya vinculada',
       'settings_remove_existing_card':
           'Elimina la tarjeta existente antes de agregar una nueva.',
@@ -1111,11 +1140,11 @@ class AppTranslations extends Translations {
       'settings_remove_card': 'Eliminar tarjeta',
       'settings_remove': 'Eliminar',
       'settings_remove_card_confirm':
-          'Seguro que quieres eliminar esta tarjeta? Esta accion no se puede deshacer.',
+          'Seguro que quieres eliminar esta tarjeta? Esta acción no se puede deshacer.',
       'settings_card_removed': 'Tarjeta eliminada correctamente',
       'settings_remove_card_failed': 'No se pudo eliminar la tarjeta',
       'settings_card_error': 'Error de tarjeta',
-      'settings_invalid_card': 'Datos de tarjeta invalidos',
+      'settings_invalid_card': 'Datos de tarjeta inválidos',
       'settings_card_process_failed': 'No se pudo procesar la tarjeta: @error',
       'settings_secure_add_card': 'Agrega tu tarjeta de forma segura',
       'settings_secure_payment': 'Pago seguro',
@@ -1133,8 +1162,8 @@ class AppTranslations extends Translations {
       'settings_delete_failed': 'No se pudo eliminar la cuenta',
       'settings_delete_success': 'Cuenta eliminada correctamente',
       'settings_delete_failed_retry':
-          'No se pudo eliminar la cuenta. Intentalo de nuevo.',
-      'settings_generic_error': 'Ocurrio un error. Intentalo de nuevo.',
+          'No se pudo eliminar la cuenta. Inténtalo de nuevo.',
+      'settings_generic_error': 'Ocurrió un error. Inténtalo de nuevo.',
       'settings_cannot_delete': 'No se puede eliminar la cuenta',
       'settings_resolve_following': 'Resuelve lo siguiente:',
       'tab_portfolio': 'Portafolio',
@@ -1200,6 +1229,8 @@ class AppTranslations extends Translations {
           'Interés enviado. Espera la respuesta del cliente para decidir si quiere contratarte.',
       'job_hired': 'Contratado',
       'job_withdraw_interest': 'Retirar interés',
+      'job_interest_withdrawn_success': 'Interés retirado correctamente.',
+      'job_interest_withdrawn_failed': 'No se pudo retirar el interés.',
       'job_interested': 'Me interesa',
       'job_submitted_on': 'Enviado: @date',
       'orders_title': 'Pedidos',
@@ -1224,6 +1255,20 @@ class AppTranslations extends Translations {
           'La función de impulso de perfil estará disponible pronto',
       'order_detail_title': 'Detalle del pedido',
       'order_delivery_submission': 'Entrega',
+      'order_delivery_empty_state': 'Aún no hay entregas.',
+      'order_delivery_view_detail': 'Ver detalles',
+      'order_delivery_revision_requested': 'Revisión solicitada',
+      'order_delivery_revision_request': 'Solicitud de revisión',
+      'order_delivery_revision_action':
+          'Envía una entrega revisada para continuar.',
+      'order_delivery_revision_final_action':
+          'Se alcanzó la revisión final. Coordina con soporte si es necesario.',
+      'order_delivery_details_title': 'Detalles de la entrega',
+      'order_delivery_status': 'Estado',
+      'order_delivery_submitted_on': 'Enviado el',
+      'order_delivery_work_description': 'Descripción del trabajo',
+      'order_delivery_files': 'Archivos',
+      'order_delivery_revision_details': 'Detalles de la revisión',
       'order_request_title': 'Solicitud de pedido',
       'order_request_new_badge': 'Nuevo',
       'order_request_error_title': 'Error al cargar el pedido',
@@ -1232,7 +1277,7 @@ class AppTranslations extends Translations {
       'order_request_requested_label': 'Solicitado:',
       'order_request_days': 'Días',
       'order_request_revisions': 'Revisiones',
-      'order_request_work_description': 'Descripción del trabajo',
+      'order_request_work_description': 'Descripci\u00f3n del trabajo',
       'order_request_work_attachments': 'Adjuntos del trabajo',
       'order_request_script': 'Guion',
       'order_request_script_attachments': 'Adjuntos del guion',
@@ -1383,7 +1428,7 @@ class AppTranslations extends Translations {
       'no_reviews_yet': 'Aún no hay reseñas',
       'service_detail_title': 'Detalle del servicio',
       'service_detail_load_failed': 'No se pudo cargar el servicio',
-      'service_detail_description': 'Descripción',
+      'service_detail_description': 'Descripci\u00f3n',
       'service_detail_video_style': 'Estilo de video',
       'service_detail_requirements': 'Requisitos',
       'service_detail_gallery': 'Galeria',
@@ -1488,12 +1533,17 @@ class AppTranslations extends Translations {
       'profile_submit_failed_generic':
           'No se pudo enviar el perfil. Intenta de nuevo.',
       'info': 'Info',
-      'service_niches_title': 'Con que nichos trabajas?',
+      'service_niches_title': '¿Con qué nichos trabajas?',
       'service_niches_hint': 'Selecciona todo lo que aplique a este servicio.',
       'service_niches_note':
-          'Podras actualizarlo mas adelante si cambia tu setup.',
+          'Podrás actualizarlo más adelante si cambia tu setup.',
       'select_niches': 'Selecciona nichos',
       'select_niches_msg': 'Elige al menos un nicho para continuar.',
     },
   };
 }
+
+
+
+
+

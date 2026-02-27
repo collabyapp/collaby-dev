@@ -404,15 +404,16 @@ class JobController extends GetxController {
           );
         }
 
-        Utils.snackBar('Success', 'Interest withdrawn successfully!');
+        Utils.snackBar('success'.tr, 'job_interest_withdrawn_success'.tr);
+        if (Get.key.currentState?.canPop() ?? false) {
+          Get.back();
+        }
       } else {
         // Handle error - show the message from API
-        final errorMessage =
-            response['message'] ?? 'Failed to withdraw interest';
-        _showError(errorMessage);
+        _showError('job_interest_withdrawn_failed'.tr);
       }
     } catch (e) {
-      _showError('Failed to withdraw interest: $e');
+      _showError('job_interest_withdrawn_failed'.tr);
     } finally {
       isSubmittingInterest.value = false;
     }
@@ -441,6 +442,6 @@ class JobController extends GetxController {
   }
 
   void _showError(String message) {
-    Utils.snackBar('Error', message);
+    Utils.snackBar('error'.tr, message);
   }
 }
