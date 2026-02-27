@@ -48,7 +48,7 @@ class ChatRepository {
       // Handle both array and wrapped response
       return data is List ? data : (data['data'] ?? data['chats'] ?? []);
     } else {
-      throw Exception('Failed to load chats: ${response.body}');
+      throw Exception('Failed to load chats');
     }
   }
 
@@ -90,11 +90,11 @@ class ChatRepository {
         log('Unexpected response format: $data');
         return [];
       } else {
-        throw Exception('Failed to load messages: ${response.body}');
+        throw Exception('Failed to load messages');
       }
     } catch (e) {
       log('Error in getChatMessages: $e');
-      throw Exception('Failed to load messages: $e');
+      throw Exception('Failed to load messages');
     }
   }
 
@@ -133,11 +133,11 @@ class ChatRepository {
         log('Unexpected response format: $data');
         return [];
       } else {
-        throw Exception('Failed to load messages: ${response.body}');
+        throw Exception('Failed to load messages');
       }
     } catch (e) {
       log('Error in getChatMessages: $e');
-      throw Exception('Failed to load messages: $e');
+      throw Exception('Failed to load messages');
     }
   }
 

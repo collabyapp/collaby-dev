@@ -79,7 +79,7 @@ class ChatController extends GetxController {
       isLoading.value = false;
     } catch (e) {
       isLoading.value = false;
-      Utils.snackBar('Error', 'Failed to initialize chat: $e');
+      _showSafeError(e);
     }
   }
 
@@ -164,22 +164,37 @@ class ChatController extends GetxController {
     return data.toString();
   }
 
+  String _mapToSafeErrorMessage(dynamic error) {
+    final raw = error.toString().toLowerCase();
+    if (raw.contains('socketexception') || raw.contains('no internet')) {
+      return 'error_no_internet'.tr;
+    }
+    if (raw.contains('timeoutexception') || raw.contains('timed out')) {
+      return 'error_timeout'.tr;
+    }
+    return 'error_generic'.tr;
+  }
+
+  void _showSafeError(dynamic error) {
+    Utils.snackBar('error'.tr, _mapToSafeErrorMessage(error));
+  }
+
   // NEW: Handle message error by removing optimistic message
   void _handleMessageError(dynamic data) {
     final errorMsg = extractSocketError(data);
-    
+
     // Remove the last optimistic message that was just sent
     if (_optimisticMessageIds.isNotEmpty) {
       final lastOptimisticId = _optimisticMessageIds.last;
       messages.removeWhere((m) => m.id == lastOptimisticId);
       _optimisticMessageIds.remove(lastOptimisticId);
-      
+
       if (kDebugMode) {
         log('âŒ Removed failed optimistic message: $lastOptimisticId');
       }
     }
-    
-    Utils.snackBar('Error', errorMsg);
+
+    _showSafeError(errorMsg);
   }
 
   Future<void> loadMessages(String chatId, {bool loadMore = false}) async {
@@ -225,7 +240,7 @@ class ChatController extends GetxController {
       if (kDebugMode) {
         log('Error loading messages: $e');
       }
-      Get.snackbar('Error', 'Failed to load messages: $e');
+      _showSafeError(e);
     } finally {
       isLoadingMessages.value = false;
     }
@@ -248,7 +263,7 @@ class ChatController extends GetxController {
       if (kDebugMode) {
         log('Error loading chats: $e');
       }
-      Get.snackbar('Error', 'Failed to load chats: $e');
+      _showSafeError(e);
     }
   }
 
@@ -376,7 +391,7 @@ class ChatController extends GetxController {
         await _uploadAndSendFile(File(image.path), 'image');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image: $e');
+      _showSafeError(e);
     }
   }
 
@@ -390,7 +405,7 @@ class ChatController extends GetxController {
         await _uploadAndSendFile(File(result.files.single.path!), 'file');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick file: $e');
+      _showSafeError(e);
     }
   }
 
@@ -440,14 +455,14 @@ class ChatController extends GetxController {
       );
     } catch (e) {
       Get.back();
-      
+
       // Remove optimistic message if upload failed
       if (optimisticMessageId != null && _optimisticMessageIds.contains(optimisticMessageId)) {
         messages.removeWhere((m) => m.id == optimisticMessageId);
         _optimisticMessageIds.remove(optimisticMessageId);
       }
-      
-      Get.snackbar('Error', 'Failed to upload file: $e');
+
+      _showSafeError(e);
     }
   }
 
@@ -510,14 +525,14 @@ class ChatController extends GetxController {
       if (kDebugMode) {
         log('âŒ Error sending offer: $e');
       }
-      
+
       // Remove optimistic message if offer failed
       if (optimisticMessageId != null && _optimisticMessageIds.contains(optimisticMessageId)) {
         messages.removeWhere((m) => m.id == optimisticMessageId);
         _optimisticMessageIds.remove(optimisticMessageId);
       }
-      
-      Get.snackbar('Error', 'Failed to send offer: ${e.toString()}');
+
+      _showSafeError(e);
     } finally {
       isSaving.value = false;
     }
@@ -532,7 +547,7 @@ class ChatController extends GetxController {
 
       Get.snackbar('Success', 'Offer accepted successfully');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to accept offer: $e');
+      _showSafeError(e);
     }
   }
 
@@ -547,7 +562,7 @@ class ChatController extends GetxController {
 
       Get.snackbar('Info', 'Offer declined');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to decline offer: $e');
+      _showSafeError(e);
     }
   }
 
@@ -558,7 +573,7 @@ class ChatController extends GetxController {
 
       _updateOfferStatus(offerId, 'withdrawn');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to withdraw offer: $e');
+      _showSafeError(e);
     }
   }
 
@@ -827,7 +842,7 @@ class ChatController extends GetxController {
 
       await selectUser(newChat);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to create chat: $e');
+      _showSafeError(e);
     }
   }
 
