@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'package:collaby_app/data/network/network_api_services.dart';
@@ -96,7 +96,8 @@ class ChatController extends GetxController {
 
       _setupSocketListeners();
 
-      await loadChats();
+      // Avoid blocking app entry with noisy startup errors.
+      await loadChats(showErrors: false);
 
       isLoading.value = false;
     } catch (e) {
@@ -268,7 +269,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> loadChats() async {
+  Future<void> loadChats({bool showErrors = true}) async {
     try {
       final chatsData = await apiService.getUserChats(currentUserId.value);
       users.value = _parseChatsSafely(chatsData);
@@ -284,7 +285,9 @@ class ChatController extends GetxController {
       if (kDebugMode) {
         log('Error loading chats: $e');
       }
-      _showSafeError(e);
+      if (showErrors) {
+        _showSafeError(e);
+      }
     }
   }
 
@@ -357,7 +360,7 @@ class ChatController extends GetxController {
         final optimisticId = messages[optimisticIndex].id;
         _optimisticMessageIds.remove(optimisticId);
         messages[optimisticIndex] = message;
-        
+
         if (kDebugMode) {
           log('âœ… Replaced optimistic message with real message');
         }
@@ -432,7 +435,7 @@ class ChatController extends GetxController {
 
   Future<void> _uploadAndSendFile(File file, String messageType) async {
     String? optimisticMessageId;
-    
+
     try {
       Get.dialog(
         Center(child: CircularProgressIndicator()),
@@ -478,7 +481,8 @@ class ChatController extends GetxController {
       Get.back();
 
       // Remove optimistic message if upload failed
-      if (optimisticMessageId != null && _optimisticMessageIds.contains(optimisticMessageId)) {
+      if (optimisticMessageId != null &&
+          _optimisticMessageIds.contains(optimisticMessageId)) {
         messages.removeWhere((m) => m.id == optimisticMessageId);
         _optimisticMessageIds.remove(optimisticMessageId);
       }
@@ -491,7 +495,7 @@ class ChatController extends GetxController {
 
   Future<void> sendCustomOffer(OfferDetails offerDetails, String gigId) async {
     String? optimisticMessageId;
-    
+
     try {
       if (currentChatId.value.isEmpty) {
         throw Exception('No active chat');
@@ -548,7 +552,8 @@ class ChatController extends GetxController {
       }
 
       // Remove optimistic message if offer failed
-      if (optimisticMessageId != null && _optimisticMessageIds.contains(optimisticMessageId)) {
+      if (optimisticMessageId != null &&
+          _optimisticMessageIds.contains(optimisticMessageId)) {
         messages.removeWhere((m) => m.id == optimisticMessageId);
         _optimisticMessageIds.remove(optimisticMessageId);
       }
@@ -804,7 +809,7 @@ class ChatController extends GetxController {
 
     messages.add(message);
     _optimisticMessageIds.add(id);
-    
+
     if (kDebugMode) {
       log('âž• Added optimistic message: $id');
     }
@@ -909,7 +914,6 @@ class ChatController extends GetxController {
     super.dispose();
   }
 }
-
 
 // Extensions
 extension ChatUserExtension on ChatUser {
@@ -1901,4 +1905,3 @@ extension OfferDetailsExtension on OfferDetails {
 //     );
 //   }
 // }
-

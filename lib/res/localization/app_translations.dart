@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AppTranslations extends Translations {
@@ -457,11 +457,16 @@ class AppTranslations extends Translations {
       'job_member_since': 'Member since @date',
       'job_interest_submitted':
           'Interest submitted. Waiting for the client\'s response to decide if they\'d like to hire you.',
+      'job_interest_submitted_success': 'Interest submitted successfully.',
       'job_hired': 'Hired',
       'job_withdraw_interest': 'Withdraw Interest',
       'job_interest_withdrawn_success': 'Interest withdrawn successfully.',
       'job_interest_withdrawn_failed': 'Failed to withdraw interest.',
       'job_interested': 'I\'m Interested',
+      'job_status_pending': 'Pending',
+      'job_status_accepted': 'Accepted',
+      'job_status_rejected': 'Rejected',
+      'job_status_withdrawn': 'Withdrawn',
       'job_submitted_on': 'Submitted: @date',
       'orders_title': 'Orders',
       'orders_earning_available': 'Earning Available:',
@@ -1227,11 +1232,16 @@ class AppTranslations extends Translations {
       'job_member_since': 'Miembro desde @date',
       'job_interest_submitted':
           'Interés enviado. Espera la respuesta del cliente para decidir si quiere contratarte.',
+      'job_interest_submitted_success': 'Interés enviado correctamente.',
       'job_hired': 'Contratado',
       'job_withdraw_interest': 'Retirar interés',
       'job_interest_withdrawn_success': 'Interés retirado correctamente.',
       'job_interest_withdrawn_failed': 'No se pudo retirar el interés.',
       'job_interested': 'Me interesa',
+      'job_status_pending': 'Pendiente',
+      'job_status_accepted': 'Aceptado',
+      'job_status_rejected': 'Rechazado',
+      'job_status_withdrawn': 'Retirado',
       'job_submitted_on': 'Enviado: @date',
       'orders_title': 'Pedidos',
       'orders_earning_available': 'Ganancias disponibles:',
@@ -1542,8 +1552,3 @@ class AppTranslations extends Translations {
     },
   };
 }
-
-
-
-
-

@@ -13,6 +13,21 @@ class AppliedJobsTab extends StatelessWidget {
   const AppliedJobsTab({required this.controller});
   final JobController controller;
 
+  String _localizedStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return 'job_status_pending'.tr;
+      case 'accepted':
+        return 'job_status_accepted'.tr;
+      case 'rejected':
+        return 'job_status_rejected'.tr;
+      case 'withdrawn':
+        return 'job_status_withdrawn'.tr;
+      default:
+        return status;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -80,7 +95,7 @@ class AppliedJobsTab extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            a.status,
+                            _localizedStatus(a.status),
                             style: const TextStyle(
                               color: Color(0xFF2F80ED),
                               fontSize: 12,
@@ -167,9 +182,9 @@ class AppliedJobsTab extends StatelessWidget {
                     //   ),
                     const SizedBox(height: 12),
                     Text(
-                      'job_submitted_on'.trParams(
-                        {'date': formatDate(a.submittedAt)},
-                      ),
+                      'job_submitted_on'.trParams({
+                        'date': formatDate(a.submittedAt),
+                      }),
 
                       style: AppTextStyles.extraSmallText.copyWith(
                         fontSize: 10,

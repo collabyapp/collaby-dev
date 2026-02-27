@@ -367,7 +367,7 @@ class JobController extends GetxController {
           );
         }
 
-        Utils.snackBar('Success', 'Application submitted successfully!');
+        Utils.snackBar('success'.tr, 'job_interest_submitted_success'.tr);
         Get.back();
       } else {
         _showError(response['message']);
@@ -386,7 +386,9 @@ class JobController extends GetxController {
 
       final response = await _repository.withdrawInterest(jobId);
       // Check for both success field and error field
-      if (response['statusCode'] == 200 || response['statusCode'] == 201) {
+      if (response['success'] == true ||
+          response['statusCode'] == 200 ||
+          response['statusCode'] == 201) {
         // Update job - remove submitted interest
         final index = allJobs.indexWhere((job) => job.id == jobId);
         if (index != -1) {
@@ -405,6 +407,7 @@ class JobController extends GetxController {
         }
 
         Utils.snackBar('success'.tr, 'job_interest_withdrawn_success'.tr);
+        await fetchAppliedJobs(refresh: true);
         if (Get.key.currentState?.canPop() ?? false) {
           Get.back();
         }

@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 
 // class ChatUser {
 //   final String id;
@@ -614,39 +614,67 @@ class ChatUser {
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
     final isCreatorView = json['creator'] != null;
-    final userData = isCreatorView ? json['brand'] : json['creator'];
+    final rawUserData = isCreatorView ? json['brand'] : json['creator'];
+    final Map<String, dynamic> userData = rawUserData is Map
+        ? Map<String, dynamic>.from(rawUserData)
+        : <String, dynamic>{};
 
     String getName() {
       if (isCreatorView) {
-        return userData?['brandCompanyName'] ??
-            userData?['username'] ??
+        return userData['brandCompanyName'] ??
+            userData['username'] ??
+            userData['displayName'] ??
             'Unknown Brand';
       } else {
-        return userData?['displayName'] ??
-            '${userData?['firstName'] ?? ''} ${userData?['lastName'] ?? ''}'
+        return userData['displayName'] ??
+            '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'
                 .trim() ??
+            userData['username'] ??
             'Unknown Creator';
       }
     }
 
+    DateTime parseLastSeen(dynamic raw) {
+      if (raw is String && raw.isNotEmpty) {
+        try {
+          return DateTime.parse(raw);
+        } catch (_) {
+          return DateTime.now();
+        }
+      }
+      return DateTime.now();
+    }
+
+    final chatId =
+        (json['_id'] ?? json['chatId'] ?? json['id'])?.toString() ?? '';
+    final userId =
+        (isCreatorView ? json['brandId'] : json['creatorId'])?.toString() ??
+        userData['_id']?.toString() ??
+        userData['id']?.toString() ??
+        chatId;
+
     return ChatUser(
-      id: isCreatorView ? json['brandId'] : json['creatorId'],
+      id: userId,
       name: getName(),
-      avatar: userData?['imageUrl'] ?? 'https://via.placeholder.com/150',
+      avatar:
+          userData['imageUrl']?.toString() ??
+          userData['avatar']?.toString() ??
+          userData['profilePicture']?.toString() ??
+          'https://via.placeholder.com/150',
       isOnline: false,
-      lastSeen: json['lastMessageAt'] != null
-          ? DateTime.parse(json['lastMessageAt'])
-          : DateTime.now(),
-      lastMessage: json['lastMessage'] ?? 'No messages yet',
+      lastSeen: parseLastSeen(json['lastMessageAt']),
+      lastMessage: (json['lastMessage']?.toString().trim().isNotEmpty ?? false)
+          ? json['lastMessage'].toString()
+          : 'No messages yet',
       unreadCount: isCreatorView
-          ? (json['creatorUnreadCount'] ?? 0)
-          : (json['brandUnreadCount'] ?? 0),
-      chatId: json['_id'],
-      role: userData?['role'],
-      brandCompanyName: userData?['brandCompanyName'],
-      displayName: userData?['displayName'],
-      firstName: userData?['firstName'],
-      lastName: userData?['lastName'],
+          ? ((json['creatorUnreadCount'] as num?)?.toInt() ?? 0)
+          : ((json['brandUnreadCount'] as num?)?.toInt() ?? 0),
+      chatId: chatId,
+      role: userData['role']?.toString(),
+      brandCompanyName: userData['brandCompanyName']?.toString(),
+      displayName: userData['displayName']?.toString(),
+      firstName: userData['firstName']?.toString(),
+      lastName: userData['lastName']?.toString(),
     );
   }
 
@@ -1220,5 +1248,3 @@ class MediaFile {
     };
   }
 }
-
-
