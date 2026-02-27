@@ -273,6 +273,10 @@ class ProfileView extends StatelessWidget {
 
   Widget _buildBoostCard(String normalizedBadge) {
     final canBoost = normalizedBadge == 'level_two' || normalizedBadge == 'pro';
+    final buttonBg = Colors.white;
+    final buttonFg = Colors.black;
+    final buttonBorder = Colors.transparent;
+
     return Container(
       margin: EdgeInsets.all(16),
       padding: EdgeInsets.all(20),
@@ -302,14 +306,19 @@ class ProfileView extends StatelessWidget {
             icon: Image.asset(ImageAssets.boostIcon, width: 20, height: 20),
             label: Text(
               canBoost ? 'boost_now'.tr : 'boost_from_level_two'.tr,
-              style: AppTextStyles.extraSmallMediumText,
+              style: AppTextStyles.extraSmallMediumText.copyWith(
+                color: buttonFg,
+              ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: canBoost ? Colors.white : Colors.white70,
-              foregroundColor: canBoost ? Colors.black : Colors.black54,
+              backgroundColor: buttonBg,
+              foregroundColor: buttonFg,
+              disabledBackgroundColor: buttonBg,
+              disabledForegroundColor: buttonFg,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
+                side: BorderSide(color: buttonBorder),
               ),
             ),
           ),

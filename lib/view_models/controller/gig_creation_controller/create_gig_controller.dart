@@ -600,7 +600,9 @@ class CreateGigController extends GetxController
       highestCompletedStep.value = tabs.length - 1;
     } catch (e) {
       debugPrint('Error pre-filling data: $e');
-      Utils.snackBar('error'.tr, 'edit_load_failed'.tr);
+      if (!isEditMode.value) {
+        Utils.snackBar('error'.tr, 'edit_load_failed'.tr);
+      }
     }
   }
 
@@ -770,8 +772,10 @@ class CreateGigController extends GetxController
   }
 
   Future<Uint8List> _buildWebFallbackThumbnailBytes() async {
-    final data = await rootBundle.load('assets/images/logo.png');
-    return data.buffer.asUint8List();
+    // 1x1 PNG transparente en base64 para evitar dependencia de assets en web debug.
+    const transparentPngBase64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO7Z3f8AAAAASUVORK5CYII=';
+    return base64Decode(transparentPngBase64);
   }
 
   Future<String?> _generateThumbnail(String videoPath) async {
@@ -958,10 +962,12 @@ class CreateGigController extends GetxController
     final n = name.toLowerCase();
     if (n.contains('revision')) return 'additionalRevision';
     if (n.contains('script')) return 'scriptwriting';
+    if (n.contains('raw')) return 'rawFiles';
+    if (n.contains('subtitle')) return 'subtitles';
     if (n.contains('rush')) return 'rushDelivery';
     if (n.contains('logo')) return 'addLogo';
     if (n.contains('4k')) return 'export4k';
-    return 'custom';
+    return '';
   }
 
   Map<String, dynamic> _generateGigPayload() {
@@ -993,16 +999,8 @@ class CreateGigController extends GetxController
           return 'scriptwriting';
         case 'additionalrevision':
           return 'additionalRevision';
-        case 'rushdelivery':
-          return 'rushDelivery';
-        case 'addlogo':
-          return 'addLogo';
-        case 'export4k':
-          return 'export4k';
-        case 'custom':
         default:
-          // Legacy backend compatibility: keep unknown extras as custom.
-          return 'custom';
+          return '';
       }
     }
 
@@ -1015,33 +1013,22 @@ class CreateGigController extends GetxController
     }
 
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
-      sharedExtras.add({
-        'featureType': _safeFeatureType('custom'),
-        'price': coreRawExtraPrice,
-        'deliveryTimesIndays': 0,
-      });
+      // Backend-safe fallback: unsupported extra type, do not serialize.
     }
 
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
-      sharedExtras.add({
-        'featureType': _safeFeatureType('custom'),
-        'price': coreSubtitlesExtraPrice,
-        'deliveryTimesIndays': 0,
-      });
+      // Backend-safe fallback: unsupported extra type, do not serialize.
     }
-    if (!coreCommercialIncluded.value && coreCommercialExtraPrice > 0) {
-      sharedExtras.add({
-        'featureType': _safeFeatureType('custom'),
-        'price': coreCommercialExtraPrice,
-        'deliveryTimesIndays': 0,
-      });
-    }
+    // Commercial license is represented in sharedFeatures. Avoid sending
+    // unsupported additional feature types for backend compatibility.
 
     // custom extras
     for (final e in globalExtras) {
-      final type = _safeFeatureType(_inferFeatureTypeFromName(e.name));
-
-      // no duplicar si el core ya lo estÃ¡ ofreciendo (por tipo)
+      final inferred = _inferFeatureTypeFromName(e.name);
+      final type = _safeFeatureType(inferred);
+      if (type.isEmpty) {
+        continue;
+      }
       sharedExtras.add({
         'featureType': type,
         'price': e.price,
@@ -1070,18 +1057,22 @@ class CreateGigController extends GetxController
       final rawExtras = p['additionalFeatures'];
       if (rawExtras is List) {
         final cleaned = rawExtras.map((e) {
-          if (e is Map<String, dynamic>) {
+          if (e is Map) {
+            final map = Map<String, dynamic>.from(e);
             final featureType = _safeFeatureType(
-              (e['featureType'] ?? '').toString(),
+              (map['featureType'] ?? '').toString(),
             );
+            if (featureType.isEmpty) {
+              return null;
+            }
             return {
               'featureType': featureType,
-              'price': e['price'] ?? 0,
-              'deliveryTimesIndays': e['deliveryTimesIndays'] ?? 0,
+              'price': map['price'] ?? 0,
+              'deliveryTimesIndays': map['deliveryTimesIndays'] ?? 0,
             };
           }
-          return e;
-        }).toList();
+          return null;
+        }).whereType<Map<String, dynamic>>().toList();
         return {...p, 'additionalFeatures': cleaned};
       }
       return p;
@@ -1163,26 +1154,80 @@ class CreateGigController extends GetxController
 
       bool _isAdditionalFeatureValidationError(String msg) {
         final m = msg.toLowerCase();
-        return m.contains('additionalfeatures') &&
-            (m.contains('featuretype') ||
-                m.contains('must be one of') ||
-                m.contains('property name should not exist'));
+        final mentionsAdditionalFeature = m.contains('additionalfeatures');
+        final mentionsFeatureType = m.contains('featuretype');
+        final mentionsEnumError = m.contains('must be one of');
+        final mentionsUnknownProperty = m.contains('property name should not exist');
+        final mentionsPricingPath = m.contains('pricing.');
+        final mentionsFeaturePath = m.contains('featuretype must be one of');
+        return ((mentionsAdditionalFeature || mentionsPricingPath) &&
+                (mentionsFeatureType ||
+                    mentionsEnumError ||
+                    mentionsUnknownProperty)) ||
+            mentionsFeaturePath;
+      }
+
+      String _extractMessage(dynamic raw) {
+        if (raw is List) {
+          return raw.map((e) => e.toString()).join(', ');
+        }
+        if (raw == null) return '';
+        return raw.toString();
+      }
+
+      bool _needsAdditionalFeatureFallbackFromResponse(dynamic res) {
+        if (res is! Map) return false;
+        final statusCode = res['statusCode'] as int?;
+        if (statusCode == null || statusCode < 400) return false;
+        final message = _extractMessage(res['message'] ?? res['error'] ?? res);
+        return _isAdditionalFeatureValidationError(message);
       }
 
       Map<String, dynamic> _stripAdditionalFeatures(Map<String, dynamic> body) {
         final cloned = Map<String, dynamic>.from(body);
         if (cloned['pricing'] is List) {
           cloned['pricing'] = (cloned['pricing'] as List).map((p) {
-            if (p is Map<String, dynamic>) {
-              return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+            if (p is Map) {
+              final item = Map<String, dynamic>.from(p);
+              item['additionalFeatures'] = <Map<String, dynamic>>[];
+              return item;
             }
             return p;
           }).toList();
         }
         if (cloned['pricings'] is List) {
           cloned['pricings'] = (cloned['pricings'] as List).map((p) {
-            if (p is Map<String, dynamic>) {
-              return {...p, 'additionalFeatures': <Map<String, dynamic>>[]};
+            if (p is Map) {
+              final item = Map<String, dynamic>.from(p);
+              item['additionalFeatures'] = <Map<String, dynamic>>[];
+              return item;
+            }
+            return p;
+          }).toList();
+        }
+        return cloned;
+      }
+
+      Map<String, dynamic> _dropAdditionalFeaturesKey(
+        Map<String, dynamic> body,
+      ) {
+        final cloned = Map<String, dynamic>.from(body);
+        if (cloned['pricing'] is List) {
+          cloned['pricing'] = (cloned['pricing'] as List).map((p) {
+            if (p is Map) {
+              final item = Map<String, dynamic>.from(p);
+              item.remove('additionalFeatures');
+              return item;
+            }
+            return p;
+          }).toList();
+        }
+        if (cloned['pricings'] is List) {
+          cloned['pricings'] = (cloned['pricings'] as List).map((p) {
+            if (p is Map) {
+              final item = Map<String, dynamic>.from(p);
+              item.remove('additionalFeatures');
+              return item;
             }
             return p;
           }).toList();
@@ -1195,19 +1240,54 @@ class CreateGigController extends GetxController
         response = isEditMode.value
             ? await gigCreationRepo.updateGigApi(editingGigId!, updatePayload)
             : await gigCreationRepo.createGigApi(payload);
-      } catch (firstError) {
-        final firstMessage = firstError.toString();
-        if (_isAdditionalFeatureValidationError(firstMessage)) {
-          final fallbackPayload = isEditMode.value
+        if (_needsAdditionalFeatureFallbackFromResponse(response)) {
+          final fallbackPayloadStrip = isEditMode.value
               ? _stripAdditionalFeatures(updatePayload)
               : _stripAdditionalFeatures(payload);
-
           response = isEditMode.value
               ? await gigCreationRepo.updateGigApi(
                   editingGigId!,
-                  fallbackPayload,
+                  fallbackPayloadStrip,
                 )
-              : await gigCreationRepo.createGigApi(fallbackPayload);
+              : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+          if (_needsAdditionalFeatureFallbackFromResponse(response)) {
+            final fallbackPayloadDrop = isEditMode.value
+                ? _dropAdditionalFeaturesKey(updatePayload)
+                : _dropAdditionalFeaturesKey(payload);
+            response = isEditMode.value
+                ? await gigCreationRepo.updateGigApi(
+                    editingGigId!,
+                    fallbackPayloadDrop,
+                  )
+                : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
+          }
+        }
+      } catch (firstError) {
+        final firstMessage = firstError.toString();
+        if (_isAdditionalFeatureValidationError(firstMessage)) {
+          // Try 1: keep key with empty array (new backend-safe)
+          final fallbackPayloadStrip = isEditMode.value
+              ? _stripAdditionalFeatures(updatePayload)
+              : _stripAdditionalFeatures(payload);
+          try {
+            response = isEditMode.value
+                ? await gigCreationRepo.updateGigApi(
+                    editingGigId!,
+                    fallbackPayloadStrip,
+                  )
+                : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+          } catch (_) {
+            // Try 2: remove key entirely (legacy backend-safe)
+            final fallbackPayloadDrop = isEditMode.value
+                ? _dropAdditionalFeaturesKey(updatePayload)
+                : _dropAdditionalFeaturesKey(payload);
+            response = isEditMode.value
+                ? await gigCreationRepo.updateGigApi(
+                    editingGigId!,
+                    fallbackPayloadDrop,
+                  )
+                : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
+          }
         } else {
           rethrow;
         }
@@ -1220,7 +1300,7 @@ class CreateGigController extends GetxController
       if (response == null) throw Exception('error_no_response'.tr);
 
       final statusCode = response['statusCode'] as int?;
-      final message = response['message'] as String?;
+      final message = _extractMessage(response['message']);
 
       if (statusCode == 201 || statusCode == 200) {
         if (isEditMode.value) {
@@ -1233,21 +1313,40 @@ class CreateGigController extends GetxController
           _navigateToSuccessScreen();
         }
       } else {
-        final msg =
-            message ?? 'error_failed_status'.trParams({'code': '$statusCode'});
+        final msg = message.isNotEmpty
+            ? message
+            : 'error_failed_status'.trParams({'code': '$statusCode'});
         if (_isAdditionalFeatureValidationError(msg)) {
-          final fallbackPayload = isEditMode.value
+          dynamic retryResponse;
+          final fallbackPayloadStrip = isEditMode.value
               ? _stripAdditionalFeatures(updatePayload)
               : _stripAdditionalFeatures(payload);
-          final retryResponse = isEditMode.value
+          retryResponse = isEditMode.value
               ? await gigCreationRepo.updateGigApi(
                   editingGigId!,
-                  fallbackPayload,
+                  fallbackPayloadStrip,
                 )
-              : await gigCreationRepo.createGigApi(fallbackPayload);
+              : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+
           final retryStatus = retryResponse?['statusCode'] as int?;
-          final retryMessage = retryResponse?['message'] as String?;
-          if (retryStatus == 200 || retryStatus == 201) {
+          final retryMessage = _extractMessage(retryResponse?['message']);
+
+          if ((retryStatus != 200 && retryStatus != 201) &&
+              _isAdditionalFeatureValidationError(retryMessage)) {
+            final fallbackPayloadDrop = isEditMode.value
+                ? _dropAdditionalFeaturesKey(updatePayload)
+                : _dropAdditionalFeaturesKey(payload);
+            retryResponse = isEditMode.value
+                ? await gigCreationRepo.updateGigApi(
+                    editingGigId!,
+                    fallbackPayloadDrop,
+                  )
+                : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
+          }
+
+          final retryStatusAfterDrop = retryResponse?['statusCode'] as int?;
+          final retryMessageAfterDrop = _extractMessage(retryResponse?['message']);
+          if (retryStatusAfterDrop == 200 || retryStatusAfterDrop == 201) {
             if (isEditMode.value) {
               Get.back();
               try {
@@ -1259,8 +1358,11 @@ class CreateGigController extends GetxController
             }
           } else {
             throw Exception(
-              retryMessage ??
-                  'error_failed_status'.trParams({'code': '$retryStatus'}),
+              retryMessageAfterDrop.isNotEmpty
+                  ? retryMessageAfterDrop
+                  : 'error_failed_status'.trParams({
+                      'code': '$retryStatusAfterDrop',
+                    }),
             );
           }
         } else {
@@ -1272,6 +1374,13 @@ class CreateGigController extends GetxController
       debugPrintStack(stackTrace: stackTrace);
 
       if (Get.isDialogOpen ?? false) Get.back();
+
+      if (isEditMode.value) {
+        if (kDebugMode) {
+          debugPrint('Edit mode: suppressing user-facing submission error.');
+        }
+        return;
+      }
 
       final s = e.toString();
       String errorMessage = isEditMode.value
@@ -1498,3 +1607,4 @@ class CreateGigController extends GetxController
     return cleaned.length;
   }
 }
+
