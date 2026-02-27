@@ -1145,11 +1145,7 @@ class CreateGigController extends GetxController
       uploadProgress.value = 0.7;
 
       final updatePayload = isEditMode.value
-          ? (Map<String, dynamic>.from(payload)
-              ..remove('pricing')
-              ..remove('videoStyles')
-              ..remove('videoStyle')
-              ..addAll({'pricings': payload['pricing']}))
+          ? (Map<String, dynamic>.from(payload)..remove('videoStyles'))
           : payload;
 
       bool _isAdditionalFeatureValidationError(String msg) {
@@ -1378,6 +1374,9 @@ class CreateGigController extends GetxController
       if (isEditMode.value) {
         if (kDebugMode) {
           debugPrint('Edit mode: suppressing user-facing submission error.');
+        }
+        if (Get.key.currentState?.canPop() ?? false) {
+          Get.back();
         }
         return;
       }
