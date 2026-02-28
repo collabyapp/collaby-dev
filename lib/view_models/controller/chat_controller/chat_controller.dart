@@ -80,19 +80,40 @@ class ChatController extends GetxController {
   }
 
   Future<void> initializeChat() async {
+    String? token;
     try {
       isLoading.value = true;
-      final token = await userPref.getToken();
+      token = await userPref.getToken();
+      if (token == null || token.trim().isEmpty) {
+        throw Exception('Missing auth token');
+      }
 
-      final userData = await verifyTokenRepo.verifyToken(token.toString());
-      final user = userData['data'];
+      // Do not hard-fail chat loading if verify-token payload shape changes.
+      try {
+        final userData = await verifyTokenRepo.verifyToken(token);
+        final user = _extractVerifiedUser(userData);
+        if (user.isNotEmpty) {
+          final resolvedUserId =
+              (user['_id'] ?? user['userId'] ?? user['id'] ?? '')
+                  .toString()
+                  .trim();
+          final resolvedRole = (user['role'] ?? '').toString().trim();
+          if (resolvedUserId.isNotEmpty) {
+            currentUserId.value = resolvedUserId;
+          }
+          if (resolvedRole.isNotEmpty) {
+            currentUserRole.value = resolvedRole;
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          log('verifyToken non-blocking failure in chats init: $e');
+        }
+      }
 
-      currentUserId.value = user['_id'];
-      currentUserRole.value = user['role'];
+      apiService.setToken(token);
 
-      apiService.setToken(token.toString());
-
-      await socketService.init(token.toString());
+      await socketService.init(token);
 
       _setupSocketListeners();
 
@@ -104,6 +125,22 @@ class ChatController extends GetxController {
       isLoading.value = false;
       _showSafeError(e);
     }
+  }
+
+  Map<String, dynamic> _extractVerifiedUser(dynamic verifyResponse) {
+    if (verifyResponse is! Map<String, dynamic>) return <String, dynamic>{};
+    final root = verifyResponse;
+    final data = root['data'] is Map<String, dynamic>
+        ? root['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    if (data['user'] is Map<String, dynamic>) {
+      return data['user'] as Map<String, dynamic>;
+    }
+    if (data.isNotEmpty) return data;
+    if (root['user'] is Map<String, dynamic>) {
+      return root['user'] as Map<String, dynamic>;
+    }
+    return root;
   }
 
   void _setupSocketListeners() {

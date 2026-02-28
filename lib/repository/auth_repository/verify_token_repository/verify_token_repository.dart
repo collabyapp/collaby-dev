@@ -7,12 +7,13 @@ class VerifyTokenRepository {
   final _userPref = UserPreference();
   Future<dynamic> verifyToken(String token) async {
     final fcmToken = await _userPref.getFMCToken();
+    final cleanedFcm = (fcmToken ?? '').trim();
     dynamic response = await _apiService.getApi(
       AppUrl.verifyToken(),
       headers: {
         'Content-Type': 'application/json',
         'Accept': '*/*',
-        'x-fcm-token': fcmToken.toString(),
+        if (cleanedFcm.isNotEmpty) 'x-fcm-token': cleanedFcm,
         'Authorization': 'Bearer $token',
       },
     );

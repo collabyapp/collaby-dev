@@ -37,19 +37,50 @@ class ChatRepository {
 
   // Get user chats
   Future<List<dynamic>> getUserChats(String userId) async {
-    final response = await http.get(
+    // Prefer modern endpoint first. Keep legacy fallback for compatibility.
+    Future<List<dynamic>> parseChatsResponse(http.Response response) async {
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load chats');
+      }
+      final data = json.decode(response.body);
+      if (data is List) return data;
+      if (data is Map<String, dynamic>) {
+        final wrappedData = data['data'];
+        if (wrappedData is List) return wrappedData;
+        if (wrappedData is Map<String, dynamic>) {
+          final doubleNested = wrappedData['data'];
+          if (doubleNested is List) return doubleNested;
+          final nestedChats = wrappedData['chats'];
+          if (nestedChats is List) return nestedChats;
+        }
+        final chats = data['chats'];
+        if (chats is List) return chats;
+      }
+      return [];
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/chat'),
+        headers: _headers,
+      );
+      log('getUserChats (/chat) status: ${response.statusCode}');
+      final parsed = await parseChatsResponse(response);
+      if (parsed.isNotEmpty || response.statusCode == 200) return parsed;
+    } catch (_) {
+      // Fall through to legacy endpoint
+    }
+
+    if (userId.trim().isEmpty) {
+      return [];
+    }
+
+    final legacyResponse = await http.get(
       Uri.parse('$baseUrl/chat/user/$userId'),
       headers: _headers,
     );
-
-    log('getUserChats response: ${json.decode(response.body)}');
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      // Handle both array and wrapped response
-      return data is List ? data : (data['data'] ?? data['chats'] ?? []);
-    } else {
-      throw Exception('Failed to load chats');
-    }
+    log('getUserChats (/chat/user/:id) status: ${legacyResponse.statusCode}');
+    return parseChatsResponse(legacyResponse);
   }
 
   // Get chat messages
