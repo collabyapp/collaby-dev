@@ -56,12 +56,26 @@ class ProfileController extends GetxController
     try {
       final response = await _profileRepository.getCreatorProfileApi();
 
-      if (response['statusCode'] == 200) {
-        profileData.value = ProfileModel.fromJson(response['data']);
-        if (response['data']['phoneNumber'] != null) {
-          await _userPref.saveUser(
-            phoneNumber: response['data']['phoneNumber'].toString(),
-          );
+      final statusCode = response is Map<String, dynamic>
+          ? response['statusCode'] as int?
+          : null;
+      final success = response is Map<String, dynamic>
+          ? response['success'] == true
+          : false;
+
+      if (statusCode == 200 || success) {
+        final responseData = response is Map<String, dynamic>
+            ? (response['data'] as Map<String, dynamic>? ?? {})
+            : <String, dynamic>{};
+        final profileJson = (responseData['profile'] is Map<String, dynamic>)
+            ? responseData['profile'] as Map<String, dynamic>
+            : responseData;
+
+        profileData.value = ProfileModel.fromJson(profileJson);
+
+        final phone = responseData['phoneNumber'] ?? profileJson['phoneNumber'];
+        if (phone != null) {
+          await _userPref.saveUser(phoneNumber: phone.toString());
         }
       }
     } catch (e) {
