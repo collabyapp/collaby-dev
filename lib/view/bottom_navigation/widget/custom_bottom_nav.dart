@@ -27,24 +27,32 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+      final bottomInset = MediaQuery.of(context).padding.bottom;
+
+      return Container(
+        padding: EdgeInsets.only(
+          left: 10,
+          right: 10,
+          bottom: bottomInset,
+        ),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
         child: Container(
-          height: 83,
-          decoration: BoxDecoration(
+          height: 74,
+          decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, -2),
-              ),
-            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -64,7 +72,7 @@ class CustomBottomNav extends StatelessWidget {
     return InkWell(
       onTap: () => controller.changeTabIndex(index),
       child: Transform.translate(
-        offset: const Offset(0, -5),
+        offset: const Offset(0, -8),
         child: Container(
           width: 90,
           height: 47,
@@ -76,7 +84,7 @@ class CustomBottomNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                '${assetName}',
+                assetName,
                 width: 22,
                 height: 22,
                 color: (isSelected

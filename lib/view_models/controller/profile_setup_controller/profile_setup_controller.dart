@@ -196,8 +196,20 @@ class ProfileSetUpController extends GetxController {
 
       final response = await profileRepository.getCreatorProfileApi();
 
-      if (response['statusCode'] == 200) {
-        final profileData = response['data'];
+      final statusCode = response is Map<String, dynamic>
+          ? response['statusCode'] as int?
+          : null;
+      final success = response is Map<String, dynamic>
+          ? response['success'] == true
+          : false;
+
+      if (statusCode == 200 || success) {
+        final responseData = response is Map<String, dynamic>
+            ? (response['data'] as Map<String, dynamic>? ?? {})
+            : <String, dynamic>{};
+        final profileData = (responseData['profile'] is Map<String, dynamic>)
+            ? responseData['profile'] as Map<String, dynamic>
+            : responseData;
 
         firstNameController.text = profileData['firstName'] ?? '';
         lastNameController.text = profileData['lastName'] ?? '';
@@ -259,6 +271,7 @@ class ProfileSetUpController extends GetxController {
 
         hasChanges.value = false;
         _validateForm();
+        update();
       }
     } catch (e) {
       Utils.snackBar('error'.tr, '${'profile_load_failed'.tr}: $e');

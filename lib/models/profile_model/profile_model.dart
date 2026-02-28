@@ -364,12 +364,7 @@ class PortfolioItem {
   factory PortfolioItem.fromJson(Map<String, dynamic> json) {
     // New response puts the file under "galleryItem"
     final galleryItemJson = (json['galleryItem'] as Map?) ?? {};
-    final canHideRaw = json['canHide'];
-    final hasDeliveryMetadata =
-        json['deliveryStatus'] != null || json['workDescription'] != null;
-    final resolvedCanHide = canHideRaw is bool
-        ? canHideRaw
-        : hasDeliveryMetadata;
+    final resolvedCanHide = json['canHide'] == true;
 
     return PortfolioItem(
       galleryItemId: json['galleryItemId'] ?? json['deliveryId'] ?? '',

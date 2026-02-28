@@ -31,8 +31,11 @@ class JobController extends GetxController {
   List<JobModel> get newJobs {
     return allJobs
         .where(
-          (job) =>
-              job.status == JobStatus.open && job.submittedInterest == null,
+          (job) {
+            final hasInterest =
+                job.interestSubmitted || job.submittedInterest != null;
+            return job.status == JobStatus.open && !hasInterest;
+          },
         )
         .toList();
   }
