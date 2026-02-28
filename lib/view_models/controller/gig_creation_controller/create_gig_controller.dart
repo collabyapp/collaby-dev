@@ -142,7 +142,7 @@ class CreateGigController extends GetxController
     {'code': 'AED', 'name': 'United Arab Emirates Dirham (AED)'},
   ];
 
-  /// UI legacy (si quieres mantenerlo para texto de UI)
+  /// Included feature labels (UI preview)
   var includedFeatures = <String>[
     'Commercial Use License',
     'Subtitles Included',
@@ -153,9 +153,6 @@ class CreateGigController extends GetxController
   /// Presets de extras (custom)
   final extraPresets = const <String>[
     'Additional revision',
-    'Rush delivery',
-    'Add logo',
-    '4K export',
     'Custom request',
   ];
 
@@ -539,9 +536,7 @@ class CreateGigController extends GetxController
 
                 final readableName = switch (t) {
                   'additionalrevision' => 'Additional revision',
-                  'rushdelivery' => 'Rush delivery',
-                  'addlogo' => 'Add logo',
-                  'export4k' => '4K export',
+                  'customrequest' => 'Custom request',
                   _ => (x['featureType'] ?? 'custom').toString(),
                 };
 
@@ -964,10 +959,9 @@ class CreateGigController extends GetxController
     if (n.contains('script')) return 'scriptwriting';
     if (n.contains('raw')) return 'rawFiles';
     if (n.contains('subtitle')) return 'subtitles';
-    if (n.contains('rush')) return 'rushDelivery';
-    if (n.contains('logo')) return 'addLogo';
-    if (n.contains('4k')) return 'export4k';
-    return '';
+    if (n.contains('commercial')) return 'commercialUseLicense';
+    if (n.contains('custom request')) return 'customRequest';
+    return name.trim();
   }
 
   Map<String, dynamic> _generateGigPayload() {
@@ -993,14 +987,44 @@ class CreateGigController extends GetxController
 
     String _safeFeatureType(String value) {
       final normalized = value.trim().toLowerCase();
+      String slug(String raw) => raw
+          .trim()
+          .replaceAll(RegExp(r'[^A-Za-z0-9]+'), '_')
+          .replaceAll(RegExp(r'_+'), '_')
+          .replaceAll(RegExp(r'^_|_$'), '')
+          .toLowerCase();
       switch (normalized) {
         case 'script':
         case 'scriptwriting':
           return 'scriptwriting';
         case 'additionalrevision':
           return 'additionalRevision';
+        case 'rawfiles':
+        case 'rawvideofiles':
+        case 'raw video files':
+          return 'rawFiles';
+        case 'subtitles':
+        case 'subtitlesincluded':
+        case 'subtitles included':
+          return 'subtitles';
+        case 'rushdelivery':
+        case 'rush delivery':
+          return 'rushDelivery';
+        case 'addlogo':
+        case 'add logo':
+          return 'addLogo';
+        case 'export4k':
+        case '4k export':
+          return 'export4k';
+        case 'commercialuselicense':
+        case 'commercial use license':
+          return 'commercialUseLicense';
+        case 'customrequest':
+        case 'custom request':
+          return 'customRequest';
         default:
-          return '';
+          final generated = slug(value);
+          return generated.isEmpty ? '' : generated;
       }
     }
 
@@ -1013,14 +1037,27 @@ class CreateGigController extends GetxController
     }
 
     if (!coreRawIncluded.value && coreRawExtraPrice > 0) {
-      // Backend-safe fallback: unsupported extra type, do not serialize.
+      sharedExtras.add({
+        'featureType': _safeFeatureType('rawFiles'),
+        'price': coreRawExtraPrice,
+        'deliveryTimesIndays': 0,
+      });
     }
 
     if (!coreSubtitlesIncluded.value && coreSubtitlesExtraPrice > 0) {
-      // Backend-safe fallback: unsupported extra type, do not serialize.
+      sharedExtras.add({
+        'featureType': _safeFeatureType('subtitles'),
+        'price': coreSubtitlesExtraPrice,
+        'deliveryTimesIndays': 0,
+      });
     }
-    // Commercial license is represented in sharedFeatures. Avoid sending
-    // unsupported additional feature types for backend compatibility.
+    if (!coreCommercialIncluded.value && coreCommercialExtraPrice > 0) {
+      sharedExtras.add({
+        'featureType': _safeFeatureType('commercialUseLicense'),
+        'price': coreCommercialExtraPrice,
+        'deliveryTimesIndays': 0,
+      });
+    }
 
     // custom extras
     for (final e in globalExtras) {
@@ -1273,7 +1310,7 @@ class CreateGigController extends GetxController
                   )
                 : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
           } catch (_) {
-            // Try 2: remove key entirely (legacy backend-safe)
+          // Try 2: remove key entirely as final fallback
             final fallbackPayloadDrop = isEditMode.value
                 ? _dropAdditionalFeaturesKey(updatePayload)
                 : _dropAdditionalFeaturesKey(payload);
@@ -1509,7 +1546,7 @@ class CreateGigController extends GetxController
 
   void exploreJobs() => Get.offAllNamed(RouteName.bottomNavigationView);
 
-  // ================= COMPATIBILITY LAYER =================
+  // ================= Public helpers =================
 
   RxList<AdditionalFeature> get additionalFeatures => globalExtras;
 

@@ -16,12 +16,6 @@ class PricingStep extends GetView<CreateGigController> {
     switch (name) {
       case 'Additional revision':
         return 'preset_additional_revision'.tr;
-      case 'Rush delivery':
-        return 'preset_rush_delivery'.tr;
-      case 'Add logo':
-        return 'preset_add_logo'.tr;
-      case '4K export':
-        return 'preset_4k_export'.tr;
       case 'Custom request':
         return 'preset_custom_request'.tr;
       default:
@@ -1004,20 +998,20 @@ class PricingStep extends GetView<CreateGigController> {
       if (controller.coreCommercialIncluded.value)
         'feature_commercial_included'.tr,
       if (!controller.coreCommercialIncluded.value &&
-          (controller.coreCommercialPriceController.text.trim().isNotEmpty))
+          controller.coreCommercialExtraPrice > 0)
         '${'extra_commercial'.tr} - +${_formatPreviewMoney(controller.coreCommercialExtraPrice, currency)}',
       if (controller.coreRawIncluded.value) 'feature_raw_included'.tr,
       if (!controller.coreRawIncluded.value &&
-          (controller.coreRawPriceController.text.trim().isNotEmpty))
+          controller.coreRawExtraPrice > 0)
         '${'extra_raw'.tr} - +${_formatPreviewMoney(controller.coreRawExtraPrice, currency)}',
       if (controller.coreSubtitlesIncluded.value)
         'feature_subtitles_included'.tr,
       if (!controller.coreSubtitlesIncluded.value &&
-          (controller.coreSubtitlesPriceController.text.trim().isNotEmpty))
+          controller.coreSubtitlesExtraPrice > 0)
         '${'extra_subtitles'.tr} - +${_formatPreviewMoney(controller.coreSubtitlesExtraPrice, currency)}',
       if (controller.coreScriptIncluded.value) 'feature_script_included'.tr,
       if (!controller.coreScriptIncluded.value &&
-          (controller.coreScriptPriceController.text.trim().isNotEmpty))
+          controller.coreScriptExtraPrice > 0)
         '${'extra_script'.tr} - +${_formatPreviewMoney(controller.coreScriptExtraPrice, currency)}',
     ];
 
@@ -1134,18 +1128,19 @@ class PricingStep extends GetView<CreateGigController> {
   }
 
   String _formatPreviewMoney(double amount, String currency) {
+    final normalizedCurrency = currency.trim().toUpperCase();
     final noDecimals = amount.toStringAsFixed(
       amount == amount.truncateToDouble() ? 0 : 2,
     );
-    switch (currency.toUpperCase()) {
+    switch (normalizedCurrency) {
       case 'EUR':
-        return '$noDecimals\u20AC';
+        return '$noDecimals \u20AC';
       case 'USD':
         return '\$$noDecimals';
       case 'GBP':
         return '\u00A3$noDecimals';
       default:
-        return '$noDecimals $currency';
+        return '$noDecimals $normalizedCurrency';
     }
   }
 }
