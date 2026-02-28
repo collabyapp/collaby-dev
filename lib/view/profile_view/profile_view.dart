@@ -281,6 +281,12 @@ class ProfileView extends StatelessWidget {
     final full = '$first $last'.trim();
     if (full.isNotEmpty) return full;
 
+    final email = controller.fallbackEmail.value.trim();
+    if (email.contains('@')) {
+      final localPart = email.split('@').first.trim();
+      if (localPart.isNotEmpty) return localPart;
+    }
+
     return 'profile_title'.tr;
   }
 

@@ -20,7 +20,9 @@ class CustomBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final bottomInset = MediaQuery.of(context).padding.bottom;
-      final bottomPadding = bottomInset > 0 ? (bottomInset - 6) : 6.0;
+      final bottomPadding = bottomInset > 0
+          ? (bottomInset - 12).clamp(0.0, double.infinity)
+          : 4.0;
 
       return Container(
         padding: EdgeInsets.only(left: 12, right: 12, bottom: bottomPadding),

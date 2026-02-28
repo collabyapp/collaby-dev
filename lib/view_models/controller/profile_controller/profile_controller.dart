@@ -21,6 +21,7 @@ class ProfileController extends GetxController
   // Profile data
   final isLoadingProfile = false.obs;
   final profileData = Rx<ProfileModel?>(null);
+  final fallbackEmail = ''.obs;
 
   // Gigs data
   final myGigs = <MyGigModel>[].obs;
@@ -43,9 +44,15 @@ class ProfileController extends GetxController
     });
 
     // Fetch profile data on init
+    _loadLocalIdentity();
     fetchProfileData();
     // Preload gigs so the services CTA doesn't flicker
     fetchMyGigs();
+  }
+
+  Future<void> _loadLocalIdentity() async {
+    final user = await _userPref.getUser();
+    fallbackEmail.value = (user['email'] as String? ?? '').trim();
   }
 
   /// Fetch profile data from API
@@ -71,8 +78,14 @@ class ProfileController extends GetxController
             responseData['phoneNumber'] ??
             root['phoneNumber'] ??
             profileJson['phoneNumber'];
+        final email =
+            responseData['email'] ?? root['email'] ?? profileJson['email'];
         if (phone != null) {
           await _userPref.saveUser(phoneNumber: phone.toString());
+        }
+        if (email != null) {
+          await _userPref.saveUser(email: email.toString());
+          fallbackEmail.value = email.toString().trim();
         }
       }
     } catch (e) {
