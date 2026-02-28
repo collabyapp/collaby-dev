@@ -174,7 +174,9 @@ class ProfileSetUpController extends GetxController {
 
     selectedLanguages.listen((_) => _onFormChange());
 
-    isEdit.value = Get.arguments?['isEdit'] ?? false;
+    isEdit.value =
+        (Get.arguments?['isEdit'] as bool?) ??
+        (Get.parameters['isEdit'] == 'true');
 
     streetController.value.addListener(_validateShipping);
     cityController.value.addListener(_validateShipping);
@@ -185,6 +187,20 @@ class ProfileSetUpController extends GetxController {
 
     if (isEdit.value) {
       _loadProfileForEdit();
+    } else {
+      _validateForm();
+    }
+  }
+
+  void ensureMode(bool editMode) {
+    if (isEdit.value != editMode) {
+      isEdit.value = editMode;
+    }
+
+    if (editMode) {
+      if (originalData.isEmpty && !isLoadingProfile.value) {
+        _loadProfileForEdit();
+      }
     } else {
       _validateForm();
     }

@@ -83,11 +83,27 @@ class ChatsListView extends StatelessWidget {
                   ),
                   child: Obx(
                     () => Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _buildFilterChip('chat_filter_all'.tr, ChatFilter.all),
-                        _buildFilterChip('chat_filter_read'.tr, ChatFilter.read),
-                        _buildFilterChip('chat_filter_unread'.tr, ChatFilter.unread),
+                        Expanded(
+                          child: _buildFilterChip(
+                            'chat_filter_all'.tr,
+                            ChatFilter.all,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildFilterChip(
+                            'chat_filter_read'.tr,
+                            ChatFilter.read,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildFilterChip(
+                            'chat_filter_unread'.tr,
+                            ChatFilter.unread,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -173,8 +189,7 @@ class ChatsListView extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       onTap: () => selectedFilter.value = value,
       child: Container(
-        width: 102,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.black : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
@@ -182,6 +197,9 @@ class ChatsListView extends StatelessWidget {
         child: Center(
           child: Text(
             label,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.extraSmallMediumText.copyWith(
               color: isSelected ? Colors.white : Colors.black,
             ),

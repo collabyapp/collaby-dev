@@ -46,7 +46,7 @@ class CustomBottomNav extends StatelessWidget {
           ],
         ),
         child: Container(
-          height: 74,
+          height: 66,
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -72,7 +72,7 @@ class CustomBottomNav extends StatelessWidget {
     return InkWell(
       onTap: () => controller.changeTabIndex(index),
       child: Transform.translate(
-        offset: const Offset(0, -8),
+        offset: const Offset(0, -4),
         child: Container(
           width: 90,
           height: 47,

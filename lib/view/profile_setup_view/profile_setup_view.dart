@@ -20,13 +20,16 @@ class ProfileSetupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ProfileSetUpController controller = Get.put(ProfileSetUpController());
+    controller.ensureMode(isEdit);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: Text(isEdit ? 'profile_edit_title'.tr : 'profile_setup_title'.tr),
+        title: Text(
+          isEdit ? 'profile_edit_title'.tr : 'profile_setup_title'.tr,
+        ),
       ),
       body: !isEdit
           ? GetBuilder<ProfileSetUpController>(
@@ -41,7 +44,10 @@ class ProfileSetupView extends StatelessWidget {
                       showProgressHeadDot: false,
                     ),
                     SizedBox(height: 16),
-                    Text('profile_personal_info'.tr, style: AppTextStyles.smallTextBold),
+                    Text(
+                      'profile_personal_info'.tr,
+                      style: AppTextStyles.smallTextBold,
+                    ),
                     SizedBox(height: 24),
 
                     // Profile Image
@@ -127,7 +133,10 @@ class ProfileSetupView extends StatelessWidget {
                     SizedBox(height: 20),
                     // Description removed for account creation flow
                     // Age Group & Gender Section
-                    Text('profile_age_gender'.tr, style: AppTextStyles.normalText),
+                    Text(
+                      'profile_age_gender'.tr,
+                      style: AppTextStyles.normalText,
+                    ),
                     SizedBox(height: 12),
                     _buildSelectionTile(
                       title: controller.ageGroup.isEmpty
@@ -302,7 +311,10 @@ class ProfileSetupView extends StatelessWidget {
                       SizedBox(height: 20),
 
                       // Country Section
-                      Text('profile_country'.tr, style: AppTextStyles.normalText),
+                      Text(
+                        'profile_country'.tr,
+                        style: AppTextStyles.normalText,
+                      ),
                       SizedBox(height: 12),
                       _buildSelectionTile(
                         title: controller.country.isEmpty
@@ -551,8 +563,8 @@ String _ageGroupLabel(String value) {
 
 String _genderLabel(String value) {
   final v = value.toLowerCase();
-  if (v.contains('male')) return 'gender_male'.tr;
   if (v.contains('female')) return 'gender_female'.tr;
+  if (v.contains('male')) return 'gender_male'.tr;
   if (v.contains('non')) return 'gender_non_binary'.tr;
   return value;
 }
