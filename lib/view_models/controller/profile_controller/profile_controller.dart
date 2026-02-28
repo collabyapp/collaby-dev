@@ -24,6 +24,7 @@ class ProfileController extends GetxController
 
   // Gigs data
   final myGigs = <MyGigModel>[].obs;
+  final servicePortfolioItems = <PortfolioItem>[].obs;
   final isLoadingGigs = false.obs;
   final currentPage = 1.obs;
   final hasMoreGigs = true.obs;
@@ -91,7 +92,32 @@ class ProfileController extends GetxController
 
   /// Get portfolio items
   List<PortfolioItem> get portfolioItems {
-    return profileData.value?.portfolio ?? [];
+    final fromProfile = profileData.value?.portfolio ?? <PortfolioItem>[];
+    if (servicePortfolioItems.isEmpty) return fromProfile;
+
+    final merged = <PortfolioItem>[];
+    final seenUrls = <String>{};
+    final serviceUrls = servicePortfolioItems
+        .map((e) => e.deliveryFile.url.trim())
+        .where((e) => e.isNotEmpty)
+        .toSet();
+
+    // Service items first so they never expose hide action.
+    for (final item in servicePortfolioItems) {
+      final key = item.deliveryFile.url.trim();
+      if (key.isNotEmpty && seenUrls.contains(key)) continue;
+      if (key.isNotEmpty) seenUrls.add(key);
+      merged.add(item);
+    }
+
+    for (final item in fromProfile) {
+      final key = item.deliveryFile.url.trim();
+      if (key.isNotEmpty && serviceUrls.contains(key)) continue;
+      if (key.isNotEmpty && seenUrls.contains(key)) continue;
+      if (key.isNotEmpty) seenUrls.add(key);
+      merged.add(item);
+    }
+    return merged;
   }
 
   /// Get reviews
@@ -138,11 +164,60 @@ class ProfileController extends GetxController
       if (hasMoreGigs.value) {
         currentPage.value++;
       }
+
+      await _hydrateServicePortfolioItems();
     } catch (e) {
       Utils.snackBar('error'.tr, e.toString());
     } finally {
       isLoadingGigs.value = false;
     }
+  }
+
+  Future<void> _hydrateServicePortfolioItems() async {
+    if (myGigs.isEmpty) {
+      servicePortfolioItems.clear();
+      return;
+    }
+
+    final built = <PortfolioItem>[];
+    final seenUrls = <String>{};
+
+    for (final gig in myGigs) {
+      if (gig.gigId.trim().isEmpty) continue;
+      try {
+        final response = await _gigRepository.getGigDetailApi(gig.gigId);
+        final data = response is Map<String, dynamic>
+            ? response['data'] as Map<String, dynamic>?
+            : null;
+        if (data == null) continue;
+
+        final detail = GigDetailModel.fromJson(data);
+        for (final media in detail.gallery) {
+          final url = media.url.trim();
+          if (url.isEmpty || seenUrls.contains(url)) continue;
+          seenUrls.add(url);
+
+          built.add(
+            PortfolioItem(
+              galleryItemId: media.id,
+              gigId: detail.id,
+              gigTitle: detail.title.isNotEmpty ? detail.title : gig.gigTitle,
+              deliveryFile: DeliveryFile(
+                name: media.name,
+                type: media.type,
+                url: media.url,
+                thumbnail: media.thumbnail,
+              ),
+              canHide: false,
+            ),
+          );
+        }
+      } catch (_) {
+        // Non-blocking: service list should still render even if one detail fails.
+      }
+    }
+
+    servicePortfolioItems.value = built;
   }
 
   /// Load more gigs (pagination)

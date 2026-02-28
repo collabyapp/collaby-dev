@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collaby_app/models/profile_model/profile_model.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
@@ -114,6 +115,8 @@ class ProfileView extends StatelessWidget {
     final profile = controller.profileData.value;
     final normalizedBadge = _normalizeBadge(profile?.badge ?? 'level_one');
     if (profile == null) return SizedBox.shrink();
+    final displayName = _resolveDisplayName(profile);
+    final locationText = _resolveLocation(profile);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -182,7 +185,7 @@ class ProfileView extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(profile.displayName, style: AppTextStyles.h6Bold),
+                        Text(displayName, style: AppTextStyles.h6Bold),
                         SizedBox(width: 8),
                         GestureDetector(
                           onTap: () => Get.toNamed(RouteName.creatorLevelView),
@@ -239,10 +242,7 @@ class ProfileView extends StatelessWidget {
                           color: Color(0xff4B5563),
                         ),
                         SizedBox(width: 4),
-                        Text(
-                          '${profile.shippingAddress.city}, ${profile.shippingAddress.country}',
-                          style: AppTextStyles.extraSmallText,
-                        ),
+                        Text(locationText, style: AppTextStyles.extraSmallText),
                       ],
                     ),
                   ],
@@ -270,6 +270,32 @@ class ProfileView extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _resolveDisplayName(ProfileModel profile) {
+    final display = (profile.displayName as String?)?.trim() ?? '';
+    if (display.isNotEmpty) return display;
+
+    final first = (profile.firstName as String?)?.trim() ?? '';
+    final last = (profile.lastName as String?)?.trim() ?? '';
+    final full = '$first $last'.trim();
+    if (full.isNotEmpty) return full;
+
+    return 'profile_title'.tr;
+  }
+
+  String _resolveLocation(ProfileModel profile) {
+    final city = profile.shippingAddress.city.trim();
+    final shippingCountry = profile.shippingAddress.country.trim();
+    final country = profile.country.trim();
+    final finalCountry = shippingCountry.isNotEmpty ? shippingCountry : country;
+
+    final parts = <String>[
+      if (city.isNotEmpty) city,
+      if (finalCountry.isNotEmpty) finalCountry,
+    ];
+    if (parts.isEmpty) return '-';
+    return parts.join(', ');
   }
 
   Widget _buildBoostCard(String normalizedBadge) {
