@@ -174,9 +174,9 @@ class _JobDetailsViewState extends State<JobDetailsView> {
 
                     SizedBox(height: 16),
                     Text(
-                      'job_updated_on'.trParams(
-                        {'date': _formatDate(job.updatedAt)},
-                      ),
+                      'job_updated_on'.trParams({
+                        'date': _formatDate(job.updatedAt),
+                      }),
                       style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
                   ],
@@ -202,7 +202,10 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Job Objective Section
-                    Text('job_objective'.tr, style: AppTextStyles.smallMediumText),
+                    Text(
+                      'job_objective'.tr,
+                      style: AppTextStyles.smallMediumText,
+                    ),
                     SizedBox(height: 12),
                     Text(job.description, style: AppTextStyles.extraSmallText),
                   ],
@@ -247,9 +250,9 @@ class _JobDetailsViewState extends State<JobDetailsView> {
                         Spacer(),
                         if (job.brandProfile?.createdAt != null)
                           Text(
-                            'job_member_since'.trParams(
-                              {'date': _formatDate(job.brandProfile!.createdAt)},
-                            ),
+                            'job_member_since'.trParams({
+                              'date': _formatDate(job.brandProfile!.createdAt),
+                            }),
                             style: AppTextStyles.extraSmallText,
                           ),
                       ],
@@ -391,13 +394,15 @@ class _JobDetailsViewState extends State<JobDetailsView> {
           buttonColor = Colors.red[50] ?? Colors.red.shade50;
           textColor = Colors.red[700] ?? Colors.red;
           onPressed = () {
-            controller.withdrawInterest(job.id);
+            if (controller.isSubmittingInterest.value) return;
+            controller.withdrawInterest(job.id, closeDetailsOnStart: true);
           };
         } else {
           buttonTitle = 'job_interested'.tr;
           buttonColor = Colors.black;
           textColor = Colors.white;
           onPressed = () {
+            if (controller.isSubmittingInterest.value) return;
             controller.applyForJob(job.id);
           };
         }

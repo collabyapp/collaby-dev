@@ -1,6 +1,7 @@
 import 'package:collaby_app/models/jobs_model/job_model.dart';
 import 'package:collaby_app/repository/job_repository/job_repository.dart';
 import 'package:collaby_app/utils/utils.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 class JobController extends GetxController {
@@ -385,12 +386,19 @@ class JobController extends GetxController {
   }
 
   // Withdraw interest from job
-  Future<void> withdrawInterest(String jobId) async {
+  Future<void> withdrawInterest(
+    String jobId, {
+    bool closeDetailsOnStart = false,
+  }) async {
     if (_interestInFlight.contains(jobId)) return;
     _interestInFlight.add(jobId);
+    bool didCloseScreen = false;
 
     try {
       isSubmittingInterest.value = true;
+      if (closeDetailsOnStart) {
+        didCloseScreen = _tryCloseCurrentScreen();
+      }
 
       final response = await _repository.withdrawInterest(jobId);
       // Check for both success field and error field
@@ -415,8 +423,8 @@ class JobController extends GetxController {
         }
 
         Utils.snackBar('success'.tr, 'job_interest_withdrawn_success'.tr);
-        if (Get.key.currentState?.canPop() ?? false) {
-          Get.back();
+        if (!didCloseScreen) {
+          _tryCloseCurrentScreen();
         }
         fetchAppliedJobs(refresh: true);
       } else {
@@ -429,6 +437,27 @@ class JobController extends GetxController {
       isSubmittingInterest.value = false;
       _interestInFlight.remove(jobId);
     }
+  }
+
+  bool _tryCloseCurrentScreen() {
+    try {
+      final nav = Get.key.currentState;
+      if (nav?.canPop() ?? false) {
+        Get.back();
+        return true;
+      }
+    } catch (_) {}
+
+    final context = Get.context;
+    if (context != null) {
+      final navigator = Navigator.of(context);
+      if (navigator.canPop()) {
+        navigator.pop();
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // Load more jobs (for pagination)
