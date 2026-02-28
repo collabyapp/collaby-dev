@@ -271,6 +271,7 @@ class JobController extends GetxController {
 
   // Toggle save job with API
   final Set<String> _favInFlight = <String>{};
+  final Set<String> _interestInFlight = <String>{};
 
   Future<void> toggleSaveJob(String jobId) async {
     if (_favInFlight.contains(jobId)) return;
@@ -338,6 +339,9 @@ class JobController extends GetxController {
 
   // Apply for job
   Future<void> applyForJob(String jobId) async {
+    if (_interestInFlight.contains(jobId)) return;
+    _interestInFlight.add(jobId);
+
     try {
       isSubmittingInterest.value = true;
 
@@ -376,11 +380,15 @@ class JobController extends GetxController {
       _showError('Failed to submit application: $e');
     } finally {
       isSubmittingInterest.value = false;
+      _interestInFlight.remove(jobId);
     }
   }
 
   // Withdraw interest from job
   Future<void> withdrawInterest(String jobId) async {
+    if (_interestInFlight.contains(jobId)) return;
+    _interestInFlight.add(jobId);
+
     try {
       isSubmittingInterest.value = true;
 
@@ -407,10 +415,10 @@ class JobController extends GetxController {
         }
 
         Utils.snackBar('success'.tr, 'job_interest_withdrawn_success'.tr);
-        await fetchAppliedJobs(refresh: true);
         if (Get.key.currentState?.canPop() ?? false) {
           Get.back();
         }
+        fetchAppliedJobs(refresh: true);
       } else {
         // Handle error - show the message from API
         _showError('job_interest_withdrawn_failed'.tr);
@@ -419,6 +427,7 @@ class JobController extends GetxController {
       _showError('job_interest_withdrawn_failed'.tr);
     } finally {
       isSubmittingInterest.value = false;
+      _interestInFlight.remove(jobId);
     }
   }
 

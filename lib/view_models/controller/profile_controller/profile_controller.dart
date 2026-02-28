@@ -191,6 +191,7 @@ class ProfileController extends GetxController
   }
 
   Future<void> hidePortfolioItem(PortfolioItem item) async {
+    if (!item.canHide) return;
     final url = item.deliveryFile.url.trim();
     if (url.isEmpty) return;
 

@@ -6,7 +6,7 @@ class ImageAssets {
   static const String onboarding2 = 'assets/images/onboarding_2.png';
 
   //Auth
-  static const String logoImage = 'assets/images/logo.png';
+  static const String logoImage = 'assets/images/mobile.jpeg';
   static const String googleIcon = 'assets/icons/google.png';
   static const String appleIcon = 'assets/icons/apple.png';
   static const String emailIcon = 'assets/icons/email.png';
@@ -64,8 +64,6 @@ class ImageAssets {
 
   //Profile Post
 
-
   static const String deleteIcon = 'assets/icons/delete_account.png';
   static const String logoutIcon = 'assets/icons/logout.png';
-
 }

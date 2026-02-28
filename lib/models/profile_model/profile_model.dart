@@ -149,13 +149,15 @@ class CreatorLevelRequirements {
         (json['reviews'] ?? <String, dynamic>{}) as Map<String, dynamic>,
       ),
       completedOrders: LevelRequirement.fromJson(
-        (json['completedOrders'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+        (json['completedOrders'] ?? <String, dynamic>{})
+            as Map<String, dynamic>,
       ),
       averageRating: LevelRequirement.fromJson(
         (json['averageRating'] ?? <String, dynamic>{}) as Map<String, dynamic>,
       ),
       daysSinceRegistration: LevelRequirement.fromJson(
-        (json['daysSinceRegistration'] ?? <String, dynamic>{}) as Map<String, dynamic>,
+        (json['daysSinceRegistration'] ?? <String, dynamic>{})
+            as Map<String, dynamic>,
       ),
     );
   }
@@ -345,6 +347,7 @@ class PortfolioItem {
   // Backward-compat: these existed in the old schema; keep as optional if you still reference them anywhere
   final String? workDescription;
   final String? deliveryStatus;
+  final bool canHide;
 
   PortfolioItem({
     required this.galleryItemId,
@@ -355,6 +358,7 @@ class PortfolioItem {
     this.updatedAt,
     this.workDescription,
     this.deliveryStatus,
+    this.canHide = true,
   });
 
   factory PortfolioItem.fromJson(Map<String, dynamic> json) {
@@ -376,6 +380,7 @@ class PortfolioItem {
       // backward-compat only (old payloads)
       workDescription: json['workDescription'] as String?,
       deliveryStatus: json['deliveryStatus'] as String?,
+      canHide: json['canHide'] == null ? true : json['canHide'] == true,
     );
   }
 }
