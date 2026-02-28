@@ -358,12 +358,18 @@ class PortfolioItem {
     this.updatedAt,
     this.workDescription,
     this.deliveryStatus,
-    this.canHide = true,
+    this.canHide = false,
   });
 
   factory PortfolioItem.fromJson(Map<String, dynamic> json) {
     // New response puts the file under "galleryItem"
     final galleryItemJson = (json['galleryItem'] as Map?) ?? {};
+    final canHideRaw = json['canHide'];
+    final hasDeliveryMetadata =
+        json['deliveryStatus'] != null || json['workDescription'] != null;
+    final resolvedCanHide = canHideRaw is bool
+        ? canHideRaw
+        : hasDeliveryMetadata;
 
     return PortfolioItem(
       galleryItemId: json['galleryItemId'] ?? json['deliveryId'] ?? '',
@@ -380,7 +386,7 @@ class PortfolioItem {
       // backward-compat only (old payloads)
       workDescription: json['workDescription'] as String?,
       deliveryStatus: json['deliveryStatus'] as String?,
-      canHide: json['canHide'] == null ? true : json['canHide'] == true,
+      canHide: resolvedCanHide,
     );
   }
 }
