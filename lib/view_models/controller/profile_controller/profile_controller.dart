@@ -55,25 +55,21 @@ class ProfileController extends GetxController
 
     try {
       final response = await _profileRepository.getCreatorProfileApi();
+      final root = response is Map<String, dynamic>
+          ? response
+          : <String, dynamic>{};
+      final responseData = root['data'] is Map<String, dynamic>
+          ? root['data'] as Map<String, dynamic>
+          : <String, dynamic>{};
+      final profileJson = _extractProfileJson(root);
 
-      final statusCode = response is Map<String, dynamic>
-          ? response['statusCode'] as int?
-          : null;
-      final success = response is Map<String, dynamic>
-          ? response['success'] == true
-          : false;
-
-      if (statusCode == 200 || success) {
-        final responseData = response is Map<String, dynamic>
-            ? (response['data'] as Map<String, dynamic>? ?? {})
-            : <String, dynamic>{};
-        final profileJson = (responseData['profile'] is Map<String, dynamic>)
-            ? responseData['profile'] as Map<String, dynamic>
-            : responseData;
-
+      if (_looksLikeProfile(profileJson)) {
         profileData.value = ProfileModel.fromJson(profileJson);
 
-        final phone = responseData['phoneNumber'] ?? profileJson['phoneNumber'];
+        final phone =
+            responseData['phoneNumber'] ??
+            root['phoneNumber'] ??
+            profileJson['phoneNumber'];
         if (phone != null) {
           await _userPref.saveUser(phoneNumber: phone.toString());
         }
@@ -248,6 +244,42 @@ class ProfileController extends GetxController
     } catch (e) {
       Utils.snackBar('error'.tr, e.toString());
     }
+  }
+
+  Map<String, dynamic> _extractProfileJson(Map<String, dynamic> root) {
+    final data = root['data'] is Map<String, dynamic>
+        ? root['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    final nestedProfile = data['profile'] is Map<String, dynamic>
+        ? data['profile'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    if (nestedProfile.isNotEmpty) return nestedProfile;
+    if (_looksLikeProfile(data)) return data;
+
+    final rootProfile = root['profile'] is Map<String, dynamic>
+        ? root['profile'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    if (rootProfile.isNotEmpty) return rootProfile;
+    if (_looksLikeProfile(root)) return root;
+
+    return <String, dynamic>{};
+  }
+
+  bool _looksLikeProfile(Map<String, dynamic> json) {
+    if (json.isEmpty) return false;
+    const keys = {
+      'displayName',
+      'firstName',
+      'lastName',
+      'imageUrl',
+      'shippingAddress',
+      'badge',
+      'userId',
+      'portfolio',
+      'reviews',
+      'creatorLevelProgress',
+    };
+    return keys.any(json.containsKey);
   }
 
   // @override

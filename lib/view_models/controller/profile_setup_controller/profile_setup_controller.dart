@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:collaby_app/data/network/network_api_services.dart';
 import 'package:collaby_app/models/profile_model.dart';
 import 'package:collaby_app/repository/profile_repository/profile_repository.dart';
@@ -146,7 +146,9 @@ class ProfileSetUpController extends GetxController {
   }
 
   List<String> get filteredNiches => allNiches
-      .where((n) => n.tr.toLowerCase().contains(searchQuery.value.toLowerCase()))
+      .where(
+        (n) => n.tr.toLowerCase().contains(searchQuery.value.toLowerCase()),
+      )
       .toList();
 
   void _validateShipping() {
@@ -211,22 +213,12 @@ class ProfileSetUpController extends GetxController {
       isLoadingProfile.value = true;
 
       final response = await profileRepository.getCreatorProfileApi();
+      final root = response is Map<String, dynamic>
+          ? response
+          : <String, dynamic>{};
+      final profileData = _extractProfileJson(root);
 
-      final statusCode = response is Map<String, dynamic>
-          ? response['statusCode'] as int?
-          : null;
-      final success = response is Map<String, dynamic>
-          ? response['success'] == true
-          : false;
-
-      if (statusCode == 200 || success) {
-        final responseData = response is Map<String, dynamic>
-            ? (response['data'] as Map<String, dynamic>? ?? {})
-            : <String, dynamic>{};
-        final profileData = (responseData['profile'] is Map<String, dynamic>)
-            ? responseData['profile'] as Map<String, dynamic>
-            : responseData;
-
+      if (_looksLikeProfile(profileData)) {
         firstNameController.text = profileData['firstName'] ?? '';
         lastNameController.text = profileData['lastName'] ?? '';
         displayNameController.text = profileData['displayName'] ?? '';
@@ -251,16 +243,19 @@ class ProfileSetUpController extends GetxController {
         final languages = profileData['languages'] as List?;
         if (languages != null) {
           selectedLanguages.value = languages
-              .map((lang) => LanguageModel(
-                    code: lang['language'] ?? '',
-                    name: lang['language'] ?? '',
-                    level: lang['level'] ?? 'Beginner',
-                  ))
+              .map(
+                (lang) => LanguageModel(
+                  code: lang['language'] ?? '',
+                  name: lang['language'] ?? '',
+                  level: lang['level'] ?? 'Beginner',
+                ),
+              )
               .toList();
         }
 
         // shipping
-        final shippingAddress = profileData['shippingAddress'] as Map<String, dynamic>?;
+        final shippingAddress =
+            profileData['shippingAddress'] as Map<String, dynamic>?;
         if (shippingAddress != null) {
           streetController.value.text = shippingAddress['street'] ?? '';
           cityController.value.text = shippingAddress['city'] ?? '';
@@ -296,9 +291,44 @@ class ProfileSetUpController extends GetxController {
     }
   }
 
+  Map<String, dynamic> _extractProfileJson(Map<String, dynamic> root) {
+    final data = root['data'] is Map<String, dynamic>
+        ? root['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    final nestedProfile = data['profile'] is Map<String, dynamic>
+        ? data['profile'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    if (nestedProfile.isNotEmpty) return nestedProfile;
+    if (_looksLikeProfile(data)) return data;
+
+    final rootProfile = root['profile'] is Map<String, dynamic>
+        ? root['profile'] as Map<String, dynamic>
+        : <String, dynamic>{};
+    if (rootProfile.isNotEmpty) return rootProfile;
+    if (_looksLikeProfile(root)) return root;
+    return <String, dynamic>{};
+  }
+
+  bool _looksLikeProfile(Map<String, dynamic> json) {
+    if (json.isEmpty) return false;
+    const keys = {
+      'displayName',
+      'firstName',
+      'lastName',
+      'imageUrl',
+      'shippingAddress',
+      'badge',
+      'userId',
+      'country',
+      'languages',
+    };
+    return keys.any(json.containsKey);
+  }
+
   String _matchAgeGroup(String value) {
     if (value.contains('18') || value.contains('24')) return 'Young (18-24)';
-    if (value.contains('25') || value.contains('39')) return 'Middle Aged (25-39)';
+    if (value.contains('25') || value.contains('39'))
+      return 'Middle Aged (25-39)';
     if (value.contains('40')) return 'Adult (40+)';
     return value;
   }
@@ -352,12 +382,16 @@ class ProfileSetUpController extends GetxController {
     try {
       isLoadingData.value = true;
 
-      final countriesJson = await rootBundle.loadString('assets/json/countries.json');
+      final countriesJson = await rootBundle.loadString(
+        'assets/json/countries.json',
+      );
       final countriesList = json.decode(countriesJson) as List;
       countries.value = countriesList.cast<String>();
       filteredCountries = List.from(countries);
 
-      final languagesJson = await rootBundle.loadString('assets/json/languages.json');
+      final languagesJson = await rootBundle.loadString(
+        'assets/json/languages.json',
+      );
       final languagesList = json.decode(languagesJson) as List;
 
       languagesData.value = languagesList
@@ -448,7 +482,9 @@ class ProfileSetUpController extends GetxController {
   }
 
   void updateLanguageLevel(String languageName, String newLevel) {
-    final index = selectedLanguages.indexWhere((lang) => lang.name == languageName);
+    final index = selectedLanguages.indexWhere(
+      (lang) => lang.name == languageName,
+    );
     if (index != -1) {
       selectedLanguages[index] = LanguageModel(
         code: selectedLanguages[index].code,
@@ -461,7 +497,9 @@ class ProfileSetUpController extends GetxController {
 
   void addLanguage(String languageCode, String languageName, String level) {
     if (!selectedLanguages.any((lang) => lang.code == languageCode)) {
-      selectedLanguages.add(LanguageModel(code: languageCode, name: languageName, level: level));
+      selectedLanguages.add(
+        LanguageModel(code: languageCode, name: languageName, level: level),
+      );
       _validateForm();
     }
   }
@@ -481,7 +519,9 @@ class ProfileSetUpController extends GetxController {
       if (image == null) return;
 
       profileImageLocal.value = image.path;
-      final uploadedUrl = await NetworkApiServices().uploadAnyFile(filePath: image.path);
+      final uploadedUrl = await NetworkApiServices().uploadAnyFile(
+        filePath: image.path,
+      );
 
       profileImageUrl.value = uploadedUrl;
       _profile.profileImagePath = uploadedUrl;
@@ -627,10 +667,12 @@ class ProfileSetUpController extends GetxController {
     if (profileImageUrl.value != originalData['imageUrl']) {
       payload['imageUrl'] = profileImageUrl.value;
     }
-    if (_profile.gender.toLowerCase() != originalData['gender']?.toLowerCase()) {
+    if (_profile.gender.toLowerCase() !=
+        originalData['gender']?.toLowerCase()) {
       payload['gender'] = _profile.gender.toLowerCase();
     }
-    if (_ageRangeValue(_profile.ageGroup) != _ageRangeValue(originalData['ageGroup'] ?? '')) {
+    if (_ageRangeValue(_profile.ageGroup) !=
+        _ageRangeValue(originalData['ageGroup'] ?? '')) {
       payload['ageGroup'] = _ageRangeValue(_profile.ageGroup);
     }
     if (_profile.country != originalData['country']) {
@@ -643,7 +685,8 @@ class ProfileSetUpController extends GetxController {
     }
 
     // shipping changes
-    final originalShipping = originalData['shippingAddress'] as Map<String, dynamic>?;
+    final originalShipping =
+        originalData['shippingAddress'] as Map<String, dynamic>?;
     final currentShipping = {
       'street': streetController.value.text.trim(),
       'city': cityController.value.text.trim(),
@@ -718,12 +761,12 @@ class ProfileSetUpController extends GetxController {
         hasChanges.value = false;
         Utils.snackBar('success'.tr, 'profile_updated_success'.tr);
 
-        Get.offAllNamed(RouteName.bottomNavigationView, arguments: {'index': 3});
-      } else {
-        Utils.snackBar(
-          'error'.tr,
-          message ?? 'profile_update_failed'.tr,
+        Get.offAllNamed(
+          RouteName.bottomNavigationView,
+          arguments: {'index': 3},
         );
+      } else {
+        Utils.snackBar('error'.tr, message ?? 'profile_update_failed'.tr);
       }
     } catch (e) {
       debugPrint('updateProfile error: $e');
@@ -764,10 +807,10 @@ class ProfileSetUpController extends GetxController {
 
         // âœ… aquÃ­ es donde tÃº enlazas â€œseguiditoâ€ al Servicio:
         // Cambia esta ruta a la que uses para CreateGigView renombrada como Servicio.
-        Get.offAllNamed(RouteName.createGigView, arguments: {
-          'fromOnboarding': true,
-          'profileData': data,
-        });
+        Get.offAllNamed(
+          RouteName.createGigView,
+          arguments: {'fromOnboarding': true, 'profileData': data},
+        );
       } else {
         Utils.snackBar(
           'error'.tr,
@@ -793,6 +836,3 @@ class ProfileSetUpController extends GetxController {
     }
   }
 }
-
-
-

@@ -257,7 +257,8 @@ class ProfileView extends StatelessWidget {
 
   Widget _buildBoostOrAnalyticsCard() {
     final profile = controller.profileData.value;
-    final normalizedBadge = _normalizeBadge(profile?.badge ?? 'level_one');
+    if (profile == null) return const SizedBox.shrink();
+    final normalizedBadge = _normalizeBadge(profile.badge);
     return Column(
       children: [
         _buildProfileInfo(),

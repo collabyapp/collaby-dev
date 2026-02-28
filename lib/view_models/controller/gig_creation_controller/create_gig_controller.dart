@@ -151,10 +151,7 @@ class CreateGigController extends GetxController
   ];
 
   /// Presets de extras (custom)
-  final extraPresets = const <String>[
-    'Additional revision',
-    'Custom request',
-  ];
+  final extraPresets = const <String>['Additional revision', 'Custom request'];
 
   /// Extras personalizados globales
   final RxList<AdditionalFeature> globalExtras = <AdditionalFeature>[].obs;
@@ -1093,23 +1090,26 @@ class CreateGigController extends GetxController
     final sanitizedPricingList = pricingList.map((p) {
       final rawExtras = p['additionalFeatures'];
       if (rawExtras is List) {
-        final cleaned = rawExtras.map((e) {
-          if (e is Map) {
-            final map = Map<String, dynamic>.from(e);
-            final featureType = _safeFeatureType(
-              (map['featureType'] ?? '').toString(),
-            );
-            if (featureType.isEmpty) {
+        final cleaned = rawExtras
+            .map((e) {
+              if (e is Map) {
+                final map = Map<String, dynamic>.from(e);
+                final featureType = _safeFeatureType(
+                  (map['featureType'] ?? '').toString(),
+                );
+                if (featureType.isEmpty) {
+                  return null;
+                }
+                return {
+                  'featureType': featureType,
+                  'price': map['price'] ?? 0,
+                  'deliveryTimesIndays': map['deliveryTimesIndays'] ?? 0,
+                };
+              }
               return null;
-            }
-            return {
-              'featureType': featureType,
-              'price': map['price'] ?? 0,
-              'deliveryTimesIndays': map['deliveryTimesIndays'] ?? 0,
-            };
-          }
-          return null;
-        }).whereType<Map<String, dynamic>>().toList();
+            })
+            .whereType<Map<String, dynamic>>()
+            .toList();
         return {...p, 'additionalFeatures': cleaned};
       }
       return p;
@@ -1186,18 +1186,10 @@ class CreateGigController extends GetxController
           : payload;
 
       bool _isAdditionalFeatureValidationError(String msg) {
-        final m = msg.toLowerCase();
-        final mentionsAdditionalFeature = m.contains('additionalfeatures');
-        final mentionsFeatureType = m.contains('featuretype');
-        final mentionsEnumError = m.contains('must be one of');
-        final mentionsUnknownProperty = m.contains('property name should not exist');
-        final mentionsPricingPath = m.contains('pricing.');
-        final mentionsFeaturePath = m.contains('featuretype must be one of');
-        return ((mentionsAdditionalFeature || mentionsPricingPath) &&
-                (mentionsFeatureType ||
-                    mentionsEnumError ||
-                    mentionsUnknownProperty)) ||
-            mentionsFeaturePath;
+        // Do not silently strip additional features.
+        // If backend rejects them, surface the error to user so the gig is not
+        // published without paid extras.
+        return false;
       }
 
       String _extractMessage(dynamic raw) {
@@ -1209,11 +1201,7 @@ class CreateGigController extends GetxController
       }
 
       bool _needsAdditionalFeatureFallbackFromResponse(dynamic res) {
-        if (res is! Map) return false;
-        final statusCode = res['statusCode'] as int?;
-        if (statusCode == null || statusCode < 400) return false;
-        final message = _extractMessage(res['message'] ?? res['error'] ?? res);
-        return _isAdditionalFeatureValidationError(message);
+        return false;
       }
 
       Map<String, dynamic> _stripAdditionalFeatures(Map<String, dynamic> body) {
@@ -1310,7 +1298,7 @@ class CreateGigController extends GetxController
                   )
                 : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
           } catch (_) {
-          // Try 2: remove key entirely as final fallback
+            // Try 2: remove key entirely as final fallback
             final fallbackPayloadDrop = isEditMode.value
                 ? _dropAdditionalFeaturesKey(updatePayload)
                 : _dropAdditionalFeaturesKey(payload);
@@ -1378,7 +1366,9 @@ class CreateGigController extends GetxController
           }
 
           final retryStatusAfterDrop = retryResponse?['statusCode'] as int?;
-          final retryMessageAfterDrop = _extractMessage(retryResponse?['message']);
+          final retryMessageAfterDrop = _extractMessage(
+            retryResponse?['message'],
+          );
           if (retryStatusAfterDrop == 200 || retryStatusAfterDrop == 201) {
             if (isEditMode.value) {
               Get.back();
@@ -1643,4 +1633,3 @@ class CreateGigController extends GetxController
     return cleaned.length;
   }
 }
-
