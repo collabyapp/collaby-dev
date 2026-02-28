@@ -68,11 +68,14 @@ class CustomBottomNav extends StatelessWidget {
           color: isSelected ? const Color(0xff4C1CAE) : Colors.transparent,
         ),
         child: Center(
-          child: Image.asset(
-            assetName,
-            width: 22,
-            height: 22,
-            color: isSelected ? AppColor.whiteColor : const Color(0xff0A0A0A),
+          child: Transform.translate(
+            offset: const Offset(0, 1.5),
+            child: Image.asset(
+              assetName,
+              width: 24,
+              height: 24,
+              color: isSelected ? AppColor.whiteColor : const Color(0xff0A0A0A),
+            ),
           ),
         ),
       ),

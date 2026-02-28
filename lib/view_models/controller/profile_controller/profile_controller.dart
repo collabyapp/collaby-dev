@@ -63,7 +63,7 @@ class ProfileController extends GetxController
           : <String, dynamic>{};
       final profileJson = _extractProfileJson(root);
 
-      if (_looksLikeProfile(profileJson)) {
+      if (profileJson.isNotEmpty) {
         profileData.value = ProfileModel.fromJson(profileJson);
 
         final phone =
@@ -250,17 +250,38 @@ class ProfileController extends GetxController
     final data = root['data'] is Map<String, dynamic>
         ? root['data'] as Map<String, dynamic>
         : <String, dynamic>{};
-    final nestedProfile = data['profile'] is Map<String, dynamic>
-        ? data['profile'] as Map<String, dynamic>
-        : <String, dynamic>{};
-    if (nestedProfile.isNotEmpty) return nestedProfile;
-    if (_looksLikeProfile(data)) return data;
+    final candidates = <Map<String, dynamic>>[
+      if (data['profile'] is Map<String, dynamic>)
+        data['profile'] as Map<String, dynamic>,
+      if (data['creatorProfile'] is Map<String, dynamic>)
+        data['creatorProfile'] as Map<String, dynamic>,
+      if (data['creator'] is Map<String, dynamic>)
+        data['creator'] as Map<String, dynamic>,
+      if (data['user'] is Map<String, dynamic>)
+        data['user'] as Map<String, dynamic>,
+      data,
+      if (root['profile'] is Map<String, dynamic>)
+        root['profile'] as Map<String, dynamic>,
+      if (root['creatorProfile'] is Map<String, dynamic>)
+        root['creatorProfile'] as Map<String, dynamic>,
+      if (root['creator'] is Map<String, dynamic>)
+        root['creator'] as Map<String, dynamic>,
+      if (root['user'] is Map<String, dynamic>)
+        root['user'] as Map<String, dynamic>,
+      root,
+    ];
 
-    final rootProfile = root['profile'] is Map<String, dynamic>
-        ? root['profile'] as Map<String, dynamic>
-        : <String, dynamic>{};
-    if (rootProfile.isNotEmpty) return rootProfile;
-    if (_looksLikeProfile(root)) return root;
+    for (final candidate in candidates) {
+      if (candidate.isNotEmpty && _looksLikeProfile(candidate)) {
+        return candidate;
+      }
+    }
+
+    for (final candidate in candidates) {
+      if (candidate.isNotEmpty) {
+        return candidate;
+      }
+    }
 
     return <String, dynamic>{};
   }

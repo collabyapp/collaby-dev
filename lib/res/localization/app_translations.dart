@@ -1066,7 +1066,7 @@ class AppTranslations extends Translations {
       'settings_currency': 'Moneda',
       'settings_choose_currency': 'Elegir moneda',
       'settings_delete_account': 'Eliminar cuenta',
-      'settings_logout': 'cerrar sesión',
+      'settings_logout': 'Cerrar sesión',
       'support_ticket_title': 'Soporte y tickets',
       'support_ticket_subtitle':
           'Abre un ticket y sigue las respuestas del equipo de soporte.',
