@@ -6,7 +6,7 @@ class ImageAssets {
   static const String onboarding2 = 'assets/images/onboarding_2.png';
 
   //Auth
-  static const String logoImage = 'assets/images/loguete.png';
+  static const String logoImage = 'assets/images/logosesion.png';
   static const String splashLogoImage = 'assets/images/splash.png';
   static const String googleIcon = 'assets/icons/google.png';
   static const String appleIcon = 'assets/icons/apple.png';
