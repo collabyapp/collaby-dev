@@ -1,9 +1,9 @@
 import 'package:collaby_app/view_models/services/notification_services/notification_service.dart';
 import 'package:collaby_app/view_models/services/splash_services.dart';
+import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -29,15 +29,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: Lottie.asset(
-          width: 500.w,
-
-          'assets/json/splash_animation.json',
-          repeat: false,
-          // animate: true,
-          // options:
-          // frameRate: FrameRate.max,
-          // delegates: LottieDelegates(values: [/* color overrides */]),
+        body: Center(
+          child: Image.asset(
+            ImageAssets.splashLogoImage,
+            width: 220.w,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
