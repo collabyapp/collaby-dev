@@ -105,7 +105,10 @@ class ProfileController extends GetxController
         fallbackEmail.value = email.toString().trim();
       }
     } catch (e) {
-      Utils.snackBar('error'.tr, e.toString());
+      final message = _humanizeErrorMessage(e);
+      if (!_isKnownNonBlockingProfileError(message)) {
+        Utils.snackBar('error'.tr, message);
+      }
     } finally {
       isLoadingProfile.value = false;
     }
@@ -827,6 +830,51 @@ class ProfileController extends GetxController
     return '';
   }
 
+  String _humanizeErrorMessage(Object error) {
+    final raw = error.toString().trim();
+    if (raw.isEmpty) return 'profile_load_failed'.tr;
+    if (raw.toLowerCase().startsWith('exception:')) {
+      final cleaned = raw.substring('exception:'.length).trim();
+      if (cleaned.isNotEmpty) return cleaned;
+    }
+    return raw;
+  }
+
+  bool _isKnownNonBlockingProfileError(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('failed to retrieve creator portfolio');
+  }
+
+  List<String> _cleanTextList(Iterable<String> values) {
+    return values
+        .map((e) => _coalesceString([e]))
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
+
+  dynamic _normalizeProfileLanguages(Iterable<dynamic> languages) {
+    final raw = languages
+        .map((entry) {
+          if (entry is Map) {
+            final map = _asMap(entry);
+            final language = _coalesceString([map['language'], map['name']]);
+            if (language.isEmpty) return null;
+            final level = _coalesceString([map['level'], 'Beginner']);
+            return <String, dynamic>{'language': language, 'level': level};
+          }
+          final language = _coalesceString([
+            (entry as dynamic).language,
+            (entry as dynamic).name,
+          ]);
+          if (language.isEmpty) return null;
+          final level = _coalesceString([(entry as dynamic).level, 'Beginner']);
+          return <String, dynamic>{'language': language, 'level': level};
+        })
+        .whereType<Map<String, dynamic>>()
+        .toList();
+    return ProfileModel.fromJson({'languages': raw}).languages;
+  }
+
   void _patchProfileFromServiceFallback(GigDetailModel detail, MyGigModel gig) {
     final creator = detail.creator;
     final current = profileData.value;
@@ -872,6 +920,19 @@ class ProfileController extends GetxController
       creator.ageGroup,
     ]);
     final resolvedGender = _coalesceString([current?.gender, creator.gender]);
+    final currentNiches = _cleanTextList(current?.niches ?? const []);
+    final creatorNiches = _cleanTextList(creator.niches);
+    final resolvedNiches = currentNiches.isNotEmpty
+        ? currentNiches
+        : creatorNiches;
+
+    final currentLanguages = _normalizeProfileLanguages(
+      current?.languages ?? const [],
+    );
+    final creatorLanguages = _normalizeProfileLanguages(creator.languages);
+    final resolvedLanguages = currentLanguages.isNotEmpty
+        ? currentLanguages
+        : creatorLanguages;
 
     if (current == null) {
       profileData.value = ProfileModel(
@@ -887,14 +948,14 @@ class ProfileController extends GetxController
         ageGroup: resolvedAgeGroup,
         gender: resolvedGender,
         country: resolvedCountry,
-        languages: const [],
+        languages: resolvedLanguages,
         shippingAddress: ShippingAddress(
           street: '',
           city: _extractCityFromAddress(gig.creatorAddress),
           zipCode: '',
           country: resolvedCountry,
         ),
-        niches: creator.niches,
+        niches: resolvedNiches,
         reviewStats: ReviewStatsModel(
           totalReviews: gig.reviewStats.totalReviews,
           averageRating: gig.reviewStats.averageRating,
@@ -925,7 +986,7 @@ class ProfileController extends GetxController
       ageGroup: resolvedAgeGroup,
       gender: resolvedGender,
       country: resolvedCountry,
-      languages: current.languages,
+      languages: resolvedLanguages,
       shippingAddress: ShippingAddress(
         street: current.shippingAddress.street,
         city: _coalesceString([
@@ -938,7 +999,7 @@ class ProfileController extends GetxController
           resolvedCountry,
         ]),
       ),
-      niches: current.niches.isNotEmpty ? current.niches : creator.niches,
+      niches: resolvedNiches,
       reviewStats: ReviewStatsModel(
         totalReviews: current.reviewStats.totalReviews > 0
             ? current.reviewStats.totalReviews

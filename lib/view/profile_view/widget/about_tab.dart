@@ -31,13 +31,13 @@ class AboutTab extends StatelessWidget {
               ),
               _buildSection(
                 'profile_gender'.tr,
-                _buildChip(_fallbackText(profile.gender)),
+                _buildChip(_localizedGender(profile.gender)),
               ),
               _buildSection(
                 'profile_skills'.tr,
                 _buildChipsList(
                   profile.niches
-                      .map((e) => StringExtension(e).capitalize)
+                      .map(_capitalize)
                       .where((e) => e.trim().isNotEmpty)
                       .toList(),
                 ),
@@ -45,10 +45,14 @@ class AboutTab extends StatelessWidget {
               _buildSection(
                 'profile_languages'.tr,
                 _buildChipsList(
-                  profile.languages
-                      .map((e) => '${e.language} (${e.level})')
-                      .where((e) => e.trim().isNotEmpty && !e.startsWith(' ()'))
-                      .toList(),
+                  profile.languages.map((e) {
+                    final language = _normalizeValue(e.language);
+                    if (language.isEmpty) return '';
+                    final level = _normalizeValue(e.level);
+                    return level.isEmpty
+                        ? language
+                        : '$language (${level.capitalize})';
+                  }).toList(),
                 ),
               ),
             ],
@@ -89,7 +93,10 @@ class AboutTab extends StatelessWidget {
   }
 
   Widget _buildChipsList(List<String> items) {
-    final cleanItems = items.where((e) => e.trim().isNotEmpty).toList();
+    final cleanItems = items
+        .map(_normalizeValue)
+        .where((e) => e.isNotEmpty)
+        .toList();
     if (cleanItems.isEmpty) return _buildChip('-');
 
     return Wrap(
@@ -100,14 +107,29 @@ class AboutTab extends StatelessWidget {
   }
 
   String _fallbackText(String value) {
-    final v = value.trim();
+    final v = _normalizeValue(value);
     return v.isEmpty ? '-' : v;
   }
-}
 
-extension StringExtension on String {
-  String get capitalize {
-    final v = trim();
+  String _normalizeValue(String value) {
+    final v = value.trim();
+    if (v.isEmpty) return '';
+    final lower = v.toLowerCase();
+    if (lower == '-' || lower == 'null' || lower == 'n/a') return '';
+    return v;
+  }
+
+  String _localizedGender(String value) {
+    final v = _normalizeValue(value).toLowerCase();
+    if (v.isEmpty) return '-';
+    if (v.contains('female') || v.contains('mujer')) return 'gender_female'.tr;
+    if (v.contains('male') || v.contains('hombre')) return 'gender_male'.tr;
+    if (v.contains('non')) return 'gender_non_binary'.tr;
+    return _capitalize(value);
+  }
+
+  String _capitalize(String value) {
+    final v = value.trim();
     if (v.isEmpty) return '';
     return '${v[0].toUpperCase()}${v.substring(1)}';
   }
