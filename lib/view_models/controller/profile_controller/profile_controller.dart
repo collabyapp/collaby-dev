@@ -44,6 +44,9 @@ class ProfileController extends GetxController
       if (currentIndex.value == 0 || currentIndex.value == 2) {
         fetchProfileData(refresh: true);
       }
+      if (currentIndex.value == 0) {
+        fetchMyGigs(refresh: true);
+      }
     });
 
     // Fetch profile data on init
@@ -111,29 +114,38 @@ class ProfileController extends GetxController
     final fromProfile = (profileData.value?.portfolio ?? <PortfolioItem>[])
         .where((item) => item.deliveryFile.url.trim().isNotEmpty)
         .toList();
-    if (fromProfile.isNotEmpty) {
-      final cleaned = <PortfolioItem>[];
-      final seenUrls = <String>{};
-      for (final item in fromProfile) {
-        final key = item.deliveryFile.url.trim();
-        if (seenUrls.contains(key)) continue;
-        seenUrls.add(key);
-        cleaned.add(item);
-      }
-      return cleaned;
-    }
+    final serviceOnly = servicePortfolioItems
+        .where((item) => item.deliveryFile.url.trim().isNotEmpty)
+        .toList();
 
-    if (servicePortfolioItems.isEmpty) return const <PortfolioItem>[];
+    if (fromProfile.isEmpty && serviceOnly.isEmpty)
+      return const <PortfolioItem>[];
 
-    final fallback = <PortfolioItem>[];
+    final serviceUrls = serviceOnly
+        .map((e) => e.deliveryFile.url.trim())
+        .where((e) => e.isNotEmpty)
+        .toSet();
+
+    final merged = <PortfolioItem>[];
     final seenUrls = <String>{};
-    for (final item in servicePortfolioItems) {
+
+    // Service gallery items must always be visible and never hideable.
+    for (final item in serviceOnly) {
       final key = item.deliveryFile.url.trim();
       if (key.isNotEmpty && seenUrls.contains(key)) continue;
       if (key.isNotEmpty) seenUrls.add(key);
-      fallback.add(item);
+      merged.add(_withCanHide(item, false));
     }
-    return fallback;
+
+    for (final item in fromProfile) {
+      final key = item.deliveryFile.url.trim();
+      if (key.isEmpty || seenUrls.contains(key)) continue;
+      seenUrls.add(key);
+      final shouldHide = serviceUrls.contains(key) ? false : item.canHide;
+      merged.add(_withCanHide(item, shouldHide));
+    }
+
+    return merged;
   }
 
   /// Get reviews
@@ -202,9 +214,10 @@ class ProfileController extends GetxController
       if (gig.gigId.trim().isEmpty) continue;
       try {
         final response = await _gigRepository.getGigDetailApi(gig.gigId);
-        final data = response is Map<String, dynamic>
-            ? response['data'] as Map<String, dynamic>?
-            : null;
+        final root = response is Map<String, dynamic>
+            ? response
+            : <String, dynamic>{};
+        final data = _extractGigDetailJson(root);
         if (data == null) continue;
 
         final detail = GigDetailModel.fromJson(data);
@@ -265,7 +278,10 @@ class ProfileController extends GetxController
       final response = await _gigRepository.getGigDetailApi(
         gig.gigId.toString(),
       );
-      final data = response is Map<String, dynamic> ? response['data'] : null;
+      final root = response is Map<String, dynamic>
+          ? response
+          : <String, dynamic>{};
+      final data = _extractGigDetailJson(root);
       if (data == null) {
         Utils.snackBar('error'.tr, 'error_no_service'.tr);
         return;
@@ -405,9 +421,13 @@ class ProfileController extends GetxController
     ]);
     merged['displayName'] = _coalesceString([
       merged['displayName'],
+      merged['fullName'],
+      merged['name'],
       user['displayName'],
       user['username'],
       user['brandCompanyName'],
+      user['fullName'],
+      user['name'],
     ]);
     merged['imageUrl'] = _coalesceString([
       merged['imageUrl'],
@@ -415,12 +435,39 @@ class ProfileController extends GetxController
     ]);
     merged['description'] = _coalesceString([
       merged['description'],
+      merged['bio'],
+      merged['about'],
       user['description'],
+      user['bio'],
+      user['about'],
+    ]);
+    merged['ageGroup'] = _coalesceString([
+      merged['ageGroup'],
+      merged['age'],
+      merged['ageRange'],
+      merged['age_range'],
+    ]);
+    merged['gender'] = _coalesceString([merged['gender'], merged['sex']]);
+    merged['country'] = _coalesceString([
+      merged['country'],
+      merged['location'],
     ]);
 
     if (merged['shippingAddress'] is! Map<String, dynamic>) {
       final shipping = _asMap(roleData['shippingAddress']);
       if (shipping.isNotEmpty) merged['shippingAddress'] = shipping;
+    }
+    if (merged['shippingAddress'] is! Map<String, dynamic>) {
+      final city = _coalesceString([merged['city'], roleData['city']]);
+      final country = _coalesceString([merged['country'], roleData['country']]);
+      if (city.isNotEmpty || country.isNotEmpty) {
+        merged['shippingAddress'] = <String, dynamic>{
+          'street': '',
+          'city': city,
+          'zipCode': '',
+          'country': country,
+        };
+      }
     }
 
     if (merged['languages'] is! List && roleData['languages'] is List) {
@@ -472,6 +519,43 @@ class ProfileController extends GetxController
       if (text.isNotEmpty) return text;
     }
     return '';
+  }
+
+  PortfolioItem _withCanHide(PortfolioItem item, bool canHide) {
+    return PortfolioItem(
+      galleryItemId: item.galleryItemId,
+      gigId: item.gigId,
+      gigTitle: item.gigTitle,
+      deliveryFile: item.deliveryFile,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt,
+      workDescription: item.workDescription,
+      deliveryStatus: item.deliveryStatus,
+      canHide: canHide,
+    );
+  }
+
+  Map<String, dynamic>? _extractGigDetailJson(Map<String, dynamic> root) {
+    final data = _asMap(root['data']);
+    final nestedData = _asMap(data['data']);
+    final candidates = <Map<String, dynamic>>[
+      nestedData,
+      data,
+      _asMap(data['gig']),
+      _asMap(root['gig']),
+      root,
+    ].where((m) => m.isNotEmpty).toList();
+
+    for (final candidate in candidates) {
+      if (_looksLikeGigDetail(candidate)) return candidate;
+    }
+    return null;
+  }
+
+  bool _looksLikeGigDetail(Map<String, dynamic> json) {
+    if (json.isEmpty) return false;
+    if (json['gallery'] is List) return true;
+    return json.containsKey('_id') || json.containsKey('title');
   }
 
   // @override

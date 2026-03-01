@@ -222,7 +222,8 @@ class ProfileSetUpController extends GetxController {
         firstNameController.text = profileData['firstName'] ?? '';
         lastNameController.text = profileData['lastName'] ?? '';
         displayNameController.text = profileData['displayName'] ?? '';
-        descriptionController.text = profileData['description'] ?? '';
+        descriptionController.text =
+            profileData['description'] ?? profileData['bio'] ?? '';
 
         profileImageUrl.value = profileData['imageUrl'] ?? '';
 
@@ -267,6 +268,7 @@ class ProfileSetUpController extends GetxController {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
           'displayName': displayNameController.text,
+          'description': descriptionController.text,
           'imageUrl': profileImageUrl.value,
           'ageGroup': _profile.ageGroup,
           'gender': _profile.gender,
@@ -358,9 +360,13 @@ class ProfileSetUpController extends GetxController {
     ]);
     merged['displayName'] = _coalesceString([
       merged['displayName'],
+      merged['fullName'],
+      merged['name'],
       user['displayName'],
       user['username'],
       user['brandCompanyName'],
+      user['fullName'],
+      user['name'],
     ]);
     merged['imageUrl'] = _coalesceString([
       merged['imageUrl'],
@@ -368,7 +374,11 @@ class ProfileSetUpController extends GetxController {
     ]);
     merged['description'] = _coalesceString([
       merged['description'],
+      merged['bio'],
+      merged['about'],
       user['description'],
+      user['bio'],
+      user['about'],
     ]);
 
     if (merged['shippingAddress'] is! Map<String, dynamic>) {
@@ -427,6 +437,7 @@ class ProfileSetUpController extends GetxController {
         'firstName': firstNameController.text,
         'lastName': lastNameController.text,
         'displayName': displayNameController.text,
+        'description': descriptionController.text,
         'imageUrl': profileImageUrl.value,
         'ageGroup': _profile.ageGroup,
         'gender': _profile.gender,
@@ -727,6 +738,7 @@ class ProfileSetUpController extends GetxController {
       "firstName": firstNameController.text.trim(),
       "lastName": lastNameController.text.trim(),
       "displayName": displayNameController.text.trim(),
+      "description": descriptionController.text.trim(),
       "gender": gender.toLowerCase(),
       "ageGroup": _ageRangeValue(_profile.ageGroup),
       "country": _profile.country,
@@ -751,6 +763,10 @@ class ProfileSetUpController extends GetxController {
     }
     if (displayNameController.text.trim() != originalData['displayName']) {
       payload['displayName'] = displayNameController.text.trim();
+    }
+    if (descriptionController.text.trim() !=
+        (originalData['description'] ?? '').toString().trim()) {
+      payload['description'] = descriptionController.text.trim();
     }
     if (profileImageUrl.value != originalData['imageUrl']) {
       payload['imageUrl'] = profileImageUrl.value;
@@ -833,6 +849,7 @@ class ProfileSetUpController extends GetxController {
           'firstName': firstNameController.text,
           'lastName': lastNameController.text,
           'displayName': displayNameController.text,
+          'description': descriptionController.text,
           'imageUrl': profileImageUrl.value,
           'ageGroup': _profile.ageGroup,
           'gender': _profile.gender,

@@ -131,7 +131,14 @@ class ProfileSetupView extends StatelessWidget {
                       placeholder: 'profile_display_name_hint'.tr,
                     ),
                     SizedBox(height: 20),
-                    // Description removed for account creation flow
+                    buildTextField(
+                      label: 'profile_bio'.tr,
+                      controller: controller.descriptionController,
+                      placeholder: 'description_placeholder'.tr,
+                      maxLines: 4,
+                      maxLength: 500,
+                    ),
+                    SizedBox(height: 20),
                     // Age Group & Gender Section
                     Text(
                       'profile_age_gender'.tr,
@@ -285,7 +292,14 @@ class ProfileSetupView extends StatelessWidget {
                         placeholder: 'profile_display_name_hint'.tr,
                       ),
                       SizedBox(height: 20),
-                      // Description removed for account creation flow
+                      buildTextField(
+                        label: 'profile_bio'.tr,
+                        controller: controller.descriptionController,
+                        placeholder: 'description_placeholder'.tr,
+                        maxLines: 4,
+                        maxLength: 500,
+                      ),
+                      SizedBox(height: 20),
 
                       // Age Group & Gender Section
                       Text(
