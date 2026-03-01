@@ -10,6 +10,7 @@ import 'package:collaby_app/view/profile_setup_view/widgets/country_selector_bot
 import 'package:collaby_app/view/profile_setup_view/widgets/gender_selector_bottom_sheet.dart';
 import 'package:collaby_app/view/profile_setup_view/widgets/language_level_selector_bottom_sheet.dart';
 import 'package:collaby_app/view/profile_setup_view/widgets/language_selector_bottom_sheet.dart';
+import 'package:collaby_app/view_models/controller/profile_controller/profile_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -216,7 +217,41 @@ class ProfileSetUpController extends GetxController {
       final root = response is Map<String, dynamic>
           ? response
           : <String, dynamic>{};
-      final profileData = _extractProfileJson(root);
+      final statusCodeRaw = root['statusCode'];
+      final statusCode = statusCodeRaw is int
+          ? statusCodeRaw
+          : int.tryParse(statusCodeRaw?.toString() ?? '');
+      if (root['error'] == true || (statusCode != null && statusCode >= 400)) {
+        final message = (root['message'] ?? '').toString().trim();
+        throw Exception(
+          message.isNotEmpty ? message : 'profile_load_failed'.tr,
+        );
+      }
+      var profileData = _extractProfileJson(root);
+      if (profileData.isEmpty && Get.isRegistered<ProfileController>()) {
+        final fallbackProfile = Get.find<ProfileController>().profileData.value;
+        if (fallbackProfile != null) {
+          profileData = <String, dynamic>{
+            'firstName': fallbackProfile.firstName,
+            'lastName': fallbackProfile.lastName,
+            'displayName': fallbackProfile.displayName,
+            'description': fallbackProfile.description,
+            'imageUrl': fallbackProfile.imageUrl,
+            'ageGroup': fallbackProfile.ageGroup,
+            'gender': fallbackProfile.gender,
+            'country': fallbackProfile.country,
+            'languages': fallbackProfile.languages
+                .map((e) => {'language': e.language, 'level': e.level})
+                .toList(),
+            'shippingAddress': {
+              'street': fallbackProfile.shippingAddress.street,
+              'city': fallbackProfile.shippingAddress.city,
+              'zipCode': fallbackProfile.shippingAddress.zipCode,
+              'country': fallbackProfile.shippingAddress.country,
+            },
+          };
+        }
+      }
 
       if (profileData.isNotEmpty) {
         firstNameController.text = profileData['firstName'] ?? '';

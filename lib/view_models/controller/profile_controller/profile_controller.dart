@@ -72,6 +72,16 @@ class ProfileController extends GetxController
       final root = response is Map<String, dynamic>
           ? response
           : <String, dynamic>{};
+      final statusCodeRaw = root['statusCode'];
+      final statusCode = statusCodeRaw is int
+          ? statusCodeRaw
+          : int.tryParse(statusCodeRaw?.toString() ?? '');
+      if (root['error'] == true || (statusCode != null && statusCode >= 400)) {
+        final message = (root['message'] ?? '').toString().trim();
+        throw Exception(
+          message.isNotEmpty ? message : 'profile_load_failed'.tr,
+        );
+      }
       final responseData = root['data'] is Map<String, dynamic>
           ? root['data'] as Map<String, dynamic>
           : <String, dynamic>{};
@@ -84,7 +94,8 @@ class ProfileController extends GetxController
           responseData['email'] ?? root['email'] ?? profileJson['email'];
 
       if (profileJson.isNotEmpty) {
-        profileData.value = ProfileModel.fromJson(profileJson);
+        final incoming = ProfileModel.fromJson(profileJson);
+        profileData.value = _mergeProfileData(profileData.value, incoming);
       }
       if (phone != null) {
         await _userPref.saveUser(phoneNumber: phone.toString());
@@ -124,6 +135,10 @@ class ProfileController extends GetxController
         .map((e) => e.deliveryFile.url.trim())
         .where((e) => e.isNotEmpty)
         .toSet();
+    final serviceGigIds = myGigs
+        .map((e) => e.gigId.trim())
+        .where((e) => e.isNotEmpty)
+        .toSet();
 
     final merged = <PortfolioItem>[];
     final seenUrls = <String>{};
@@ -140,7 +155,10 @@ class ProfileController extends GetxController
       final key = item.deliveryFile.url.trim();
       if (key.isEmpty || seenUrls.contains(key)) continue;
       seenUrls.add(key);
-      final shouldHide = serviceUrls.contains(key) ? false : item.canHide;
+      final fromServiceGig = serviceGigIds.contains(item.gigId.trim());
+      final shouldHide = (serviceUrls.contains(key) || fromServiceGig)
+          ? false
+          : item.canHide;
       merged.add(_withCanHide(item, shouldHide));
     }
 
@@ -210,9 +228,11 @@ class ProfileController extends GetxController
     final seenUrls = <String>{};
     GigDetailModel? firstUsableDetail;
     MyGigModel? firstUsableGig;
+    MyGigModel? firstGigForFallback;
 
     for (final gig in myGigs) {
       if (gig.gigId.trim().isEmpty) continue;
+      firstGigForFallback ??= gig;
       try {
         final response = await _gigRepository.getGigDetailApi(gig.gigId);
         final root = response is Map<String, dynamic>
@@ -254,6 +274,8 @@ class ProfileController extends GetxController
     servicePortfolioItems.value = built;
     if (firstUsableDetail != null && firstUsableGig != null) {
       _patchProfileFromServiceFallback(firstUsableDetail, firstUsableGig);
+    } else if (firstGigForFallback != null) {
+      _patchProfileFromGigCardFallback(firstGigForFallback);
     }
   }
 
@@ -362,6 +384,73 @@ class ProfileController extends GetxController
     }
   }
 
+  ProfileModel _mergeProfileData(ProfileModel? current, ProfileModel incoming) {
+    if (current == null) return incoming;
+
+    String pick(String next, String prev) =>
+        next.trim().isNotEmpty ? next : prev;
+
+    List<T> pickList<T>(List<T> next, List<T> prev) =>
+        next.isNotEmpty ? next : prev;
+
+    final mergedShipping = ShippingAddress(
+      street: pick(
+        incoming.shippingAddress.street,
+        current.shippingAddress.street,
+      ),
+      city: pick(incoming.shippingAddress.city, current.shippingAddress.city),
+      zipCode: pick(
+        incoming.shippingAddress.zipCode,
+        current.shippingAddress.zipCode,
+      ),
+      country: pick(
+        incoming.shippingAddress.country,
+        current.shippingAddress.country,
+      ),
+    );
+
+    final mergedReviewStats = ReviewStatsModel(
+      totalReviews: incoming.reviewStats.totalReviews > 0
+          ? incoming.reviewStats.totalReviews
+          : current.reviewStats.totalReviews,
+      averageRating: incoming.reviewStats.averageRating > 0
+          ? incoming.reviewStats.averageRating
+          : current.reviewStats.averageRating,
+    );
+
+    return ProfileModel(
+      role: pick(incoming.role, current.role),
+      status: pick(incoming.status, current.status),
+      badge: pick(incoming.badge, current.badge),
+      userId: pick(incoming.userId, current.userId),
+      imageUrl: pick(incoming.imageUrl, current.imageUrl),
+      firstName: pick(incoming.firstName, current.firstName),
+      lastName: pick(incoming.lastName, current.lastName),
+      displayName: pick(incoming.displayName, current.displayName),
+      description: pick(incoming.description, current.description),
+      ageGroup: pick(incoming.ageGroup, current.ageGroup),
+      gender: pick(incoming.gender, current.gender),
+      country: pick(incoming.country, current.country),
+      languages: pickList(incoming.languages, current.languages),
+      shippingAddress: mergedShipping,
+      niches: pickList(incoming.niches, current.niches),
+      reviewStats: mergedReviewStats,
+      subscription: incoming.subscription ?? current.subscription,
+      analytics: incoming.analytics ?? current.analytics,
+      isConnectedAccount:
+          incoming.isConnectedAccount || current.isConnectedAccount,
+      stripeConnectedAccountId:
+          incoming.stripeConnectedAccountId ?? current.stripeConnectedAccountId,
+      activeBoost: incoming.activeBoost ?? current.activeBoost,
+      portfolio: pickList(incoming.portfolio, current.portfolio),
+      reviews: pickList(incoming.reviews, current.reviews),
+      creatorReviewStats:
+          incoming.creatorReviewStats ?? current.creatorReviewStats,
+      creatorLevelProgress:
+          incoming.creatorLevelProgress ?? current.creatorLevelProgress,
+    );
+  }
+
   Map<String, dynamic> _extractProfileJson(Map<String, dynamic> root) {
     final data = root['data'] is Map<String, dynamic>
         ? root['data'] as Map<String, dynamic>
@@ -417,10 +506,11 @@ class ProfileController extends GetxController
 
     if (best.isEmpty && data.isNotEmpty) {
       final fallback = _normalizeProfileCandidate(data);
-      if (_profileStructuralScore(fallback) > 0) {
+      if (_hasMinimumProfileSignal(fallback)) {
         return fallback;
       }
     }
+    if (!_hasMinimumProfileSignal(best)) return <String, dynamic>{};
     return best;
   }
 
@@ -611,16 +701,34 @@ class ProfileController extends GetxController
       merged['role'],
       user['role'],
       roleData['role'],
-      'creator',
     ]);
     merged['status'] = _coalesceString([
       merged['status'],
       merged['profileStatus'],
       roleData['profileStatus'],
-      'active',
     ]);
 
     return merged;
+  }
+
+  bool _hasMinimumProfileSignal(Map<String, dynamic> json) {
+    if (json.isEmpty) return false;
+    if (_coalesceString([json['displayName']]).isNotEmpty) return true;
+    if (_coalesceString([json['firstName']]).isNotEmpty) return true;
+    if (_coalesceString([json['lastName']]).isNotEmpty) return true;
+    if (_coalesceString([json['description']]).isNotEmpty) return true;
+    if (_coalesceString([json['imageUrl']]).isNotEmpty) return true;
+    if (_coalesceString([json['country']]).isNotEmpty) return true;
+    if (_coalesceString([json['ageGroup']]).isNotEmpty) return true;
+    if (_coalesceString([json['gender']]).isNotEmpty) return true;
+    if (json['languages'] is List && (json['languages'] as List).isNotEmpty) {
+      return true;
+    }
+    if (json['shippingAddress'] is Map &&
+        (json['shippingAddress'] as Map).isNotEmpty) {
+      return true;
+    }
+    return false;
   }
 
   int _profileScore(Map<String, dynamic> json) {
@@ -851,6 +959,103 @@ class ProfileController extends GetxController
     );
   }
 
+  void _patchProfileFromGigCardFallback(MyGigModel gig) {
+    final current = profileData.value;
+    final fullName = gig.creatorFullName.trim();
+    final split = fullName.split(RegExp(r'\s+')).where((e) => e.isNotEmpty);
+    final parts = split.toList();
+    final firstFallback = parts.isNotEmpty ? parts.first : '';
+    final lastFallback = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+    final cityFallback = _extractCityFromAddress(gig.creatorAddress);
+    final countryFallback = _extractCountryFromAddress(gig.creatorAddress);
+
+    if (current == null) {
+      profileData.value = ProfileModel(
+        role: 'creator',
+        status: 'active',
+        badge: 'none',
+        userId: _coalesceString([gig.creatorUserId]),
+        imageUrl: _coalesceString([gig.creatorImageUrl]),
+        firstName: firstFallback,
+        lastName: lastFallback,
+        displayName: _coalesceString([fullName, firstFallback]),
+        description: '',
+        ageGroup: '',
+        gender: '',
+        country: countryFallback,
+        languages: const [],
+        shippingAddress: ShippingAddress(
+          street: '',
+          city: cityFallback,
+          zipCode: '',
+          country: countryFallback,
+        ),
+        niches: const [],
+        reviewStats: ReviewStatsModel(
+          totalReviews: gig.reviewStats.totalReviews,
+          averageRating: gig.reviewStats.averageRating,
+        ),
+        subscription: null,
+        analytics: null,
+        isConnectedAccount: false,
+        stripeConnectedAccountId: null,
+        activeBoost: null,
+        portfolio: const [],
+        reviews: const [],
+        creatorReviewStats: null,
+        creatorLevelProgress: null,
+      );
+      return;
+    }
+
+    profileData.value = ProfileModel(
+      role: _coalesceString([current.role, 'creator']),
+      status: _coalesceString([current.status, 'active']),
+      badge: _coalesceString([current.badge, 'none']),
+      userId: _coalesceString([current.userId, gig.creatorUserId]),
+      imageUrl: _coalesceString([current.imageUrl, gig.creatorImageUrl]),
+      firstName: _coalesceString([current.firstName, firstFallback]),
+      lastName: _coalesceString([current.lastName, lastFallback]),
+      displayName: _coalesceString([
+        current.displayName,
+        fullName,
+        firstFallback,
+      ]),
+      description: current.description,
+      ageGroup: current.ageGroup,
+      gender: current.gender,
+      country: _coalesceString([current.country, countryFallback]),
+      languages: current.languages,
+      shippingAddress: ShippingAddress(
+        street: current.shippingAddress.street,
+        city: _coalesceString([current.shippingAddress.city, cityFallback]),
+        zipCode: current.shippingAddress.zipCode,
+        country: _coalesceString([
+          current.shippingAddress.country,
+          countryFallback,
+        ]),
+      ),
+      niches: current.niches,
+      reviewStats: ReviewStatsModel(
+        totalReviews: current.reviewStats.totalReviews > 0
+            ? current.reviewStats.totalReviews
+            : gig.reviewStats.totalReviews,
+        averageRating: current.reviewStats.averageRating > 0
+            ? current.reviewStats.averageRating
+            : gig.reviewStats.averageRating,
+      ),
+      subscription: current.subscription,
+      analytics: current.analytics,
+      isConnectedAccount: current.isConnectedAccount,
+      stripeConnectedAccountId: current.stripeConnectedAccountId,
+      activeBoost: current.activeBoost,
+      portfolio: current.portfolio,
+      reviews: current.reviews,
+      creatorReviewStats: current.creatorReviewStats,
+      creatorLevelProgress: current.creatorLevelProgress,
+    );
+  }
+
   String _extractCityFromAddress(String raw) {
     final cleaned = raw.trim();
     if (cleaned.isEmpty) return '';
@@ -900,7 +1105,10 @@ class ProfileController extends GetxController
   bool _looksLikeGigDetail(Map<String, dynamic> json) {
     if (json.isEmpty) return false;
     if (json['gallery'] is List) return true;
-    return json.containsKey('_id') || json.containsKey('title');
+    return json.containsKey('_id') ||
+        json.containsKey('title') ||
+        json.containsKey('gigId') ||
+        json.containsKey('creator');
   }
 
   // @override

@@ -1153,11 +1153,6 @@ class CreateGigController extends GetxController
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
       'videoStyle': videoStylePayload,
-      'additionalFeatures':
-          (sanitizedPricingList.isNotEmpty &&
-              sanitizedPricingList.first['additionalFeatures'] is List)
-          ? sanitizedPricingList.first['additionalFeatures']
-          : <Map<String, dynamic>>[],
       'pricing': sanitizedPricingList,
       'title': title,
       'description': description,
@@ -1192,10 +1187,12 @@ class CreateGigController extends GetxController
           : payload;
 
       bool _isAdditionalFeatureValidationError(String msg) {
-        // Do not silently strip additional features.
-        // If backend rejects them, surface the error to user so the gig is not
-        // published without paid extras.
-        return false;
+        final m = msg.toLowerCase();
+        return m.contains('additionalfeatures') &&
+            (m.contains('should not exist') ||
+                m.contains('must not exist') ||
+                m.contains('not allowed') ||
+                m.contains('forbid'));
       }
 
       String _extractMessage(dynamic raw) {
@@ -1226,11 +1223,15 @@ class CreateGigController extends GetxController
       }
 
       bool _needsAdditionalFeatureFallbackFromResponse(dynamic res) {
-        return false;
+        if (res is! Map) return false;
+        if (res['error'] != true) return false;
+        final msg = _extractMessage(res['message']);
+        return _isAdditionalFeatureValidationError(msg);
       }
 
       Map<String, dynamic> _stripAdditionalFeatures(Map<String, dynamic> body) {
         final cloned = Map<String, dynamic>.from(body);
+        cloned.remove('additionalFeatures');
         if (cloned['pricing'] is List) {
           cloned['pricing'] = (cloned['pricing'] as List).map((p) {
             if (p is Map) {
@@ -1258,6 +1259,7 @@ class CreateGigController extends GetxController
         Map<String, dynamic> body,
       ) {
         final cloned = Map<String, dynamic>.from(body);
+        cloned.remove('additionalFeatures');
         if (cloned['pricing'] is List) {
           cloned['pricing'] = (cloned['pricing'] as List).map((p) {
             if (p is Map) {
