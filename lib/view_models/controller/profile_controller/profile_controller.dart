@@ -867,14 +867,43 @@ class ProfileController extends GetxController
             if (language.isEmpty) return null;
             return <String, dynamic>{'language': language, 'level': 'Beginner'};
           }
-          final language = _coalesceString([(entry as dynamic).language]);
+          final language = _coalesceString([
+            _dynamicGet(entry, 'language'),
+            _dynamicGet(entry, 'name'),
+          ]);
           if (language.isEmpty) return null;
-          final level = _coalesceString([(entry as dynamic).level, 'Beginner']);
+          final level = _coalesceString([
+            _dynamicGet(entry, 'level'),
+            'Beginner',
+          ]);
           return <String, dynamic>{'language': language, 'level': level};
         })
         .whereType<Map<String, dynamic>>()
         .toList();
     return ProfileModel.fromJson({'languages': raw}).languages;
+  }
+
+  dynamic _dynamicGet(dynamic source, String key) {
+    if (source == null) return null;
+    try {
+      return (source as dynamic)[key];
+    } catch (_) {}
+    try {
+      return (source as dynamic).toJson()[key];
+    } catch (_) {}
+    try {
+      switch (key) {
+        case 'language':
+          return (source as dynamic).language;
+        case 'name':
+          return (source as dynamic).name;
+        case 'level':
+          return (source as dynamic).level;
+        default:
+          return null;
+      }
+    } catch (_) {}
+    return null;
   }
 
   void _patchProfileFromServiceFallback(GigDetailModel detail, MyGigModel gig) {
@@ -1152,26 +1181,50 @@ class ProfileController extends GetxController
     final data = _asMap(root['data']);
     final nestedData = _asMap(data['data']);
     final candidates = <Map<String, dynamic>>[
-      nestedData,
-      data,
+      _asMap(nestedData['gig']),
       _asMap(data['gig']),
       _asMap(root['gig']),
+      nestedData,
+      data,
       root,
     ].where((m) => m.isNotEmpty).toList();
 
+    Map<String, dynamic>? best;
+    var bestScore = -1;
     for (final candidate in candidates) {
-      if (_looksLikeGigDetail(candidate)) return candidate;
+      final score = _gigDetailScore(candidate);
+      if (score <= 0) continue;
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
     }
-    return null;
+    return best;
   }
 
-  bool _looksLikeGigDetail(Map<String, dynamic> json) {
-    if (json.isEmpty) return false;
-    if (json['gallery'] is List) return true;
-    return json.containsKey('_id') ||
-        json.containsKey('title') ||
-        json.containsKey('gigId') ||
-        json.containsKey('creator');
+  int _gigDetailScore(Map<String, dynamic> json) {
+    if (json.isEmpty) return 0;
+    var score = 0;
+
+    final gallery = json['gallery'];
+    if (gallery is List && gallery.isNotEmpty) score += 4;
+
+    final pricings = json['pricings'];
+    final pricing = json['pricing'];
+    if (pricings is List && pricings.isNotEmpty) score += 3;
+    if (pricing is List && pricing.isNotEmpty) score += 3;
+
+    final creator = _asMap(json['creator']);
+    if (creator.isNotEmpty) score += 2;
+
+    if (_coalesceString([json['_id'], json['gigId'], json['id']]).isNotEmpty) {
+      score += 1;
+    }
+    if (_coalesceString([json['title']]).isNotEmpty) score += 1;
+    if (_coalesceString([json['description']]).isNotEmpty) score += 1;
+    if (_coalesceString([json['createdBy']]).isNotEmpty) score += 1;
+
+    return score;
   }
 
   // @override

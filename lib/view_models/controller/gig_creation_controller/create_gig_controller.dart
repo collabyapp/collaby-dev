@@ -438,6 +438,10 @@ class CreateGigController extends GetxController
 
       // pricing
       final pricings = readField(gig, 'pricings') ?? readField(gig, 'pricing');
+      final globalAdditionalFeaturesRaw = readField(gig, 'additionalFeatures');
+      final globalAdditionalFeatures = globalAdditionalFeaturesRaw is List
+          ? globalAdditionalFeaturesRaw
+          : const <dynamic>[];
       if (pricings is List) {
         for (int i = 0; i < pricings.length && i < 3; i++) {
           final p = pricings[i];
@@ -495,7 +499,9 @@ class CreateGigController extends GetxController
 
           // additionalFeatures: solo leemos del primer pricing (shared)
           if (i == 0) {
-            final add = getP('additionalFeatures');
+            final add = globalAdditionalFeatures.isNotEmpty
+                ? globalAdditionalFeatures
+                : getP('additionalFeatures');
             if (add is List) {
               for (final x in add) {
                 if (x is! Map) continue;
@@ -1083,38 +1089,27 @@ class CreateGigController extends GetxController
         'deliveryTimeDays': sharedDeliveryDays,
         'numberOfRevisions': sharedRevisions,
         'features': sharedFeatures,
-        'additionalFeatures': sharedExtras,
       });
     }
 
     // harden: ensure additionalFeatures have only allowed keys
-    final sanitizedPricingList = pricingList.map((p) {
-      final rawExtras = p['additionalFeatures'];
-      if (rawExtras is List) {
-        final cleaned = rawExtras
-            .map((e) {
-              if (e is Map) {
-                final map = Map<String, dynamic>.from(e);
-                final featureType = _safeFeatureType(
-                  (map['featureType'] ?? '').toString(),
-                );
-                if (featureType.isEmpty) {
-                  return null;
-                }
-                return {
-                  'featureType': featureType,
-                  'price': map['price'] ?? 0,
-                  'deliveryTimesIndays': map['deliveryTimesIndays'] ?? 0,
-                };
-              }
-              return null;
-            })
-            .whereType<Map<String, dynamic>>()
-            .toList();
-        return {...p, 'additionalFeatures': cleaned};
-      }
-      return p;
-    }).toList();
+    final sanitizedAdditionalFeatures = sharedExtras
+        .map((e) {
+          final map = Map<String, dynamic>.from(e);
+          final featureType = _safeFeatureType(
+            (map['featureType'] ?? '').toString(),
+          );
+          if (featureType.isEmpty) {
+            return null;
+          }
+          return {
+            'featureType': featureType,
+            'price': map['price'] ?? 0,
+            'deliveryTimesIndays': map['deliveryTimesIndays'] ?? 0,
+          };
+        })
+        .whereType<Map<String, dynamic>>()
+        .toList();
 
     // gallery
     final galleryList = <Map<String, dynamic>>[];
@@ -1153,7 +1148,8 @@ class CreateGigController extends GetxController
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
       'videoStyle': videoStylePayload,
-      'pricing': sanitizedPricingList,
+      'pricing': pricingList,
+      'additionalFeatures': sanitizedAdditionalFeatures,
       'title': title,
       'description': description,
       'gallery': galleryList,
@@ -1229,6 +1225,46 @@ class CreateGigController extends GetxController
         return _isAdditionalFeatureValidationError(msg);
       }
 
+      Map<String, dynamic> _moveAdditionalFeaturesToPricing(
+        Map<String, dynamic> body,
+      ) {
+        final cloned = Map<String, dynamic>.from(body);
+        final extrasRaw = cloned['additionalFeatures'];
+        final extras = extrasRaw is List
+            ? extrasRaw
+                  .whereType<Map>()
+                  .map((e) => Map<String, dynamic>.from(e))
+                  .toList()
+            : <Map<String, dynamic>>[];
+
+        cloned.remove('additionalFeatures');
+        if (extras.isEmpty) return cloned;
+
+        if (cloned['pricing'] is List) {
+          cloned['pricing'] = (cloned['pricing'] as List).map((p) {
+            if (p is! Map) return p;
+            final item = Map<String, dynamic>.from(p);
+            item['additionalFeatures'] = extras
+                .map((e) => Map<String, dynamic>.from(e))
+                .toList();
+            return item;
+          }).toList();
+        }
+
+        if (cloned['pricings'] is List) {
+          cloned['pricings'] = (cloned['pricings'] as List).map((p) {
+            if (p is! Map) return p;
+            final item = Map<String, dynamic>.from(p);
+            item['additionalFeatures'] = extras
+                .map((e) => Map<String, dynamic>.from(e))
+                .toList();
+            return item;
+          }).toList();
+        }
+
+        return cloned;
+      }
+
       Map<String, dynamic> _stripAdditionalFeatures(Map<String, dynamic> body) {
         final cloned = Map<String, dynamic>.from(body);
         cloned.remove('additionalFeatures');
@@ -1289,6 +1325,17 @@ class CreateGigController extends GetxController
             ? await gigCreationRepo.updateGigApi(editingGigId!, updatePayload)
             : await gigCreationRepo.createGigApi(payload);
         if (_needsAdditionalFeatureFallbackFromResponse(response)) {
+          final fallbackPayloadLegacy = isEditMode.value
+              ? _moveAdditionalFeaturesToPricing(updatePayload)
+              : _moveAdditionalFeaturesToPricing(payload);
+          response = isEditMode.value
+              ? await gigCreationRepo.updateGigApi(
+                  editingGigId!,
+                  fallbackPayloadLegacy,
+                )
+              : await gigCreationRepo.createGigApi(fallbackPayloadLegacy);
+        }
+        if (_needsAdditionalFeatureFallbackFromResponse(response)) {
           final fallbackPayloadStrip = isEditMode.value
               ? _stripAdditionalFeatures(updatePayload)
               : _stripAdditionalFeatures(payload);
@@ -1313,28 +1360,41 @@ class CreateGigController extends GetxController
       } catch (firstError) {
         final firstMessage = firstError.toString();
         if (_isAdditionalFeatureValidationError(firstMessage)) {
-          // Try 1: keep key with empty array (new backend-safe)
-          final fallbackPayloadStrip = isEditMode.value
-              ? _stripAdditionalFeatures(updatePayload)
-              : _stripAdditionalFeatures(payload);
+          // Try 1: legacy backend expects additional features inside each tier.
+          final fallbackPayloadLegacy = isEditMode.value
+              ? _moveAdditionalFeaturesToPricing(updatePayload)
+              : _moveAdditionalFeaturesToPricing(payload);
           try {
             response = isEditMode.value
                 ? await gigCreationRepo.updateGigApi(
                     editingGigId!,
-                    fallbackPayloadStrip,
+                    fallbackPayloadLegacy,
                   )
-                : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+                : await gigCreationRepo.createGigApi(fallbackPayloadLegacy);
           } catch (_) {
-            // Try 2: remove key entirely as final fallback
-            final fallbackPayloadDrop = isEditMode.value
-                ? _dropAdditionalFeaturesKey(updatePayload)
-                : _dropAdditionalFeaturesKey(payload);
-            response = isEditMode.value
-                ? await gigCreationRepo.updateGigApi(
-                    editingGigId!,
-                    fallbackPayloadDrop,
-                  )
-                : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
+            // Try 2: keep key with empty array.
+            final fallbackPayloadStrip = isEditMode.value
+                ? _stripAdditionalFeatures(updatePayload)
+                : _stripAdditionalFeatures(payload);
+            try {
+              response = isEditMode.value
+                  ? await gigCreationRepo.updateGigApi(
+                      editingGigId!,
+                      fallbackPayloadStrip,
+                    )
+                  : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+            } catch (_) {
+              // Try 3: remove key entirely as final fallback.
+              final fallbackPayloadDrop = isEditMode.value
+                  ? _dropAdditionalFeaturesKey(updatePayload)
+                  : _dropAdditionalFeaturesKey(payload);
+              response = isEditMode.value
+                  ? await gigCreationRepo.updateGigApi(
+                      editingGigId!,
+                      fallbackPayloadDrop,
+                    )
+                  : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
+            }
           }
         } else {
           rethrow;
@@ -1369,21 +1429,39 @@ class CreateGigController extends GetxController
             : 'error_failed_status'.trParams({'code': '$statusCode'});
         if (_isAdditionalFeatureValidationError(msg)) {
           dynamic retryResponse;
-          final fallbackPayloadStrip = isEditMode.value
-              ? _stripAdditionalFeatures(updatePayload)
-              : _stripAdditionalFeatures(payload);
+
+          final fallbackPayloadLegacy = isEditMode.value
+              ? _moveAdditionalFeaturesToPricing(updatePayload)
+              : _moveAdditionalFeaturesToPricing(payload);
           retryResponse = isEditMode.value
               ? await gigCreationRepo.updateGigApi(
                   editingGigId!,
-                  fallbackPayloadStrip,
+                  fallbackPayloadLegacy,
                 )
-              : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+              : await gigCreationRepo.createGigApi(fallbackPayloadLegacy);
 
           final retryStatus = _readStatusCode(retryResponse);
           final retryMessage = _extractMessage(retryResponse?['message']);
 
           if ((retryStatus != 200 && retryStatus != 201) &&
               _isAdditionalFeatureValidationError(retryMessage)) {
+            final fallbackPayloadStrip = isEditMode.value
+                ? _stripAdditionalFeatures(updatePayload)
+                : _stripAdditionalFeatures(payload);
+            retryResponse = isEditMode.value
+                ? await gigCreationRepo.updateGigApi(
+                    editingGigId!,
+                    fallbackPayloadStrip,
+                  )
+                : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
+          }
+
+          final retryStatusAfterStrip = _readStatusCode(retryResponse);
+          final retryMessageAfterStrip = _extractMessage(
+            retryResponse?['message'],
+          );
+          if ((retryStatusAfterStrip != 200 && retryStatusAfterStrip != 201) &&
+              _isAdditionalFeatureValidationError(retryMessageAfterStrip)) {
             final fallbackPayloadDrop = isEditMode.value
                 ? _dropAdditionalFeaturesKey(updatePayload)
                 : _dropAdditionalFeaturesKey(payload);

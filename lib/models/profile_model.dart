@@ -46,4 +46,7 @@ class LanguageModel {
   Map<String, dynamic> toJson() {
     return {'code': code, 'name': name, 'level': level};
   }
+
+  // Compatibility alias used by profile rendering paths.
+  String get language => name;
 }

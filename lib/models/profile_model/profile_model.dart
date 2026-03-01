@@ -191,10 +191,15 @@ class LanguageModel {
 
   factory LanguageModel.fromJson(Map<String, dynamic> json) {
     return LanguageModel(
-      language: json['language'] ?? '',
+      language: (json['language'] ?? json['name'] ?? json['code'] ?? '')
+          .toString(),
       level: json['level'] ?? '',
     );
   }
+
+  // Compatibility aliases: some flows still read "name"/"code".
+  String get name => language;
+  String get code => language;
 }
 
 class ShippingAddress {

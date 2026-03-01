@@ -607,10 +607,16 @@ class LanguageModel {
   factory LanguageModel.fromJson(Map<String, dynamic> json) {
     return LanguageModel(
       id: _str(json['_id']),
-      language: _str(json['language']),
+      language: _str(json['language']).isNotEmpty
+          ? _str(json['language'])
+          : _str(json['name']),
       level: _str(json['level']),
     );
   }
+
+  // Compatibility aliases for legacy widgets/controllers.
+  String get name => language;
+  String get code => language;
 }
 
 class ShippingAddressModel {
