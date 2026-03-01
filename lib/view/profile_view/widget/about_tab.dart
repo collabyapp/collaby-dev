@@ -37,7 +37,7 @@ class AboutTab extends StatelessWidget {
                 'profile_skills'.tr,
                 _buildChipsList(
                   profile.niches
-                      .map(_capitalize)
+                      .map(_formatSkillLabel)
                       .where((e) => e.trim().isNotEmpty)
                       .toList(),
                 ),
@@ -132,5 +132,45 @@ class AboutTab extends StatelessWidget {
     final v = value.trim();
     if (v.isEmpty) return '';
     return '${v[0].toUpperCase()}${v.substring(1)}';
+  }
+
+  String _formatSkillLabel(String value) {
+    final v = _normalizeValue(value);
+    if (v.isEmpty) return '';
+
+    final lower = v.toLowerCase();
+    if (lower.contains('couple')) return 'Couple';
+    if (lower.contains('green') && lower.contains('screen')) {
+      return 'Green screen';
+    }
+    if (lower.contains('pet')) return 'Pets';
+    if (lower.contains('mom')) return 'Mom creator';
+    if (lower.contains('car')) return 'Cars';
+    if (lower.contains('travel')) return 'Travel';
+    if (lower.contains('outdoor') || lower.contains('outside')) {
+      return 'Outdoor';
+    }
+    if (lower.contains('indoor') || lower.contains('inside')) return 'Indoor';
+    if (lower.contains('interview')) return 'Interviews';
+    if (lower.contains('podcast')) return 'Podcast';
+
+    var cleaned = v;
+    cleaned = cleaned.replaceFirst(RegExp(r"(?i)^i['’]?m\s+a\s+"), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)^i\s+have\s+'), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)^i\s+can\s+do\s+'), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)\s+creator$'), '');
+    return _titleCase(cleaned);
+  }
+
+  String _titleCase(String value) {
+    final parts = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((e) => e.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '';
+    return parts
+        .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+        .join(' ');
   }
 }

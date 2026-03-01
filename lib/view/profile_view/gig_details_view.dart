@@ -103,7 +103,9 @@ class GigDetailView extends StatelessWidget {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: c.categories.map((t) => _chip(t)).toList(),
+                  children: c.categories
+                      .map((t) => _chip(_formatStyleLabel(t)))
+                      .toList(),
                 ),
 
               const SizedBox(height: 16),
@@ -132,7 +134,9 @@ class GigDetailView extends StatelessWidget {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: c.videoStyles.map((t) => _chip(t)).toList(),
+                  children: c.videoStyles
+                      .map((t) => _chip(_formatStyleLabel(t)))
+                      .toList(),
                 ),
                 const SizedBox(height: 20),
               ],
@@ -359,13 +363,13 @@ class GigDetailView extends StatelessWidget {
                   Text(
                     c.numberOfRevisions.value == 1
                         ? 'revision_single'.tr.replaceAll(
-                          '@count',
-                          c.numberOfRevisions.value.toString(),
-                        )
+                            '@count',
+                            c.numberOfRevisions.value.toString(),
+                          )
                         : 'revision_plural'.tr.replaceAll(
-                          '@count',
-                          c.numberOfRevisions.value.toString(),
-                        ),
+                            '@count',
+                            c.numberOfRevisions.value.toString(),
+                          ),
                     style: AppTextStyles.extraSmallMediumText,
                   ),
                 ],
@@ -408,6 +412,41 @@ class GigDetailView extends StatelessWidget {
         style: AppTextStyles.extraSmallText.copyWith(color: Colors.white),
       ),
     );
+  }
+
+  String _formatStyleLabel(String value) {
+    final v = value.trim();
+    if (v.isEmpty) return '';
+    final lower = v.toLowerCase();
+
+    if (lower.contains('couple')) return 'Couple';
+    if (lower.contains('green') && lower.contains('screen')) {
+      return 'Green screen';
+    }
+    if (lower.contains('pet')) return 'Pets';
+    if (lower.contains('mom')) return 'Mom creator';
+    if (lower.contains('car')) return 'Cars';
+    if (lower.contains('travel')) return 'Travel';
+    if (lower.contains('outdoor') || lower.contains('outside')) {
+      return 'Outdoor';
+    }
+    if (lower.contains('indoor') || lower.contains('inside')) return 'Indoor';
+    if (lower.contains('interview')) return 'Interviews';
+    if (lower.contains('podcast')) return 'Podcast';
+
+    var cleaned = v;
+    cleaned = cleaned.replaceFirst(RegExp(r"(?i)^i['’]?m\s+a\s+"), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)^i\s+have\s+'), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)^i\s+can\s+do\s+'), '');
+    cleaned = cleaned.replaceFirst(RegExp(r'(?i)\s+creator$'), '');
+    if (cleaned.isEmpty) return '';
+
+    final words = cleaned
+        .split(RegExp(r'\s+'))
+        .where((e) => e.isNotEmpty)
+        .map((e) => '${e[0].toUpperCase()}${e.substring(1)}')
+        .toList();
+    return words.join(' ');
   }
 
   Widget _galleryTile(dynamic galleryItem) {

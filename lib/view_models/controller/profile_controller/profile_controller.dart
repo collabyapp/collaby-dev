@@ -674,7 +674,7 @@ class ProfileController extends GetxController
       profile['reviews'],
     ]).map((e) => _asMap(e)).where((e) => e.isNotEmpty).toList();
 
-    merged['niches'] = _coalesceList([
+    final rawNiches = _coalesceList([
       merged['niches'],
       roleData['niches'],
       creator['niches'],
@@ -683,7 +683,27 @@ class ProfileController extends GetxController
       merged['skills'],
       roleData['skills'],
       creator['skills'],
-    ]).map((e) => _coalesceString([e])).where((e) => e.isNotEmpty).toList();
+      merged['videoStyle'],
+      merged['videoStyles'],
+      roleData['videoStyle'],
+      roleData['videoStyles'],
+      creator['videoStyle'],
+      creator['videoStyles'],
+      creatorProfile['videoStyle'],
+      creatorProfile['videoStyles'],
+      profile['videoStyle'],
+      profile['videoStyles'],
+    ]);
+    merged['niches'] = rawNiches
+        .map((e) {
+          if (e is Map) {
+            final m = _asMap(e);
+            return _coalesceString([m['name'], m['label'], m['value']]);
+          }
+          return _coalesceString([e]);
+        })
+        .where((e) => e.isNotEmpty)
+        .toList();
     merged['badge'] = _coalesceString([
       merged['badge'],
       roleData['badge'],
@@ -953,9 +973,12 @@ class ProfileController extends GetxController
     final resolvedGender = _coalesceString([current?.gender, creator.gender]);
     final currentNiches = _cleanTextList(current?.niches ?? const []);
     final creatorNiches = _cleanTextList(creator.niches);
+    final styleNiches = _cleanTextList(
+      detail.videoStyles.map((e) => _coalesceString([e.name])),
+    );
     final resolvedNiches = currentNiches.isNotEmpty
         ? currentNiches
-        : creatorNiches;
+        : (creatorNiches.isNotEmpty ? creatorNiches : styleNiches);
 
     final currentLanguages = _normalizeProfileLanguages(
       current?.languages ?? const [],
