@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import '../app_exceptions.dart';
-
 
 class UploadResult {
   final String url;
@@ -42,7 +41,6 @@ class UploadResult {
   }
 }
 
-
 class NetworkApiServices extends BaseApiServices {
   @override
   Future<dynamic> getApi(
@@ -62,8 +60,14 @@ class NetworkApiServices extends BaseApiServices {
           .get(uri, headers: headers)
           .timeout(Duration(seconds: 60));
       return returnResponse(response);
+    } on http.ClientException catch (e) {
+      throw FetchDataException(_friendlyNetworkError(e, uri.toString()));
+    } on SocketException {
+      throw InternetException('No internet connection.');
+    } on TimeoutException {
+      throw RequestTimeOut('Request timed out.');
     } catch (e) {
-      throw Exception("Error fetching data: $e");
+      throw FetchDataException('Error fetching data: $e');
     }
   }
 
@@ -107,10 +111,12 @@ class NetworkApiServices extends BaseApiServices {
       }
 
       responseJson = returnResponse(response);
+    } on http.ClientException catch (e) {
+      throw FetchDataException(_friendlyNetworkError(e, url));
     } on SocketException {
-      throw InternetException('');
-    } on RequestTimeOut {
-      throw RequestTimeOut('');
+      throw InternetException('No internet connection.');
+    } on TimeoutException {
+      throw RequestTimeOut('Request timed out.');
     }
 
     if (kDebugMode) log('âœ… Final Response: $responseJson');
@@ -157,6 +163,8 @@ class NetworkApiServices extends BaseApiServices {
       }
 
       responseJson = returnResponse(response);
+    } on http.ClientException catch (e) {
+      throw FetchDataException(_friendlyNetworkError(e, url));
     } on SocketException {
       throw InternetException('No Internet Connection');
     } on TimeoutException {
@@ -228,11 +236,21 @@ class NetworkApiServices extends BaseApiServices {
           .timeout(const Duration(seconds: 60));
 
       return returnResponse(response);
+    } on http.ClientException catch (e) {
+      throw FetchDataException(_friendlyNetworkError(e, url));
     } on SocketException {
       throw InternetException('No Internet');
     } on TimeoutException {
       throw RequestTimeOut('Request timed out');
     }
+  }
+
+  String _friendlyNetworkError(Object error, String url) {
+    final lower = error.toString().toLowerCase();
+    if (kIsWeb && lower.contains('failed to fetch')) {
+      return 'Cannot reach server from Chrome. API may be down or blocking web origin. ($url)';
+    }
+    return 'Network request failed for $url';
   }
 
   Future<String> uploadAnyFile({
@@ -323,32 +341,39 @@ class NetworkApiServices extends BaseApiServices {
     // Web (or memory) uploads
     Uint8List? videoBytes,
     Uint8List? thumbnailBytes,
-    String? videoFileName,        // required when using bytes
-    String? thumbnailFileName,    // required when using bytes
+    String? videoFileName, // required when using bytes
+    String? thumbnailFileName, // required when using bytes
 
     String useCase = 'gigs-attachments',
     Map<String, String>? headers, // e.g., {'Authorization': 'Bearer ...'}
   }) async {
     // --- Validation ---
-    final hasPaths = (videoPath?.isNotEmpty == true) && (thumbnailPath?.isNotEmpty == true);
-    final hasBytes = (videoBytes != null && videoBytes.isNotEmpty) &&
-                     (thumbnailBytes != null && thumbnailBytes.isNotEmpty) &&
-                     (videoFileName?.isNotEmpty == true) &&
-                     (thumbnailFileName?.isNotEmpty == true);
+    final hasPaths =
+        (videoPath?.isNotEmpty == true) && (thumbnailPath?.isNotEmpty == true);
+    final hasBytes =
+        (videoBytes != null && videoBytes.isNotEmpty) &&
+        (thumbnailBytes != null && thumbnailBytes.isNotEmpty) &&
+        (videoFileName?.isNotEmpty == true) &&
+        (thumbnailFileName?.isNotEmpty == true);
 
     if (!hasPaths && !hasBytes) {
-      throw ArgumentError('Provide video+thumbnail via file paths OR via bytes+file names.');
+      throw ArgumentError(
+        'Provide video+thumbnail via file paths OR via bytes+file names.',
+      );
     }
 
     // Your API expects mediaType=video
-    final uri = Uri.parse('${AppUrl.uploadMedia()}?mediaType=video'); 
+    final uri = Uri.parse('${AppUrl.uploadMedia()}?mediaType=video');
     final req = http.MultipartRequest('POST', uri);
 
     if (headers != null) req.headers.addAll(headers);
     req.fields['useCase'] = useCase;
 
     // Helper to guess content type
-    MediaType mt(String filename, {String fallback = 'application/octet-stream'}) {
+    MediaType mt(
+      String filename, {
+      String fallback = 'application/octet-stream',
+    }) {
       final mime = lookupMimeType(filename) ?? fallback;
       return MediaType.parse(mime);
     }
@@ -434,25 +459,33 @@ class NetworkApiServices extends BaseApiServices {
 
   dynamic returnResponse(http.Response response) {
     dynamic responseJson;
+    final rawBody = response.body.toString();
+    final trimmedBody = rawBody.trim();
 
     try {
-      responseJson = jsonDecode(response.body);
-    } catch (e) {
-      throw FetchDataException('Invalid response format from server');
+      responseJson = jsonDecode(rawBody);
+    } catch (_) {
+      responseJson = null;
     }
 
     final statusCode = response.statusCode;
 
     // âœ… Success
     if (statusCode >= 200 && statusCode < 300) {
-      return responseJson;
+      if (responseJson != null) return responseJson;
+      return {
+        'statusCode': statusCode,
+        'message': trimmedBody.isNotEmpty ? trimmedBody : 'Request successful',
+      };
     }
     // âŒ Client Error (400â€“499)
     else if (statusCode >= 400 && statusCode < 500) {
       // Extract the proper message from server if present
       final message = responseJson is Map && responseJson['message'] != null
           ? responseJson['message'].toString()
-          : 'Request failed with status $statusCode';
+          : (trimmedBody.isNotEmpty
+                ? trimmedBody
+                : 'Request failed with status $statusCode');
 
       // Return a unified error map that controllers can directly read
       return {'error': true, 'statusCode': statusCode, 'message': message};
@@ -461,7 +494,9 @@ class NetworkApiServices extends BaseApiServices {
     else if (statusCode >= 500 && statusCode < 600) {
       final message = responseJson is Map && responseJson['message'] != null
           ? responseJson['message'].toString()
-          : 'Server error ($statusCode)';
+          : (trimmedBody.isNotEmpty
+                ? trimmedBody
+                : 'Server error ($statusCode)');
       throw FetchDataException(message);
     }
     // âš ï¸ Unexpected
@@ -492,4 +527,3 @@ class NetworkApiServices extends BaseApiServices {
   //   }
   // }
 }
-

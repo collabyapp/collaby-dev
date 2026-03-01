@@ -68,6 +68,27 @@ class HelpSupportView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (controller.relatedOrderNumber.value.isNotEmpty) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffF4F1FF),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xffD9D1FF)),
+                        ),
+                        child: Text(
+                          'support_ticket_linked_order'.trParams({
+                            'order': controller.relatedOrderNumber.value,
+                          }),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                     Text('support_ticket_category'.tr),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
@@ -138,6 +159,16 @@ class HelpSupportView extends StatelessWidget {
               const SizedBox(height: 10),
               if (controller.isListLoading.value)
                 const Center(child: CircularProgressIndicator())
+              else if (controller.isSupportUnavailable.value)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: const Color(0xffE5E7EB)),
+                  ),
+                  child: Text('support_ticket_unavailable'.tr),
+                )
               else if (controller.tickets.isEmpty)
                 Container(
                   padding: const EdgeInsets.all(12),

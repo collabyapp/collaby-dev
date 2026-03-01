@@ -1,6 +1,9 @@
 class AppUrl {
   // Base URLs for production
-  static const String baseUrl = 'https://api.collaby.co';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.collaby.co',
+  );
   // static const String baseUrl = 'https://2e929a9ed5d4.ngrok-free.app';
 
   // ------------------ Auth Endpoints ------------------

@@ -47,6 +47,7 @@
 // }
 
 import 'dart:developer';
+import 'package:collaby_app/config/app_env.dart';
 import 'package:collaby_app/view_models/services/auth_service/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -62,6 +63,12 @@ class SplashServices {
   /// If no (or verification fails), routes to onboarding.
   Future<void> isLogin() async {
     try {
+      if (AppEnv.allowOfflineDemo) {
+        await Future.delayed(const Duration(seconds: 2));
+        Get.offAllNamed(RouteName.bottomNavigationView);
+        return;
+      }
+
       // Read persisted session
       final value = await _userPref.getUser();
       final String? token = value['token'] as String?;

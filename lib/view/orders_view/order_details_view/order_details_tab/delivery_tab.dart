@@ -31,7 +31,7 @@ Widget buildDeliveryTab(OrderDetailController controller) {
 
             SizedBox(height: 8),
             Text(
-              'All deliveries you’ve submitted will\n appear here.',
+              'order_delivery_empty_state'.tr,
               textAlign: TextAlign.center,
               style: AppTextStyles.extraSmallText,
             ),
@@ -109,11 +109,10 @@ Widget _buildSubmissionCard(Delivery delivery, BuildContext context) {
 
         // Work Description
         Text(
-          'Work Detail',
+          'order_work_detail'.tr,
           style: AppTextStyles.extraSmallText.copyWith(
             fontSize: 10,
-
-            color: Color(0xff848194),
+            color: const Color(0xff848194),
           ),
         ),
         SizedBox(height: 8),
@@ -133,10 +132,10 @@ Widget _buildSubmissionCard(Delivery delivery, BuildContext context) {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            'View Detail',
+            'order_delivery_view_detail'.tr,
             style: AppTextStyles.extraSmallText.copyWith(
               fontFamily: AppFonts.OpenSansBold,
-              color: Color(0xff816CED),
+              color: const Color(0xff816CED),
             ),
           ),
         ),
@@ -335,9 +334,9 @@ Widget _buildRevisionDetailsSection(RevisionDetails revisionDetails) {
             // Icon(Icons.refresh, color: Colors.orange[700], size: 18),
             // SizedBox(width: 8),
             Text(
-              'Revision ${revisionDetails.revisionNumber} Requested',
-              style: AppTextStyles.smallMediumText,
-            ),
+                '${'order_delivery_revision_requested'.tr} ${revisionDetails.revisionNumber}',
+                style: AppTextStyles.smallMediumText,
+              ),
           ],
         ),
         SizedBox(height: 8),
@@ -387,7 +386,7 @@ Widget _buildRevisionRequestCard(RevisionRequest revisionRequest) {
             // SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Revision Request',
+                'order_delivery_revision_request'.tr,
                 style: AppTextStyles.smallMediumText,
               ),
             ),
@@ -500,8 +499,8 @@ Widget _buildRevisionRequestCard(RevisionRequest revisionRequest) {
               Expanded(
                 child: Text(
                   revisionRequest.hasRevisionsLeft
-                      ? 'Your order has been sent back for revision. Please review the feedback and resubmit.'
-                      : 'This is your final revision. Please ensure all requirements are met.',
+                      ? 'order_delivery_revision_action'.tr
+                      : 'order_delivery_revision_final_action'.tr,
                   style: TextStyle(fontSize: 12, color: Colors.blue[900]),
                 ),
               ),
@@ -537,7 +536,7 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
               children: [
                 Expanded(
                   child: Text(
-                    'Delivery Details',
+                    'order_delivery_details_title'.tr,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -561,9 +560,9 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Status',
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
+                    'order_delivery_status'.tr,
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
                       _buildStatusBadge(delivery),
                     ],
                   ),
@@ -574,7 +573,7 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
 
                   // Date
                   Text(
-                    'Submitted On',
+                    'order_delivery_submitted_on'.tr,
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                   SizedBox(height: 4),
@@ -591,7 +590,7 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
 
                   // Work Description
                   Text(
-                    'Work Description',
+                    'order_delivery_work_description'.tr,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
@@ -606,7 +605,7 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
 
                   // Delivery Files
                   Text(
-                    'Delivery Files (${delivery.deliveryFiles.length})',
+                    '${'order_delivery_files'.tr} (${delivery.deliveryFiles.length})',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 12),
@@ -621,7 +620,7 @@ void _showDeliveryDetails(Delivery delivery, BuildContext context) {
                     Divider(),
                     SizedBox(height: 16),
                     Text(
-                      'Revision Details',
+                      'order_delivery_revision_details'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

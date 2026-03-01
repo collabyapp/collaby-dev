@@ -1,6 +1,7 @@
 import 'package:collaby_app/models/orders_model/orders_models.dart';
 import 'package:collaby_app/res/components/Button.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
+import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/view/orders_view/order_details_view/order_details_tab/chat_tab.dart';
 import 'package:collaby_app/view/orders_view/order_details_view/order_details_tab/deliver_order_view.dart';
 import 'package:collaby_app/view/orders_view/order_details_view/order_details_tab/delivery_tab.dart';
@@ -55,6 +56,26 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         //   onPressed: () => Get.back(),
         // ),
         title: Text('order_detail_title'.tr),
+        actions: [
+          IconButton(
+            tooltip: 'settings_support_tickets'.tr,
+            onPressed: () {
+              Get.toNamed(
+                RouteName.helpSupportView,
+                arguments: {
+                  'category': 'order_issue',
+                  'subject':
+                      '${'support_ticket_order_subject_prefix'.tr} ${controller.orderNumber ?? ''}'
+                          .trim(),
+                  'description': 'support_ticket_order_description_prefill'.tr,
+                  'relatedOrderId': controller.orderId ?? '',
+                  'relatedOrderNumber': controller.orderNumber ?? '',
+                },
+              );
+            },
+            icon: const Icon(Icons.support_agent_rounded),
+          ),
+        ],
         // actions: [
         //   Container(
         //     margin: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
