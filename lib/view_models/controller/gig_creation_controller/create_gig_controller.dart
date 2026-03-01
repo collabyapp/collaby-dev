@@ -1152,6 +1152,11 @@ class CreateGigController extends GetxController
     return <String, dynamic>{
       'gigThumbnail': uploadedCoverUrl ?? '',
       'videoStyle': videoStylePayload,
+      'additionalFeatures':
+          (sanitizedPricingList.isNotEmpty &&
+              sanitizedPricingList.first['additionalFeatures'] is List)
+          ? sanitizedPricingList.first['additionalFeatures']
+          : <Map<String, dynamic>>[],
       'pricing': sanitizedPricingList,
       'title': title,
       'description': description,
