@@ -862,10 +862,12 @@ class ProfileController extends GetxController
             final level = _coalesceString([map['level'], 'Beginner']);
             return <String, dynamic>{'language': language, 'level': level};
           }
-          final language = _coalesceString([
-            (entry as dynamic).language,
-            (entry as dynamic).name,
-          ]);
+          if (entry is String) {
+            final language = _coalesceString([entry]);
+            if (language.isEmpty) return null;
+            return <String, dynamic>{'language': language, 'level': 'Beginner'};
+          }
+          final language = _coalesceString([(entry as dynamic).language]);
           if (language.isEmpty) return null;
           final level = _coalesceString([(entry as dynamic).level, 'Beginner']);
           return <String, dynamic>{'language': language, 'level': level};
