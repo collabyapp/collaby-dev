@@ -267,7 +267,7 @@ class ProfileController extends GetxController
         Utils.snackBar('error'.tr, 'error_no_service'.tr);
         return;
       }
-      Get.toNamed(
+      await Get.toNamed(
         RouteName.createGigView,
         arguments: {
           'isEditMode': true,
@@ -275,6 +275,7 @@ class ProfileController extends GetxController
           'gigData': data,
         },
       );
+      await refreshAll();
     } catch (e) {
       Utils.snackBar('error'.tr, e.toString());
     }
@@ -284,7 +285,7 @@ class ProfileController extends GetxController
   Future<void> refreshAll() async {
     await Future.wait([
       fetchProfileData(refresh: true),
-      if (currentIndex.value == 1) fetchMyGigs(refresh: true),
+      fetchMyGigs(refresh: true),
     ]);
   }
 
@@ -338,7 +339,19 @@ class ProfileController extends GetxController
     final data = root['data'] is Map<String, dynamic>
         ? root['data'] as Map<String, dynamic>
         : <String, dynamic>{};
+    final nestedData = data['data'] is Map<String, dynamic>
+        ? data['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
     final candidates = <Map<String, dynamic>>[
+      if (nestedData['profile'] is Map<String, dynamic>)
+        nestedData['profile'] as Map<String, dynamic>,
+      if (nestedData['creatorProfile'] is Map<String, dynamic>)
+        nestedData['creatorProfile'] as Map<String, dynamic>,
+      if (nestedData['creator'] is Map<String, dynamic>)
+        nestedData['creator'] as Map<String, dynamic>,
+      if (nestedData['user'] is Map<String, dynamic>)
+        nestedData['user'] as Map<String, dynamic>,
+      nestedData,
       if (data['profile'] is Map<String, dynamic>)
         data['profile'] as Map<String, dynamic>,
       if (data['creatorProfile'] is Map<String, dynamic>)

@@ -295,7 +295,19 @@ class ProfileSetUpController extends GetxController {
     final data = root['data'] is Map<String, dynamic>
         ? root['data'] as Map<String, dynamic>
         : <String, dynamic>{};
+    final nestedData = data['data'] is Map<String, dynamic>
+        ? data['data'] as Map<String, dynamic>
+        : <String, dynamic>{};
     final candidates = <Map<String, dynamic>>[
+      if (nestedData['profile'] is Map<String, dynamic>)
+        nestedData['profile'] as Map<String, dynamic>,
+      if (nestedData['creatorProfile'] is Map<String, dynamic>)
+        nestedData['creatorProfile'] as Map<String, dynamic>,
+      if (nestedData['creator'] is Map<String, dynamic>)
+        nestedData['creator'] as Map<String, dynamic>,
+      if (nestedData['user'] is Map<String, dynamic>)
+        nestedData['user'] as Map<String, dynamic>,
+      nestedData,
       if (data['profile'] is Map<String, dynamic>)
         data['profile'] as Map<String, dynamic>,
       if (data['creatorProfile'] is Map<String, dynamic>)
