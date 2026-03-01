@@ -1,4 +1,4 @@
-﻿import 'dart:developer';
+import 'dart:developer';
 import 'package:collaby_app/models/chat_model/chat_model.dart';
 import 'package:collaby_app/res/assets/image_assets.dart';
 import 'package:collaby_app/res/fonts/app_fonts.dart';
@@ -10,11 +10,31 @@ import 'package:get/get.dart';
 
 enum ChatFilter { all, read, unread }
 
-class ChatsListView extends StatelessWidget {
+class ChatsListView extends StatefulWidget {
+  const ChatsListView({super.key});
+
+  @override
+  State<ChatsListView> createState() => _ChatsListViewState();
+}
+
+class _ChatsListViewState extends State<ChatsListView> {
   final ChatController chatController = Get.put(ChatController());
   final Rx<ChatFilter> selectedFilter = ChatFilter.all.obs;
+  late final PageController _pageController;
 
-  ChatsListView({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(
+      initialPage: _filterToPage(selectedFilter.value),
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,63 +132,15 @@ class ChatsListView extends StatelessWidget {
 
               // Chat List
               Expanded(
-                child: Obx(() {
-                  final List<ChatUser> allUsers = chatController.users;
-                  final List<ChatUser> filteredUsers = allUsers.where((user) {
-                    switch (selectedFilter.value) {
-                      case ChatFilter.all:
-                        return true;
-                      case ChatFilter.read:
-                        return user.unreadCount == 0;
-                      case ChatFilter.unread:
-                        return user.unreadCount > 0;
-                    }
-                  }).toList();
-
-                  if (filteredUsers.isEmpty) {
-                    final String emptyMsg = () {
-                      switch (selectedFilter.value) {
-                        case ChatFilter.unread:
-                          return 'chat_empty_unread'.tr;
-                        case ChatFilter.read:
-                        case ChatFilter.all:
-                          return 'chat_empty_all'.tr;
-                      }
-                    }();
-
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(ImageAssets.noMessageImage, width: 58),
-                          const SizedBox(height: 16),
-                          Text(
-                            emptyMsg,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.extraSmallText,
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  return RefreshIndicator(
-                    onRefresh: () => chatController.loadChats(),
-                    child: ListView.builder(
-                      itemCount: filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final user = filteredUsers[index];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: _buildChatTile(user),
-                        );
-                      },
-                    ),
-                  );
-                }),
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  children: [
+                    _buildFilteredChatList(ChatFilter.all),
+                    _buildFilteredChatList(ChatFilter.read),
+                    _buildFilteredChatList(ChatFilter.unread),
+                  ],
+                ),
               ),
             ],
           );
@@ -187,7 +159,7 @@ class ChatsListView extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () => selectedFilter.value = value,
+      onTap: () => _onFilterSelected(value),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
@@ -207,6 +179,114 @@ class ChatsListView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildFilteredChatList(ChatFilter filter) {
+    return Obx(() {
+      final List<ChatUser> allUsers = chatController.users;
+      final List<ChatUser> filteredUsers = allUsers.where((user) {
+        switch (filter) {
+          case ChatFilter.all:
+            return true;
+          case ChatFilter.read:
+            return user.unreadCount == 0;
+          case ChatFilter.unread:
+            return user.unreadCount > 0;
+        }
+      }).toList();
+
+      if (filteredUsers.isEmpty) {
+        return _buildEmptyState(_emptyMessageFor(filter));
+      }
+
+      return RefreshIndicator(
+        onRefresh: () => chatController.loadChats(),
+        child: ListView.builder(
+          key: PageStorageKey<String>('chat-list-${filter.name}'),
+          itemCount: filteredUsers.length,
+          itemBuilder: (context, index) {
+            final user = filteredUsers[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: _buildChatTile(user),
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(ImageAssets.noMessageImage, width: 58),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 40,
+            child: Center(
+              child: Text(
+                message,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.extraSmallText,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _emptyMessageFor(ChatFilter filter) {
+    switch (filter) {
+      case ChatFilter.unread:
+        return 'chat_empty_unread'.tr;
+      case ChatFilter.read:
+      case ChatFilter.all:
+        return 'chat_empty_all'.tr;
+    }
+  }
+
+  int _filterToPage(ChatFilter filter) {
+    switch (filter) {
+      case ChatFilter.all:
+        return 0;
+      case ChatFilter.read:
+        return 1;
+      case ChatFilter.unread:
+        return 2;
+    }
+  }
+
+  ChatFilter _pageToFilter(int index) {
+    switch (index) {
+      case 1:
+        return ChatFilter.read;
+      case 2:
+        return ChatFilter.unread;
+      case 0:
+      default:
+        return ChatFilter.all;
+    }
+  }
+
+  void _onFilterSelected(ChatFilter filter) {
+    if (selectedFilter.value == filter) return;
+    selectedFilter.value = filter;
+    _pageController.animateToPage(
+      _filterToPage(filter),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _onPageChanged(int page) {
+    final nextFilter = _pageToFilter(page);
+    if (selectedFilter.value == nextFilter) return;
+    selectedFilter.value = nextFilter;
   }
 
   Widget _buildChatTile(ChatUser user) {
@@ -422,4 +502,3 @@ class UserSearchDialog extends StatelessWidget {
     }
   }
 }
-
