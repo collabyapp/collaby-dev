@@ -12,6 +12,7 @@ import 'package:collaby_app/res/colors/app_color.dart';
 import 'package:collaby_app/res/routes/routes_name.dart';
 import 'package:collaby_app/utils/utils.dart';
 import 'package:collaby_app/view_models/controller/profile_controller/gig_details_controller.dart';
+import 'package:collaby_app/view_models/controller/profile_controller/profile_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1205,6 +1206,25 @@ class CreateGigController extends GetxController
         return raw.toString();
       }
 
+      int? _readStatusCode(dynamic raw) {
+        if (raw is! Map) return null;
+        final status = raw['statusCode'];
+        if (status is int) return status;
+        if (status is num) return status.toInt();
+        return int.tryParse(status?.toString() ?? '');
+      }
+
+      bool _isSuccessResponse(dynamic raw) {
+        if (raw is! Map) return false;
+        if (raw['error'] == true) return false;
+        final statusCode = _readStatusCode(raw);
+        if (statusCode == null) {
+          // Some endpoints return only {message, data} on success.
+          return true;
+        }
+        return statusCode >= 200 && statusCode < 300;
+      }
+
       bool _needsAdditionalFeatureFallbackFromResponse(dynamic res) {
         return false;
       }
@@ -1325,11 +1345,14 @@ class CreateGigController extends GetxController
 
       if (response == null) throw Exception('error_no_response'.tr);
 
-      final statusCode = response['statusCode'] as int?;
+      final statusCode = _readStatusCode(response);
       final message = _extractMessage(response['message']);
 
-      if (statusCode == 201 || statusCode == 200) {
+      if (_isSuccessResponse(response)) {
         if (isEditMode.value) {
+          if (Get.isRegistered<ProfileController>()) {
+            await Get.find<ProfileController>().refreshAll();
+          }
           Get.back();
           try {
             Get.find<GigDetailController>().fetchGigDetail();
@@ -1354,7 +1377,7 @@ class CreateGigController extends GetxController
                 )
               : await gigCreationRepo.createGigApi(fallbackPayloadStrip);
 
-          final retryStatus = retryResponse?['statusCode'] as int?;
+          final retryStatus = _readStatusCode(retryResponse);
           final retryMessage = _extractMessage(retryResponse?['message']);
 
           if ((retryStatus != 200 && retryStatus != 201) &&
@@ -1370,12 +1393,15 @@ class CreateGigController extends GetxController
                 : await gigCreationRepo.createGigApi(fallbackPayloadDrop);
           }
 
-          final retryStatusAfterDrop = retryResponse?['statusCode'] as int?;
+          final retryStatusAfterDrop = _readStatusCode(retryResponse);
           final retryMessageAfterDrop = _extractMessage(
             retryResponse?['message'],
           );
-          if (retryStatusAfterDrop == 200 || retryStatusAfterDrop == 201) {
+          if (_isSuccessResponse(retryResponse)) {
             if (isEditMode.value) {
+              if (Get.isRegistered<ProfileController>()) {
+                await Get.find<ProfileController>().refreshAll();
+              }
               Get.back();
               try {
                 Get.find<GigDetailController>().fetchGigDetail();
@@ -1389,7 +1415,7 @@ class CreateGigController extends GetxController
               retryMessageAfterDrop.isNotEmpty
                   ? retryMessageAfterDrop
                   : 'error_failed_status'.trParams({
-                      'code': '$retryStatusAfterDrop',
+                      'code': '${retryStatusAfterDrop ?? '-'}',
                     }),
             );
           }
@@ -1402,16 +1428,6 @@ class CreateGigController extends GetxController
       debugPrintStack(stackTrace: stackTrace);
 
       if (Get.isDialogOpen ?? false) Get.back();
-
-      if (isEditMode.value) {
-        if (kDebugMode) {
-          debugPrint('Edit mode: suppressing user-facing submission error.');
-        }
-        if (Get.key.currentState?.canPop() ?? false) {
-          Get.back();
-        }
-        return;
-      }
 
       final s = e.toString();
       String errorMessage = isEditMode.value

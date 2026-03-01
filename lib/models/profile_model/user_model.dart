@@ -60,6 +60,45 @@ class UserModel {
 
 // models/gig/my_gigs_response_model.dart
 
+Map<String, dynamic> _map(dynamic value) {
+  if (value is Map<String, dynamic>) return value;
+  if (value is Map) {
+    return value.map((k, v) => MapEntry(k.toString(), v));
+  }
+  return <String, dynamic>{};
+}
+
+List<dynamic> _list(dynamic value) => value is List ? value : const [];
+
+String _str(dynamic value) {
+  if (value == null) return '';
+  if (value is String) return value;
+  if (value is Map) {
+    final map = _map(value);
+    final nested = map['_id'] ?? map['id'] ?? map['\$oid'];
+    if (nested != null) return nested.toString();
+  }
+  return value.toString();
+}
+
+int _int(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+double _double(dynamic value) {
+  if (value is double) return value;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+bool _bool(dynamic value) {
+  if (value is bool) return value;
+  final raw = value?.toString().toLowerCase().trim() ?? '';
+  return raw == 'true' || raw == '1' || raw == 'yes';
+}
+
 class MyGigsResponseModel {
   final int totalPages;
   final int totalData;
@@ -81,17 +120,15 @@ class MyGigsResponseModel {
 
   factory MyGigsResponseModel.fromJson(Map<String, dynamic> json) {
     return MyGigsResponseModel(
-      totalPages: json['totalPages'] ?? 0,
-      totalData: json['totalData'] ?? 0,
-      pageNumber: json['pageNumber'] ?? 1,
-      data:
-          (json['data'] as List?)
-              ?.map((e) => MyGigModel.fromJson(e))
-              .toList() ??
-          [],
-      statusCode: json['statusCode'] ?? 0,
-      message: json['message'] ?? '',
-      timestamp: json['timestamp'] ?? '',
+      totalPages: _int(json['totalPages']),
+      totalData: _int(json['totalData']),
+      pageNumber: _int(json['pageNumber']) == 0 ? 1 : _int(json['pageNumber']),
+      data: _list(
+        json['data'],
+      ).map((e) => MyGigModel.fromJson(_map(e))).toList(),
+      statusCode: _int(json['statusCode']),
+      message: _str(json['message']),
+      timestamp: _str(json['timestamp']),
     );
   }
 }
@@ -127,20 +164,22 @@ class MyGigModel {
 
   factory MyGigModel.fromJson(Map<String, dynamic> json) {
     return MyGigModel(
-      gigId: json['gigId'] ?? '',
-      gigTitle: json['gigTitle'] ?? '',
-      gigThumbnail: json['gigThumbnail'] ?? '',
-      gigStatus: json['gigStatus'] ?? 'Active',
-      createdAt: json['createdAt'] ?? '',
-      startingPrice: json['startingPrice'] ?? 0,
-      creatorUserId: json['creatorUserId'] ?? '',
-      creatorFullName: json['creatorFullName'] ?? '',
-      creatorAddress: json['creatorAddress'] ?? '',
-      creatorImageUrl: json['creatorImageUrl'] ?? '',
-      reviewStats: json['reviewStats'] != null
-          ? ReviewStats.fromJson(json['reviewStats'])
+      gigId: _str(json['gigId'] ?? json['_id']),
+      gigTitle: _str(json['gigTitle'] ?? json['title']),
+      gigThumbnail: _str(json['gigThumbnail'] ?? json['thumbnail']),
+      gigStatus: _str(json['gigStatus'] ?? json['status']).isEmpty
+          ? 'Active'
+          : _str(json['gigStatus'] ?? json['status']),
+      createdAt: _str(json['createdAt']),
+      startingPrice: _int(json['startingPrice'] ?? json['price']),
+      creatorUserId: _str(json['creatorUserId'] ?? json['createdBy']),
+      creatorFullName: _str(json['creatorFullName'] ?? json['creatorName']),
+      creatorAddress: _str(json['creatorAddress']),
+      creatorImageUrl: _str(json['creatorImageUrl']),
+      reviewStats: _map(json['reviewStats']).isNotEmpty
+          ? ReviewStats.fromJson(_map(json['reviewStats']))
           : ReviewStats(totalReviews: 0, averageRating: 0),
-      isFavourited: json['isFavourited'] ?? false,
+      isFavourited: _bool(json['isFavourited']),
     );
   }
 
@@ -181,10 +220,10 @@ class GigDetailResponseModel {
 
   factory GigDetailResponseModel.fromJson(Map<String, dynamic> json) {
     return GigDetailResponseModel(
-      data: GigDetailModel.fromJson(json['data'] ?? {}),
-      statusCode: json['statusCode'] ?? 0,
-      message: json['message'] ?? '',
-      timestamp: json['timestamp'] ?? '',
+      data: GigDetailModel.fromJson(_map(json['data'])),
+      statusCode: _int(json['statusCode']),
+      message: _str(json['message']),
+      timestamp: _str(json['timestamp']),
     );
   }
 }
@@ -235,49 +274,46 @@ class GigDetailModel {
   });
 
   factory GigDetailModel.fromJson(Map<String, dynamic> json) {
+    final pricingsRaw = _list(json['pricings']).isNotEmpty
+        ? _list(json['pricings'])
+        : _list(json['pricing']);
+    final stylesRaw = _list(json['videoStyles']).isNotEmpty
+        ? _list(json['videoStyles'])
+        : _list(json['videoStyle']);
+
     return GigDetailModel(
-      id: json['_id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      gigStatus: json['gigStatus'] ?? 'Active',
-      createdBy: json['createdBy'] ?? '',
-      gigThumbnail: json['gigThumbnail'] ?? '',
-      isDeleted: json['isDeleted'] ?? false,
-      createdAt: json['createdAt'] ?? '',
-      updatedAt: json['updatedAt'] ?? '',
-      pricings:
-          (json['pricings'] as List?)
-              ?.map((e) => PricingModel.fromJson(e))
-              .toList() ??
-          [],
-      tags:
-          (json['tags'] as List?)?.map((e) => TagModel.fromJson(e)).toList() ??
-          [],
-      videoStyles:
-          (json['videoStyles'] as List?)
-              ?.map((e) => VideoStyleModel.fromJson(e))
-              .toList() ??
-          [],
-      questions:
-          (json['questions'] as List?)
-              ?.map((e) => QuestionModel.fromJson(e))
-              .toList() ??
-          [],
-      gallery:
-          (json['gallery'] as List?)
-              ?.map((e) => GalleryModel.fromJson(e))
-              .toList() ??
-          [],
-      creator: json['creator'] != null
-          ? CreatorModel.fromJson(json['creator'])
+      id: _str(json['_id'] ?? json['gigId'] ?? json['id']),
+      title: _str(json['title']),
+      description: _str(json['description']),
+      gigStatus: _str(json['gigStatus']).isEmpty
+          ? 'Active'
+          : _str(json['gigStatus']),
+      createdBy: _str(json['createdBy']),
+      gigThumbnail: _str(json['gigThumbnail']),
+      isDeleted: _bool(json['isDeleted']),
+      createdAt: _str(json['createdAt']),
+      updatedAt: _str(json['updatedAt']),
+      pricings: pricingsRaw.map((e) => PricingModel.fromJson(_map(e))).toList(),
+      tags: _list(json['tags']).map((e) => TagModel.fromJson(_map(e))).toList(),
+      videoStyles: stylesRaw
+          .map((e) => VideoStyleModel.fromJson(_map(e)))
+          .toList(),
+      questions: _list(
+        json['questions'],
+      ).map((e) => QuestionModel.fromJson(_map(e))).toList(),
+      gallery: _list(
+        json['gallery'],
+      ).map((e) => GalleryModel.fromJson(_map(e))).toList(),
+      creator: _map(json['creator']).isNotEmpty
+          ? CreatorModel.fromJson(_map(json['creator']))
           : CreatorModel.empty(),
-      creatorFullName: json['creatorFullName'] ?? '',
-      creatorAddress: json['creatorAddress'] ?? '',
-      creatorImageUrl: json['creatorImageUrl'] ?? '',
-      reviewStats: json['reviewStats'] != null
-          ? ReviewStats.fromJson(json['reviewStats'])
+      creatorFullName: _str(json['creatorFullName']),
+      creatorAddress: _str(json['creatorAddress']),
+      creatorImageUrl: _str(json['creatorImageUrl']),
+      reviewStats: _map(json['reviewStats']).isNotEmpty
+          ? ReviewStats.fromJson(_map(json['reviewStats']))
           : ReviewStats(totalReviews: 0, averageRating: 0),
-      isFavourited: json['isFavourited'] ?? false,
+      isFavourited: _bool(json['isFavourited']),
     );
   }
 }
@@ -305,18 +341,16 @@ class PricingModel {
 
   factory PricingModel.fromJson(Map<String, dynamic> json) {
     return PricingModel(
-      id: json['_id'] ?? '',
-      pricingName: json['pricingName'] ?? '',
-      currency: json['currency'] ?? 'USD',
-      price: json['price'] ?? 0,
-      deliveryTimeDays: json['deliveryTimeDays'] ?? 0,
-      numberOfRevisions: json['numberOfRevisions'] ?? 0,
-      features: (json['features'] as List?)?.cast<String>() ?? [],
-      additionalFeatures:
-          (json['additionalFeatures'] as List?)
-              ?.map((e) => AdditionalFeatureModel.fromJson(e))
-              .toList() ??
-          [],
+      id: _str(json['_id']),
+      pricingName: _str(json['pricingName']),
+      currency: _str(json['currency']).isEmpty ? 'USD' : _str(json['currency']),
+      price: _int(json['price']),
+      deliveryTimeDays: _int(json['deliveryTimeDays']),
+      numberOfRevisions: _int(json['numberOfRevisions']),
+      features: _list(json['features']).map((e) => _str(e)).toList(),
+      additionalFeatures: _list(
+        json['additionalFeatures'],
+      ).map((e) => AdditionalFeatureModel.fromJson(_map(e))).toList(),
     );
   }
 
@@ -339,10 +373,12 @@ class AdditionalFeatureModel {
 
   factory AdditionalFeatureModel.fromJson(Map<String, dynamic> json) {
     return AdditionalFeatureModel(
-      id: json['_id'] ?? '',
-      featureType: json['featureType'] ?? '',
-      price: json['price'] ?? 0,
-      deliveryTimesIndays: json['deliveryTimesIndays'],
+      id: _str(json['_id']),
+      featureType: _str(json['featureType']),
+      price: _int(json['price']),
+      deliveryTimesIndays: json['deliveryTimesIndays'] == null
+          ? null
+          : _int(json['deliveryTimesIndays']),
     );
   }
 }
@@ -354,7 +390,7 @@ class TagModel {
   TagModel({required this.id, required this.name});
 
   factory TagModel.fromJson(Map<String, dynamic> json) {
-    return TagModel(id: json['_id'] ?? '', name: json['name'] ?? '');
+    return TagModel(id: _str(json['_id']), name: _str(json['name']));
   }
 }
 
@@ -365,7 +401,7 @@ class VideoStyleModel {
   VideoStyleModel({required this.id, required this.name});
 
   factory VideoStyleModel.fromJson(Map<String, dynamic> json) {
-    return VideoStyleModel(id: json['_id'] ?? '', name: json['name'] ?? '');
+    return VideoStyleModel(id: _str(json['_id']), name: _str(json['name']));
   }
 }
 
@@ -386,11 +422,11 @@ class QuestionModel {
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
-      id: json['_id'] ?? '',
-      questionText: json['questionText'] ?? '',
-      questionType: json['questionType'] ?? '',
-      options: (json['options'] as List?)?.cast<String>() ?? [],
-      isRequired: json['isRequired'] ?? false,
+      id: _str(json['_id']),
+      questionText: _str(json['questionText']),
+      questionType: _str(json['questionType']),
+      options: _list(json['options']).map((e) => _str(e)).toList(),
+      isRequired: _bool(json['isRequired']),
     );
   }
 }
@@ -414,12 +450,12 @@ class GalleryModel {
 
   factory GalleryModel.fromJson(Map<String, dynamic> json) {
     return GalleryModel(
-      id: json['_id'] ?? '',
-      name: json['name'] ?? '',
-      type: json['type'] ?? '',
-      url: json['url'] ?? '',
-      thumbnail: json['thumbnail'] ?? '',
-      size: json['size'] ?? 0,
+      id: _str(json['_id'] ?? json['id']),
+      name: _str(json['name']),
+      type: _str(json['type']),
+      url: _str(json['url']),
+      thumbnail: _str(json['thumbnail']),
+      size: _int(json['size']),
     );
   }
 
@@ -470,31 +506,29 @@ class CreatorModel {
 
   factory CreatorModel.fromJson(Map<String, dynamic> json) {
     return CreatorModel(
-      imageUrl: json['imageUrl'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      displayName: json['displayName'] ?? '',
-      gender: json['gender'] ?? '',
-      niches: (json['niches'] as List?)?.cast<String>() ?? [],
-      profileStatus: json['profileStatus'] ?? '',
-      isGigCreated: json['isGigCreated'] ?? false,
-      isEmailVerified: json['isEmailVerified'] ?? false,
-      isPhoneVerified: json['isPhoneVerified'] ?? false,
-      walletBalance: (json['walletBalance'] ?? 0).toDouble(),
-      badge: json['badge'] ?? '',
-      activeBoost: json['activeBoost'] != null
-          ? ActiveBoostModel.fromJson(json['activeBoost'])
+      imageUrl: _str(json['imageUrl']),
+      firstName: _str(json['firstName']),
+      lastName: _str(json['lastName']),
+      displayName: _str(json['displayName']),
+      gender: _str(json['gender']),
+      niches: _list(json['niches']).map((e) => _str(e)).toList(),
+      profileStatus: _str(json['profileStatus']),
+      isGigCreated: _bool(json['isGigCreated']),
+      isEmailVerified: _bool(json['isEmailVerified']),
+      isPhoneVerified: _bool(json['isPhoneVerified']),
+      walletBalance: _double(json['walletBalance']),
+      badge: _str(json['badge']),
+      activeBoost: _map(json['activeBoost']).isNotEmpty
+          ? ActiveBoostModel.fromJson(_map(json['activeBoost']))
           : null,
-      languages:
-          (json['languages'] as List?)
-              ?.map((e) => LanguageModel.fromJson(e))
-              .toList() ??
-          [],
-      ageGroup: json['ageGroup'] ?? '',
-      country: json['country'] ?? '',
-      description: json['description'] ?? '',
-      shippingAddress: json['shippingAddress'] != null
-          ? ShippingAddressModel.fromJson(json['shippingAddress'])
+      languages: _list(
+        json['languages'],
+      ).map((e) => LanguageModel.fromJson(_map(e))).toList(),
+      ageGroup: _str(json['ageGroup']),
+      country: _str(json['country']),
+      description: _str(json['description']),
+      shippingAddress: _map(json['shippingAddress']).isNotEmpty
+          ? ShippingAddressModel.fromJson(_map(json['shippingAddress']))
           : null,
     );
   }
@@ -546,15 +580,15 @@ class ActiveBoostModel {
 
   factory ActiveBoostModel.fromJson(Map<String, dynamic> json) {
     return ActiveBoostModel(
-      type: json['type'] ?? '',
-      expiresAt: json['expiresAt'] ?? '',
-      subscriptionStartDate: json['subscriptionStartDate'] ?? '',
-      nextSubscriptionStartDate: json['nextSubscriptionStartDate'],
-      isRecurring: json['isRecurring'] ?? false,
-      autoRenewal: json['autoRenewal'] ?? false,
-      subscriptionId: json['subscriptionId'],
-      paymentIntentId: json['paymentIntentId'] ?? '',
-      appliedAt: json['appliedAt'] ?? '',
+      type: _str(json['type']),
+      expiresAt: _str(json['expiresAt']),
+      subscriptionStartDate: _str(json['subscriptionStartDate']),
+      nextSubscriptionStartDate: json['nextSubscriptionStartDate']?.toString(),
+      isRecurring: _bool(json['isRecurring']),
+      autoRenewal: _bool(json['autoRenewal']),
+      subscriptionId: json['subscriptionId']?.toString(),
+      paymentIntentId: _str(json['paymentIntentId']),
+      appliedAt: _str(json['appliedAt']),
     );
   }
 }
@@ -572,9 +606,9 @@ class LanguageModel {
 
   factory LanguageModel.fromJson(Map<String, dynamic> json) {
     return LanguageModel(
-      id: json['_id'] ?? '',
-      language: json['language'] ?? '',
-      level: json['level'] ?? '',
+      id: _str(json['_id']),
+      language: _str(json['language']),
+      level: _str(json['level']),
     );
   }
 }
@@ -596,11 +630,11 @@ class ShippingAddressModel {
 
   factory ShippingAddressModel.fromJson(Map<String, dynamic> json) {
     return ShippingAddressModel(
-      id: json['_id'] ?? '',
-      street: json['street'] ?? '',
-      city: json['city'] ?? '',
-      zipCode: json['zipCode'] ?? '',
-      country: json['country'] ?? '',
+      id: _str(json['_id']),
+      street: _str(json['street']),
+      city: _str(json['city']),
+      zipCode: _str(json['zipCode']),
+      country: _str(json['country']),
     );
   }
 }
@@ -613,8 +647,8 @@ class ReviewStats {
 
   factory ReviewStats.fromJson(Map<String, dynamic> json) {
     return ReviewStats(
-      totalReviews: json['totalReviews'] ?? 0,
-      averageRating: (json['averageRating'] ?? 0).toDouble(),
+      totalReviews: _int(json['totalReviews']),
+      averageRating: _double(json['averageRating']),
     );
   }
 }

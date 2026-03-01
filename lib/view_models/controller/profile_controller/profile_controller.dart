@@ -76,23 +76,22 @@ class ProfileController extends GetxController
           ? root['data'] as Map<String, dynamic>
           : <String, dynamic>{};
       final profileJson = _extractProfileJson(root);
+      final phone =
+          responseData['phoneNumber'] ??
+          root['phoneNumber'] ??
+          profileJson['phoneNumber'];
+      final email =
+          responseData['email'] ?? root['email'] ?? profileJson['email'];
 
       if (profileJson.isNotEmpty) {
         profileData.value = ProfileModel.fromJson(profileJson);
-
-        final phone =
-            responseData['phoneNumber'] ??
-            root['phoneNumber'] ??
-            profileJson['phoneNumber'];
-        final email =
-            responseData['email'] ?? root['email'] ?? profileJson['email'];
-        if (phone != null) {
-          await _userPref.saveUser(phoneNumber: phone.toString());
-        }
-        if (email != null) {
-          await _userPref.saveUser(email: email.toString());
-          fallbackEmail.value = email.toString().trim();
-        }
+      }
+      if (phone != null) {
+        await _userPref.saveUser(phoneNumber: phone.toString());
+      }
+      if (email != null) {
+        await _userPref.saveUser(email: email.toString());
+        fallbackEmail.value = email.toString().trim();
       }
     } catch (e) {
       Utils.snackBar('error'.tr, e.toString());
@@ -209,6 +208,8 @@ class ProfileController extends GetxController
 
     final built = <PortfolioItem>[];
     final seenUrls = <String>{};
+    GigDetailModel? firstUsableDetail;
+    MyGigModel? firstUsableGig;
 
     for (final gig in myGigs) {
       if (gig.gigId.trim().isEmpty) continue;
@@ -221,6 +222,10 @@ class ProfileController extends GetxController
         if (data == null) continue;
 
         final detail = GigDetailModel.fromJson(data);
+        if (firstUsableDetail == null) {
+          firstUsableDetail = detail;
+          firstUsableGig = gig;
+        }
         for (final media in detail.gallery) {
           final url = media.url.trim();
           if (url.isEmpty || seenUrls.contains(url)) continue;
@@ -247,6 +252,9 @@ class ProfileController extends GetxController
     }
 
     servicePortfolioItems.value = built;
+    if (firstUsableDetail != null && firstUsableGig != null) {
+      _patchProfileFromServiceFallback(firstUsableDetail, firstUsableGig);
+    }
   }
 
   /// Load more gigs (pagination)
@@ -362,14 +370,8 @@ class ProfileController extends GetxController
         ? data['data'] as Map<String, dynamic>
         : <String, dynamic>{};
     final candidates = <Map<String, dynamic>>[
-      root,
-      data,
       nestedData,
-      _asMap(root['profile']),
-      _asMap(root['creatorProfile']),
-      _asMap(root['creator']),
-      _asMap(root['user']),
-      _asMap(root['roleData']),
+      data,
       _asMap(data['profile']),
       _asMap(data['creatorProfile']),
       _asMap(data['creator']),
@@ -380,20 +382,45 @@ class ProfileController extends GetxController
       _asMap(nestedData['creator']),
       _asMap(nestedData['user']),
       _asMap(nestedData['roleData']),
+      _asMap(root['profile']),
+      _asMap(root['creatorProfile']),
+      _asMap(root['creator']),
+      _asMap(root['user']),
+      _asMap(root['roleData']),
+      root,
     ].where((m) => m.isNotEmpty).toList();
 
     Map<String, dynamic> best = <String, dynamic>{};
     var bestScore = -1;
+    var bestStructuralScore = -1;
+    var bestKeyCount = -1;
 
     for (final raw in candidates) {
       final normalized = _normalizeProfileCandidate(raw);
+      final structuralScore = _profileStructuralScore(normalized);
+      if (structuralScore == 0) continue;
       final score = _profileScore(normalized);
-      if (score > bestScore) {
+      final keyCount = normalized.keys.length;
+      final isBetter =
+          score > bestScore ||
+          (score == bestScore && structuralScore > bestStructuralScore) ||
+          (score == bestScore &&
+              structuralScore == bestStructuralScore &&
+              keyCount > bestKeyCount);
+      if (isBetter) {
         bestScore = score;
+        bestStructuralScore = structuralScore;
+        bestKeyCount = keyCount;
         best = normalized;
       }
     }
 
+    if (best.isEmpty && data.isNotEmpty) {
+      final fallback = _normalizeProfileCandidate(data);
+      if (_profileStructuralScore(fallback) > 0) {
+        return fallback;
+      }
+    }
     return best;
   }
 
@@ -410,33 +437,55 @@ class ProfileController extends GetxController
     merged.addAll(creator);
     merged.addAll(profile);
     merged.addAll(raw);
+    merged.addAll(_asMap(merged['data']));
 
     merged['firstName'] = _coalesceString([
       merged['firstName'],
+      merged['first_name'],
+      merged['firstname'],
       user['firstName'],
+      user['first_name'],
+      user['firstname'],
     ]);
     merged['lastName'] = _coalesceString([
       merged['lastName'],
+      merged['last_name'],
+      merged['lastname'],
+      merged['surname'],
       user['lastName'],
+      user['last_name'],
+      user['lastname'],
+      user['surname'],
     ]);
     merged['displayName'] = _coalesceString([
       merged['displayName'],
       merged['fullName'],
       merged['name'],
+      merged['username'],
+      merged['userName'],
       user['displayName'],
       user['username'],
+      user['userName'],
       user['brandCompanyName'],
       user['fullName'],
       user['name'],
     ]);
     merged['imageUrl'] = _coalesceString([
       merged['imageUrl'],
+      merged['profileImage'],
+      merged['profileImageUrl'],
+      merged['avatar'],
+      merged['photoUrl'],
       user['imageUrl'],
+      user['profileImage'],
+      user['profileImageUrl'],
+      user['avatar'],
     ]);
     merged['description'] = _coalesceString([
       merged['description'],
       merged['bio'],
       merged['about'],
+      merged['creatorDescription'],
       user['description'],
       user['bio'],
       user['about'],
@@ -446,20 +495,40 @@ class ProfileController extends GetxController
       merged['age'],
       merged['ageRange'],
       merged['age_range'],
+      merged['age_group'],
     ]);
-    merged['gender'] = _coalesceString([merged['gender'], merged['sex']]);
+    merged['gender'] = _coalesceString([
+      merged['gender'],
+      merged['sex'],
+      merged['genre'],
+    ]);
     merged['country'] = _coalesceString([
       merged['country'],
       merged['location'],
+      merged['countryName'],
     ]);
 
     if (merged['shippingAddress'] is! Map<String, dynamic>) {
-      final shipping = _asMap(roleData['shippingAddress']);
+      final shipping = _coalesceMap([
+        merged['shippingAddress'],
+        roleData['shippingAddress'],
+        creator['shippingAddress'],
+        creatorProfile['shippingAddress'],
+        profile['shippingAddress'],
+      ]);
       if (shipping.isNotEmpty) merged['shippingAddress'] = shipping;
     }
     if (merged['shippingAddress'] is! Map<String, dynamic>) {
-      final city = _coalesceString([merged['city'], roleData['city']]);
-      final country = _coalesceString([merged['country'], roleData['country']]);
+      final city = _coalesceString([
+        merged['city'],
+        roleData['city'],
+        creator['city'],
+      ]);
+      final country = _coalesceString([
+        merged['country'],
+        roleData['country'],
+        creator['country'],
+      ]);
       if (city.isNotEmpty || country.isNotEmpty) {
         merged['shippingAddress'] = <String, dynamic>{
           'street': '',
@@ -470,15 +539,86 @@ class ProfileController extends GetxController
       }
     }
 
-    if (merged['languages'] is! List && roleData['languages'] is List) {
-      merged['languages'] = roleData['languages'];
-    }
-    if (merged['portfolio'] is! List && roleData['portfolio'] is List) {
-      merged['portfolio'] = roleData['portfolio'];
-    }
-    if (merged['reviews'] is! List && roleData['reviews'] is List) {
-      merged['reviews'] = roleData['reviews'];
-    }
+    final rawLanguages = _coalesceList([
+      merged['languages'],
+      roleData['languages'],
+      creator['languages'],
+      creatorProfile['languages'],
+      profile['languages'],
+      user['languages'],
+    ]);
+    merged['languages'] = rawLanguages
+        .map((e) {
+          if (e is Map) {
+            final map = _asMap(e);
+            final language = _coalesceString([map['language'], map['name']]);
+            if (language.isEmpty) return null;
+            return <String, dynamic>{
+              'language': language,
+              'level': _coalesceString([map['level'], 'Beginner']),
+            };
+          }
+          final language = _coalesceString([e]);
+          if (language.isEmpty) return null;
+          return <String, dynamic>{'language': language, 'level': 'Beginner'};
+        })
+        .whereType<Map<String, dynamic>>()
+        .toList();
+
+    merged['portfolio'] = _coalesceList([
+      merged['portfolio'],
+      roleData['portfolio'],
+      creator['portfolio'],
+      creatorProfile['portfolio'],
+      profile['portfolio'],
+    ]).map((e) => _asMap(e)).where((e) => e.isNotEmpty).toList();
+
+    merged['reviews'] = _coalesceList([
+      merged['reviews'],
+      roleData['reviews'],
+      creator['reviews'],
+      creatorProfile['reviews'],
+      profile['reviews'],
+    ]).map((e) => _asMap(e)).where((e) => e.isNotEmpty).toList();
+
+    merged['niches'] = _coalesceList([
+      merged['niches'],
+      roleData['niches'],
+      creator['niches'],
+      creatorProfile['niches'],
+      profile['niches'],
+      merged['skills'],
+      roleData['skills'],
+      creator['skills'],
+    ]).map((e) => _coalesceString([e])).where((e) => e.isNotEmpty).toList();
+    merged['badge'] = _coalesceString([
+      merged['badge'],
+      roleData['badge'],
+      creator['badge'],
+      creatorProfile['badge'],
+    ]);
+    merged['userId'] = _coalesceString([
+      merged['userId'],
+      merged['user_id'],
+      merged['id'],
+      merged['_id'],
+      user['userId'],
+      user['_id'],
+      roleData['user'],
+      creator['user'],
+    ]);
+    merged['role'] = _coalesceString([
+      merged['role'],
+      user['role'],
+      roleData['role'],
+      'creator',
+    ]);
+    merged['status'] = _coalesceString([
+      merged['status'],
+      merged['profileStatus'],
+      roleData['profileStatus'],
+      'active',
+    ]);
 
     return merged;
   }
@@ -500,8 +640,49 @@ class ProfileController extends GetxController
     if (json['reviews'] is List && (json['reviews'] as List).isNotEmpty) {
       score += 1;
     }
+    if (_coalesceString([json['userId']]).isNotEmpty) score += 1;
+    if (_coalesceString([json['badge']]).isNotEmpty) score += 1;
     if (json['creatorLevelProgress'] is Map<String, dynamic>) score += 1;
     if (json['reviewStats'] is Map<String, dynamic>) score += 1;
+    return score;
+  }
+
+  int _profileStructuralScore(Map<String, dynamic> json) {
+    const keys = <String>{
+      'role',
+      'status',
+      'badge',
+      'userId',
+      'imageUrl',
+      'firstName',
+      'lastName',
+      'displayName',
+      'description',
+      'ageGroup',
+      'gender',
+      'country',
+      'languages',
+      'shippingAddress',
+      'niches',
+      'reviewStats',
+      'portfolio',
+      'reviews',
+      'creatorReviewStats',
+      'creatorLevelProgress',
+      'subscription',
+      'analytics',
+      'isConnectedAccount',
+    };
+    var score = 0;
+    for (final key in keys) {
+      if (!json.containsKey(key)) continue;
+      final value = json[key];
+      if (value == null) continue;
+      if (value is String && value.trim().isEmpty) continue;
+      if (value is List && value.isEmpty) continue;
+      if (value is Map && value.isEmpty) continue;
+      score++;
+    }
     return score;
   }
 
@@ -513,12 +694,176 @@ class ProfileController extends GetxController
     return <String, dynamic>{};
   }
 
+  Map<String, dynamic> _coalesceMap(List<dynamic> values) {
+    for (final value in values) {
+      final map = _asMap(value);
+      if (map.isNotEmpty) return map;
+    }
+    return <String, dynamic>{};
+  }
+
+  List<dynamic> _coalesceList(List<dynamic> values) {
+    for (final value in values) {
+      if (value is List && value.isNotEmpty) return value;
+    }
+    return const [];
+  }
+
   String _coalesceString(List<dynamic> values) {
     for (final value in values) {
       final text = value?.toString().trim() ?? '';
-      if (text.isNotEmpty) return text;
+      if (text.isEmpty) continue;
+      if (text == '-' || text.toLowerCase() == 'null') continue;
+      return text;
     }
     return '';
+  }
+
+  void _patchProfileFromServiceFallback(GigDetailModel detail, MyGigModel gig) {
+    final creator = detail.creator;
+    final current = profileData.value;
+
+    String fallbackDisplayName() {
+      final joined = '${creator.firstName.trim()} ${creator.lastName.trim()}'
+          .trim();
+      return _coalesceString([
+        creator.displayName,
+        joined,
+        gig.creatorFullName,
+        current?.displayName,
+        current?.firstName,
+      ]);
+    }
+
+    final resolvedDisplayName = fallbackDisplayName();
+    final resolvedFirstName = _coalesceString([
+      current?.firstName,
+      creator.firstName,
+    ]);
+    final resolvedLastName = _coalesceString([
+      current?.lastName,
+      creator.lastName,
+    ]);
+    final resolvedImage = _coalesceString([
+      current?.imageUrl,
+      creator.imageUrl,
+      gig.creatorImageUrl,
+    ]);
+    final resolvedDescription = _coalesceString([
+      current?.description,
+      creator.description,
+      detail.description,
+    ]);
+    final resolvedCountry = _coalesceString([
+      current?.country,
+      creator.country,
+      _extractCountryFromAddress(gig.creatorAddress),
+    ]);
+    final resolvedAgeGroup = _coalesceString([
+      current?.ageGroup,
+      creator.ageGroup,
+    ]);
+    final resolvedGender = _coalesceString([current?.gender, creator.gender]);
+
+    if (current == null) {
+      profileData.value = ProfileModel(
+        role: 'creator',
+        status: 'active',
+        badge: _coalesceString([creator.badge, 'none']),
+        userId: _coalesceString([gig.creatorUserId]),
+        imageUrl: resolvedImage,
+        firstName: resolvedFirstName,
+        lastName: resolvedLastName,
+        displayName: resolvedDisplayName,
+        description: resolvedDescription,
+        ageGroup: resolvedAgeGroup,
+        gender: resolvedGender,
+        country: resolvedCountry,
+        languages: const [],
+        shippingAddress: ShippingAddress(
+          street: '',
+          city: _extractCityFromAddress(gig.creatorAddress),
+          zipCode: '',
+          country: resolvedCountry,
+        ),
+        niches: creator.niches,
+        reviewStats: ReviewStatsModel(
+          totalReviews: gig.reviewStats.totalReviews,
+          averageRating: gig.reviewStats.averageRating,
+        ),
+        subscription: null,
+        analytics: null,
+        isConnectedAccount: false,
+        stripeConnectedAccountId: null,
+        activeBoost: null,
+        portfolio: const [],
+        reviews: const [],
+        creatorReviewStats: null,
+        creatorLevelProgress: null,
+      );
+      return;
+    }
+
+    profileData.value = ProfileModel(
+      role: _coalesceString([current.role, 'creator']),
+      status: _coalesceString([current.status, 'active']),
+      badge: _coalesceString([current.badge, creator.badge, 'none']),
+      userId: _coalesceString([current.userId, gig.creatorUserId]),
+      imageUrl: resolvedImage,
+      firstName: resolvedFirstName,
+      lastName: resolvedLastName,
+      displayName: _coalesceString([current.displayName, resolvedDisplayName]),
+      description: resolvedDescription,
+      ageGroup: resolvedAgeGroup,
+      gender: resolvedGender,
+      country: resolvedCountry,
+      languages: current.languages,
+      shippingAddress: ShippingAddress(
+        street: current.shippingAddress.street,
+        city: _coalesceString([
+          current.shippingAddress.city,
+          _extractCityFromAddress(gig.creatorAddress),
+        ]),
+        zipCode: current.shippingAddress.zipCode,
+        country: _coalesceString([
+          current.shippingAddress.country,
+          resolvedCountry,
+        ]),
+      ),
+      niches: current.niches.isNotEmpty ? current.niches : creator.niches,
+      reviewStats: ReviewStatsModel(
+        totalReviews: current.reviewStats.totalReviews > 0
+            ? current.reviewStats.totalReviews
+            : gig.reviewStats.totalReviews,
+        averageRating: current.reviewStats.averageRating > 0
+            ? current.reviewStats.averageRating
+            : gig.reviewStats.averageRating,
+      ),
+      subscription: current.subscription,
+      analytics: current.analytics,
+      isConnectedAccount: current.isConnectedAccount,
+      stripeConnectedAccountId: current.stripeConnectedAccountId,
+      activeBoost: current.activeBoost,
+      portfolio: current.portfolio,
+      reviews: current.reviews,
+      creatorReviewStats: current.creatorReviewStats,
+      creatorLevelProgress: current.creatorLevelProgress,
+    );
+  }
+
+  String _extractCityFromAddress(String raw) {
+    final cleaned = raw.trim();
+    if (cleaned.isEmpty) return '';
+    final parts = cleaned.split(',');
+    return parts.first.trim();
+  }
+
+  String _extractCountryFromAddress(String raw) {
+    final cleaned = raw.trim();
+    if (cleaned.isEmpty) return '';
+    final parts = cleaned.split(',');
+    if (parts.length < 2) return '';
+    return parts.last.trim();
   }
 
   PortfolioItem _withCanHide(PortfolioItem item, bool canHide) {

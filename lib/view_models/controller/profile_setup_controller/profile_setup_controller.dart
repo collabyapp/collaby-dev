@@ -243,21 +243,29 @@ class ProfileSetUpController extends GetxController {
         // languages
         final languages = profileData['languages'] as List?;
         if (languages != null) {
-          selectedLanguages.value = languages
-              .map(
-                (lang) => LanguageModel(
-                  code: lang['language'] ?? '',
-                  name: lang['language'] ?? '',
-                  level: lang['level'] ?? 'Beginner',
-                ),
-              )
-              .toList();
+          selectedLanguages.value = languages.map((lang) {
+            if (lang is Map) {
+              final map = _asMap(lang);
+              final language = _coalesceString([map['language'], map['name']]);
+              final level = _coalesceString([map['level'], 'Beginner']);
+              return LanguageModel(
+                code: language,
+                name: language,
+                level: level,
+              );
+            }
+            final language = _coalesceString([lang]);
+            return LanguageModel(
+              code: language,
+              name: language,
+              level: 'Beginner',
+            );
+          }).toList();
         }
 
         // shipping
-        final shippingAddress =
-            profileData['shippingAddress'] as Map<String, dynamic>?;
-        if (shippingAddress != null) {
+        final shippingAddress = _asMap(profileData['shippingAddress']);
+        if (shippingAddress.isNotEmpty) {
           streetController.value.text = shippingAddress['street'] ?? '';
           cityController.value.text = shippingAddress['city'] ?? '';
           zipCodeController.value.text = shippingAddress['zipCode'] ?? '';
@@ -301,14 +309,8 @@ class ProfileSetUpController extends GetxController {
         ? data['data'] as Map<String, dynamic>
         : <String, dynamic>{};
     final candidates = <Map<String, dynamic>>[
-      root,
-      data,
       nestedData,
-      _asMap(root['profile']),
-      _asMap(root['creatorProfile']),
-      _asMap(root['creator']),
-      _asMap(root['user']),
-      _asMap(root['roleData']),
+      data,
       _asMap(data['profile']),
       _asMap(data['creatorProfile']),
       _asMap(data['creator']),
@@ -319,20 +321,45 @@ class ProfileSetUpController extends GetxController {
       _asMap(nestedData['creator']),
       _asMap(nestedData['user']),
       _asMap(nestedData['roleData']),
+      _asMap(root['profile']),
+      _asMap(root['creatorProfile']),
+      _asMap(root['creator']),
+      _asMap(root['user']),
+      _asMap(root['roleData']),
+      root,
     ].where((m) => m.isNotEmpty).toList();
 
     Map<String, dynamic> best = <String, dynamic>{};
     var bestScore = -1;
+    var bestStructuralScore = -1;
+    var bestKeyCount = -1;
 
     for (final raw in candidates) {
       final normalized = _normalizeProfileCandidate(raw);
+      final structuralScore = _profileStructuralScore(normalized);
+      if (structuralScore == 0) continue;
       final score = _profileScore(normalized);
-      if (score > bestScore) {
+      final keyCount = normalized.keys.length;
+      final isBetter =
+          score > bestScore ||
+          (score == bestScore && structuralScore > bestStructuralScore) ||
+          (score == bestScore &&
+              structuralScore == bestStructuralScore &&
+              keyCount > bestKeyCount);
+      if (isBetter) {
         bestScore = score;
+        bestStructuralScore = structuralScore;
+        bestKeyCount = keyCount;
         best = normalized;
       }
     }
 
+    if (best.isEmpty && data.isNotEmpty) {
+      final fallback = _normalizeProfileCandidate(data);
+      if (_profileStructuralScore(fallback) > 0) {
+        return fallback;
+      }
+    }
     return best;
   }
 
@@ -349,46 +376,112 @@ class ProfileSetUpController extends GetxController {
     merged.addAll(creator);
     merged.addAll(profile);
     merged.addAll(raw);
+    merged.addAll(_asMap(merged['data']));
 
     merged['firstName'] = _coalesceString([
       merged['firstName'],
+      merged['first_name'],
+      merged['firstname'],
       user['firstName'],
+      user['first_name'],
+      user['firstname'],
     ]);
     merged['lastName'] = _coalesceString([
       merged['lastName'],
+      merged['last_name'],
+      merged['lastname'],
+      merged['surname'],
       user['lastName'],
+      user['last_name'],
+      user['lastname'],
+      user['surname'],
     ]);
     merged['displayName'] = _coalesceString([
       merged['displayName'],
       merged['fullName'],
       merged['name'],
+      merged['username'],
+      merged['userName'],
       user['displayName'],
       user['username'],
+      user['userName'],
       user['brandCompanyName'],
       user['fullName'],
       user['name'],
     ]);
     merged['imageUrl'] = _coalesceString([
       merged['imageUrl'],
+      merged['profileImage'],
+      merged['profileImageUrl'],
+      merged['avatar'],
       user['imageUrl'],
+      user['profileImage'],
+      user['profileImageUrl'],
+      user['avatar'],
     ]);
     merged['description'] = _coalesceString([
       merged['description'],
       merged['bio'],
       merged['about'],
+      merged['creatorDescription'],
       user['description'],
       user['bio'],
       user['about'],
     ]);
+    merged['ageGroup'] = _coalesceString([
+      merged['ageGroup'],
+      merged['age'],
+      merged['ageRange'],
+      merged['age_range'],
+      merged['age_group'],
+    ]);
+    merged['gender'] = _coalesceString([
+      merged['gender'],
+      merged['sex'],
+      merged['genre'],
+    ]);
+    merged['country'] = _coalesceString([
+      merged['country'],
+      merged['location'],
+      merged['countryName'],
+    ]);
 
     if (merged['shippingAddress'] is! Map<String, dynamic>) {
-      final shipping = _asMap(roleData['shippingAddress']);
+      final shipping = _coalesceMap([
+        merged['shippingAddress'],
+        roleData['shippingAddress'],
+        creator['shippingAddress'],
+        creatorProfile['shippingAddress'],
+        profile['shippingAddress'],
+      ]);
       if (shipping.isNotEmpty) merged['shippingAddress'] = shipping;
     }
 
-    if (merged['languages'] is! List && roleData['languages'] is List) {
-      merged['languages'] = roleData['languages'];
-    }
+    final rawLanguages = _coalesceList([
+      merged['languages'],
+      roleData['languages'],
+      creator['languages'],
+      creatorProfile['languages'],
+      profile['languages'],
+      user['languages'],
+    ]);
+    merged['languages'] = rawLanguages
+        .map((e) {
+          if (e is Map) {
+            final map = _asMap(e);
+            final language = _coalesceString([map['language'], map['name']]);
+            if (language.isEmpty) return null;
+            return <String, dynamic>{
+              'language': language,
+              'level': _coalesceString([map['level'], 'Beginner']),
+            };
+          }
+          final language = _coalesceString([e]);
+          if (language.isEmpty) return null;
+          return <String, dynamic>{'language': language, 'level': 'Beginner'};
+        })
+        .whereType<Map<String, dynamic>>()
+        .toList();
 
     return merged;
   }
@@ -404,6 +497,39 @@ class ProfileSetUpController extends GetxController {
     if (json['languages'] is List && (json['languages'] as List).isNotEmpty) {
       score += 2;
     }
+    if (_coalesceString([json['country']]).isNotEmpty) score += 1;
+    if (_coalesceString([json['ageGroup']]).isNotEmpty) score += 1;
+    if (_coalesceString([json['gender']]).isNotEmpty) score += 1;
+    return score;
+  }
+
+  int _profileStructuralScore(Map<String, dynamic> json) {
+    const keys = <String>{
+      'firstName',
+      'lastName',
+      'displayName',
+      'description',
+      'imageUrl',
+      'ageGroup',
+      'gender',
+      'country',
+      'shippingAddress',
+      'languages',
+      'badge',
+      'userId',
+      'role',
+      'status',
+    };
+    var score = 0;
+    for (final key in keys) {
+      if (!json.containsKey(key)) continue;
+      final value = json[key];
+      if (value == null) continue;
+      if (value is String && value.trim().isEmpty) continue;
+      if (value is List && value.isEmpty) continue;
+      if (value is Map && value.isEmpty) continue;
+      score++;
+    }
     return score;
   }
 
@@ -415,10 +541,27 @@ class ProfileSetUpController extends GetxController {
     return <String, dynamic>{};
   }
 
+  Map<String, dynamic> _coalesceMap(List<dynamic> values) {
+    for (final value in values) {
+      final map = _asMap(value);
+      if (map.isNotEmpty) return map;
+    }
+    return <String, dynamic>{};
+  }
+
+  List<dynamic> _coalesceList(List<dynamic> values) {
+    for (final value in values) {
+      if (value is List && value.isNotEmpty) return value;
+    }
+    return const [];
+  }
+
   String _coalesceString(List<dynamic> values) {
     for (final value in values) {
       final text = value?.toString().trim() ?? '';
-      if (text.isNotEmpty) return text;
+      if (text.isEmpty) continue;
+      if (text == '-' || text.toLowerCase() == 'null') continue;
+      return text;
     }
     return '';
   }
