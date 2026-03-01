@@ -299,64 +299,118 @@ class ProfileSetUpController extends GetxController {
         ? data['data'] as Map<String, dynamic>
         : <String, dynamic>{};
     final candidates = <Map<String, dynamic>>[
-      if (nestedData['profile'] is Map<String, dynamic>)
-        nestedData['profile'] as Map<String, dynamic>,
-      if (nestedData['creatorProfile'] is Map<String, dynamic>)
-        nestedData['creatorProfile'] as Map<String, dynamic>,
-      if (nestedData['creator'] is Map<String, dynamic>)
-        nestedData['creator'] as Map<String, dynamic>,
-      if (nestedData['user'] is Map<String, dynamic>)
-        nestedData['user'] as Map<String, dynamic>,
-      nestedData,
-      if (data['profile'] is Map<String, dynamic>)
-        data['profile'] as Map<String, dynamic>,
-      if (data['creatorProfile'] is Map<String, dynamic>)
-        data['creatorProfile'] as Map<String, dynamic>,
-      if (data['creator'] is Map<String, dynamic>)
-        data['creator'] as Map<String, dynamic>,
-      if (data['user'] is Map<String, dynamic>)
-        data['user'] as Map<String, dynamic>,
-      data,
-      if (root['profile'] is Map<String, dynamic>)
-        root['profile'] as Map<String, dynamic>,
-      if (root['creatorProfile'] is Map<String, dynamic>)
-        root['creatorProfile'] as Map<String, dynamic>,
-      if (root['creator'] is Map<String, dynamic>)
-        root['creator'] as Map<String, dynamic>,
-      if (root['user'] is Map<String, dynamic>)
-        root['user'] as Map<String, dynamic>,
       root,
-    ];
+      data,
+      nestedData,
+      _asMap(root['profile']),
+      _asMap(root['creatorProfile']),
+      _asMap(root['creator']),
+      _asMap(root['user']),
+      _asMap(root['roleData']),
+      _asMap(data['profile']),
+      _asMap(data['creatorProfile']),
+      _asMap(data['creator']),
+      _asMap(data['user']),
+      _asMap(data['roleData']),
+      _asMap(nestedData['profile']),
+      _asMap(nestedData['creatorProfile']),
+      _asMap(nestedData['creator']),
+      _asMap(nestedData['user']),
+      _asMap(nestedData['roleData']),
+    ].where((m) => m.isNotEmpty).toList();
 
-    for (final candidate in candidates) {
-      if (candidate.isNotEmpty && _looksLikeProfile(candidate)) {
-        return candidate;
+    Map<String, dynamic> best = <String, dynamic>{};
+    var bestScore = -1;
+
+    for (final raw in candidates) {
+      final normalized = _normalizeProfileCandidate(raw);
+      final score = _profileScore(normalized);
+      if (score > bestScore) {
+        bestScore = score;
+        best = normalized;
       }
     }
 
-    for (final candidate in candidates) {
-      if (candidate.isNotEmpty) {
-        return candidate;
-      }
+    return best;
+  }
+
+  Map<String, dynamic> _normalizeProfileCandidate(Map<String, dynamic> raw) {
+    final roleData = _asMap(raw['roleData']);
+    final creator = _asMap(raw['creator']);
+    final creatorProfile = _asMap(raw['creatorProfile']);
+    final profile = _asMap(raw['profile']);
+    final user = _asMap(raw['user']);
+
+    final merged = <String, dynamic>{};
+    merged.addAll(roleData);
+    merged.addAll(creatorProfile);
+    merged.addAll(creator);
+    merged.addAll(profile);
+    merged.addAll(raw);
+
+    merged['firstName'] = _coalesceString([
+      merged['firstName'],
+      user['firstName'],
+    ]);
+    merged['lastName'] = _coalesceString([
+      merged['lastName'],
+      user['lastName'],
+    ]);
+    merged['displayName'] = _coalesceString([
+      merged['displayName'],
+      user['displayName'],
+      user['username'],
+      user['brandCompanyName'],
+    ]);
+    merged['imageUrl'] = _coalesceString([
+      merged['imageUrl'],
+      user['imageUrl'],
+    ]);
+    merged['description'] = _coalesceString([
+      merged['description'],
+      user['description'],
+    ]);
+
+    if (merged['shippingAddress'] is! Map<String, dynamic>) {
+      final shipping = _asMap(roleData['shippingAddress']);
+      if (shipping.isNotEmpty) merged['shippingAddress'] = shipping;
     }
 
+    if (merged['languages'] is! List && roleData['languages'] is List) {
+      merged['languages'] = roleData['languages'];
+    }
+
+    return merged;
+  }
+
+  int _profileScore(Map<String, dynamic> json) {
+    var score = 0;
+    if (_coalesceString([json['displayName']]).isNotEmpty) score += 3;
+    if (_coalesceString([json['firstName']]).isNotEmpty) score += 2;
+    if (_coalesceString([json['lastName']]).isNotEmpty) score += 2;
+    if (_coalesceString([json['description']]).isNotEmpty) score += 2;
+    if (_coalesceString([json['imageUrl']]).isNotEmpty) score += 2;
+    if (json['shippingAddress'] is Map<String, dynamic>) score += 2;
+    if (json['languages'] is List && (json['languages'] as List).isNotEmpty) {
+      score += 2;
+    }
+    return score;
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(k.toString(), v));
+    }
     return <String, dynamic>{};
   }
 
-  bool _looksLikeProfile(Map<String, dynamic> json) {
-    if (json.isEmpty) return false;
-    const keys = {
-      'displayName',
-      'firstName',
-      'lastName',
-      'imageUrl',
-      'shippingAddress',
-      'badge',
-      'userId',
-      'country',
-      'languages',
-    };
-    return keys.any(json.containsKey);
+  String _coalesceString(List<dynamic> values) {
+    for (final value in values) {
+      final text = value?.toString().trim() ?? '';
+      if (text.isNotEmpty) return text;
+    }
+    return '';
   }
 
   String _matchAgeGroup(String value) {
